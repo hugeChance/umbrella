@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+  <!-- 驱动物理路径 -->
+  <classPathEntry location="D:\oracle\app\oracle\product\11.2.0\server\jdbc\lib\ojdbc6.jar" />
+
+  <context id="OracleTables" targetRuntime="MyBatis3">
+    <jdbcConnection driverClass="oracle.jdbc.driver.OracleDriver"
+        connectionURL="jdbc:oracle:thin:@10.0.0.204:1521:orcl"
+        userId="subaccount"
+        password="subaccount">
+    </jdbcConnection>
+
+    <javaTypeResolver >
+      <property name="forceBigDecimals" value="false" />
+    </javaTypeResolver>
+
+    <javaModelGenerator targetPackage="com.bohai.subAccount.entity" targetProject="src\main\java">
+      <property name="enableSubPackages" value="true" />
+      <property name="trimStrings" value="true" />
+    </javaModelGenerator>
+
+    <sqlMapGenerator targetPackage="mybatis.mapper"  targetProject="src\main\resources">
+      <property name="enableSubPackages" value="true" />
+    </sqlMapGenerator>
+
+    <javaClientGenerator type="XMLMAPPER" targetPackage="com.bohai.subAccount.dao"  targetProject="src\main\java">
+      <property name="enableSubPackages" value="true" />
+    </javaClientGenerator>
+
+	<!-- 去掉Example辅助类 -->
+	<!-- enableSelectByExample="true" enableDeleteByExample="false" enableCountByExample="false"
+    	enableUpdateByExample="false" selectByExampleQueryId="false" --> 
+    <!-- <table schema="" tableName="t_future_market" domainObjectName="FutureMarket" 
+    enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+    	enableUpdateByExample="false" selectByExampleQueryId="false">
+      <property name="useActualColumnNames" value="true"/>
+      <generatedKey column="ID" sqlStatement="DB2" identity="true" />
+      <columnOverride column="DATE_FIELD" property="startDate" />
+      <ignoreColumn column="FRED" />
+      <columnOverride column="LONG_VARCHAR_FIELD" jdbcType="VARCHAR" />
+    </table> -->
+    
+    <!-- <table schema="" tableName="T_MAIN_ACCOUNT" domainObjectName="MainAccount" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>
+    
+    <table schema="" tableName="T_GROUP_INFO" domainObjectName="GroupInfo" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>
+    
+    <table schema="" tableName="T_USER_INFO" domainObjectName="UserInfo" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>
+    
+    <table schema="" tableName="T_USER_CONTRACT" domainObjectName="UserContract" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>
+    
+    <table schema="" tableName="T_GROUP_RULE" domainObjectName="GroupRule" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>
+    
+    <table schema="" tableName="T_TRADE_RULE" domainObjectName="TradeRule" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>
+    
+    <table schema="" tableName="T_CLOSE_RULE" domainObjectName="CloseRule" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table> -->
+    
+    <!-- <table schema="sjzx" tableName="sys_roles" domainObjectName="SysRole" 
+        enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+        enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>
+    
+    <table schema="sjzx" tableName="sys_permissions" domainObjectName="SysPermission" 
+        enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+        enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table> -->
+    
+    
+
+    <!-- <table schema="" tableName="T_CTPTRADINGACCOUNT" domainObjectName="Ctptradingaccount" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table> -->
+
+    <!-- <table schema="" tableName="T_INPUT_ORDER" domainObjectName="InputOrder" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>
+    
+    <table schema="" tableName="T_ORDER" domainObjectName="Order" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table> -->
+    
+    <!-- <table schema="" tableName="T_INVESTOR_POSITION" domainObjectName="InvestorPosition" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>   -->
+    
+    
+    <!-- <table schema="" tableName="T_SUB_TRADINGACCOUNT" domainObjectName="SubTradingaccount" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table> -->  
+    
+    <!-- <table schema="" tableName="T_TRADE" domainObjectName="Trade" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>  
+    
+    
+    <table schema="" tableName="T_USER_FROZENACCOUNT" domainObjectName="UserFrozenaccount" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>   -->
+    
+    <!-- <table schema="" tableName="T_USER_LOGIN" domainObjectName="UserLogin" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>   -->
+    
+
+    <table schema="" tableName="T_INVESTOR_POSITION_HISTORY" domainObjectName="InvestorPositionHistory" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>
+    
+    <table schema="" tableName="T_INPUT_ORDER_HISTORY" domainObjectName="InputOrderHistory" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>
+    
+    <table schema="" tableName="T_ORDER_HISTORY" domainObjectName="OrderHistory" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>
+    
+    <table schema="" tableName="T_TRADE_HISTORY" domainObjectName="TradeHistory" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table> 
+  </context>
+</generatorConfiguration>
