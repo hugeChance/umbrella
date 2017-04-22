@@ -5,13 +5,13 @@
 
 <generatorConfiguration>
   <!-- 驱动物理路径 -->
-  <classPathEntry location="D:\oracle\app\oracle\product\11.2.0\server\jdbc\lib\ojdbc6.jar" />
+  <classPathEntry location="D:\git\umbrella\bohai-subAccount\ojdbc6.jar" />
 
   <context id="OracleTables" targetRuntime="MyBatis3">
     <jdbcConnection driverClass="oracle.jdbc.driver.OracleDriver"
-        connectionURL="jdbc:oracle:thin:@10.0.0.204:1521:orcl"
-        userId="subaccount"
-        password="subaccount">
+        connectionURL="jdbc:oracle:thin:@192.168.1.103:1521:XE"
+        userId="SUBACCOUNT"
+        password="SUBACCOUNT">
     </jdbcConnection>
 
     <javaTypeResolver >
@@ -134,7 +134,7 @@
     </table>   -->
     
 
-    <table schema="" tableName="T_INVESTOR_POSITION_HISTORY" domainObjectName="InvestorPositionHistory" 
+    <!-- <table schema="" tableName="T_INVESTOR_POSITION_HISTORY" domainObjectName="InvestorPositionHistory" 
        enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
        enableUpdateByExample="false" selectByExampleQueryId="false">
     </table>
@@ -152,6 +152,16 @@
     <table schema="" tableName="T_TRADE_HISTORY" domainObjectName="TradeHistory" 
        enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
        enableUpdateByExample="false" selectByExampleQueryId="false">
-    </table> 
+    </table>  -->
+    
+    <table schema="" tableName="T_CAPITAL_RATE" domainObjectName="CapitalRate" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>
+    
+    <table schema="" tableName="T_CAPITAL_RATE_DETAIL" domainObjectName="CapitalRateDetail" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>   
   </context>
 </generatorConfiguration>
