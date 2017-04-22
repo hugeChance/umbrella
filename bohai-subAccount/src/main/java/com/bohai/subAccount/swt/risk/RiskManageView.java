@@ -421,6 +421,18 @@ public class RiskManageView {
 				RiskControlDialog riskControlDialog = new RiskControlDialog(shell, SWT.CLOSE, item,RiskManageView.this,userContracts);
 				riskControlDialog.open();
 			}
+			
+			@Override
+			public void mouseDown(MouseEvent e) {
+				if(e.button == 3) {
+					TableItem item = subAccountTable.getItem(new Point(e.x, e.y));
+					if(item == null){
+						return;
+					}
+					RiskCapitalRateDialog riskCapitalRateDialog = new RiskCapitalRateDialog(shell, SWT.CLOSE, item,RiskManageView.this);
+					riskCapitalRateDialog.open();
+				}
+			}
 		});
 		TableLayout tLayout = new TableLayout();//专用于表格的布局
 		subAccountTable.setLayout(tLayout);
