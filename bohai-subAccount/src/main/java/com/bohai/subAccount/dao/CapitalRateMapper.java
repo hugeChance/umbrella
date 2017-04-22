@@ -1,6 +1,9 @@
 package com.bohai.subAccount.dao;
 
+import java.util.List;
+
 import com.bohai.subAccount.entity.CapitalRate;
+import com.bohai.subAccount.entity.Order;
 
 public interface CapitalRateMapper {
     /**
@@ -18,4 +21,6 @@ public interface CapitalRateMapper {
      * @mbggenerated Sat Apr 22 17:28:32 CST 2017
      */
     int insertSelective(CapitalRate record);
+    
+    List<CapitalRate> getUserByUserName(String userName);
 }
