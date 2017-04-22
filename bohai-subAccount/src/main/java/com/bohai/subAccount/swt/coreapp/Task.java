@@ -141,6 +141,9 @@ public class Task implements Runnable {
         	 }else if(riskstr.equals("TPXZ")){
         		 //用户名 合约号 开仓方向
         		 coreappView.riskTPXZ(subAccount,templist[3],templist[4]);
+        	 }else if(riskstr.equals("CRJ")){
+        		 //出入金
+        		 coreappView.riskCRJ(subAccount,templist[3]);
         	 }
 //        	 coreappView.subOrderAction(subAccount, strJson);
          }

@@ -1154,12 +1154,6 @@ public class CoreappView {
 			}
 		});
 		
-		//
-		
-			
-		
-		
-		
 		//报单回报使用的函数是 OnRtnOrder。核心数据结构为 CThostFtdcOrderField。 报单回报主要作用是通知客户端该报单的最新状态，如已提交，已撤销，未触发，已成交等。 每次报单状态有变化，该函数都会被调用一次。
 		//VolumeTotalOriginal&VolumeTraded&VolumeTotal 上述三个字段分别对应该报单的原始报单数量，已成交数量和剩余数量。
 		//如果报单是分笔成交，则每次成交都会有一次 OnRtnOrder 返回。
@@ -1324,27 +1318,33 @@ public class CoreappView {
 					
 				}
 				
-				
-				
-				
-		
-		
-		
-		
-		
-		
 		
 		
 		CThostFtdcInputOrderActionField pInputOrderAction = new CThostFtdcInputOrderActionField();
 		pInputOrderAction.setBrokerID(mainAccount.getBrokerId());
 		pInputOrderAction.setInvestorID(mainAccount.getAccountNo());
-		pInputOrderAction.setOrderRef(json.getString("orderRef"));
-		pInputOrderAction.setFrontID(Integer.valueOf(json.getString("frontID")));
-		pInputOrderAction.setSessionID(Integer.valueOf(json.getString("sessionID")));
+		// caoxx2 start orderSysID + exchangeID 撤单
+//		pInputOrderAction.setOrderRef(json.getString("orderRef"));
+//		pInputOrderAction.setFrontID(Integer.valueOf(json.getString("frontID")));
+//		pInputOrderAction.setSessionID(Integer.valueOf(json.getString("sessionID")));
+		// caoxx2 end
 		pInputOrderAction.setInstrumentID(json.getString("instrumentID"));
 		pInputOrderAction.setActionFlag(json.getString("actionFlag").toCharArray()[0]);
 		
-		logger.info("zzzzz"+CTPApi.reqOrderAction(pInputOrderAction, nRequestID));
+		//caoxx2 start orderSysID + exchangeID 撤单
+		pInputOrderAction.setOrderSysID(json.getString("orderSysID"));
+		pInputOrderAction.setExchangeID(json.getString("exchangeID"));
+		//caoxx2 end
+		
+		// caoxx2 start 自成交 前置新规改修
+		if (json.getString("orderSysID").equals("1")){
+			//前置1
+			logger.info("zzzzz"+CTPApi.reqOrderAction(pInputOrderAction, nRequestID));
+		} else {
+			//前置2
+			logger.info("zzzzz"+CTPApi.reqOrderAction(pInputOrderAction, nRequestID));
+		}
+		// caoxx2 end 自成交 前置新规改修
 		
 		Display.getDefault().syncExec(new Runnable() {
 			
@@ -1552,14 +1552,8 @@ public class CoreappView {
 				}
 				
 			}
-		}
-		
-		
-		
-		
-		
-		
-		
+			
+		} 
 		
 		InputOrder inputOrder = new InputOrder();
 		
@@ -1650,6 +1644,8 @@ public class CoreappView {
 				getCtpRequest().append(JSON.toJSONString(inputOrderField)+"\r\n");
 			}
 		});
+		
+		
 	}
 	
 	/**
@@ -2359,6 +2355,22 @@ public class CoreappView {
 		//logger.info("用户名:"+subUserid+"|持仓盈亏做可用计算:"+JSON.toJSONString(available));
 		UserAvailableMemorySave userAvailableMemorySave = 		mapAvailableMemorySave.get(subUserid);
 		userAvailableMemorySave.setPositionWin(available);
+		//发送给交易员
+		availableMap(subUserid,userAvailableMemorySave);
+		
+		
+		
+		//MAP可用资金设定
+		mapUserAccountMemorySave.put(subUserid, available);
+
+	}
+	
+	public void riskCRJ(String subUserid,String available){
+		
+		//出入金推送
+		//logger.info("用户名:"+subUserid+"|持仓盈亏做可用计算:"+JSON.toJSONString(available));
+		UserAvailableMemorySave userAvailableMemorySave = 		mapAvailableMemorySave.get(subUserid);
+		userAvailableMemorySave.setInOutMoney(available);
 		//发送给交易员
 		availableMap(subUserid,userAvailableMemorySave);
 		
