@@ -23,14 +23,14 @@ public class CapitalRateServiceImpl implements CapitalRateService {
 	@Override
 	public List<CapitalRate> getUserByUserName(String subuserid)throws FutureException  {
 
-		logger.info("Order getUserByUserName入參：userName = "+subuserid);
+		logger.info("capitalRate getUserByUserName入參：userName = "+subuserid);
 		
 		List<CapitalRate> list = null;
 		try {
 			list = capitalRateMapper.getUserByUserName(subuserid);
 		} catch (Exception e) {
-			logger.error("查询order失败",e);
-			throw new FutureException("","查询order失败");
+			logger.error("查询capitalRate失败",e);
+			throw new FutureException("","查询capitalRate失败");
 		}
 		
 		return list;
@@ -38,13 +38,39 @@ public class CapitalRateServiceImpl implements CapitalRateService {
 
 
 	@Override
-	public void saveOrder(CapitalRate capitalRate) throws FutureException {
-		logger.info("order入參："+JSON.toJSONString(capitalRate));
+	public void saveCapitalRate(CapitalRate capitalRate) throws FutureException {
+		logger.info("capitalRate入參："+JSON.toJSONString(capitalRate));
 		try {
 			capitalRateMapper.insert(capitalRate);
 		} catch (Exception e) {
-			logger.error("插入order失败",e);
-			throw new FutureException("","插入order失败");
+			logger.error("插入capitalRate失败",e);
+			throw new FutureException("","插入capitalRate失败");
+		}
+		
+	}
+
+
+	@Override
+	public void updateCapitalRate(CapitalRate capitalRate) throws FutureException {
+		logger.info("updateCapitalRate入參："+JSON.toJSONString(capitalRate));
+		try {
+			capitalRateMapper.update(capitalRate);
+		} catch (Exception e) {
+			logger.error("更新capitalRate失败",e);
+			throw new FutureException("","更新capitalRate失败");
+		}
+		
+	}
+
+
+	@Override
+	public void deleteCapitalRate(String subuserid) throws FutureException {
+		logger.info("deleteCapitalRate入參："+subuserid);
+		try {
+			capitalRateMapper.delete(subuserid);
+		} catch (Exception e) {
+			logger.error("删除capitalRate失败",e);
+			throw new FutureException("","删除capitalRate失败");
 		}
 		
 	}

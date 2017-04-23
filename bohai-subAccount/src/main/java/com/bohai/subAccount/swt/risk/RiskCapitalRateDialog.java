@@ -1,20 +1,18 @@
 package com.bohai.subAccount.swt.risk;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Text;
 
+import com.bohai.subAccount.service.CapitalRateDetailService;
+import com.bohai.subAccount.service.CapitalRateService;
 import com.bohai.subAccount.service.InvestorPositionService;
-import com.bohai.subAccount.service.SubTradingaccountService;
-import com.bohai.subAccount.service.TradeService;
-import com.bohai.subAccount.service.UserContractService;
 import com.bohai.subAccount.utils.SpringContextUtil;
-
-import org.eclipse.swt.widgets.Button;
 
 public class RiskCapitalRateDialog extends Dialog {
 
@@ -25,6 +23,9 @@ public class RiskCapitalRateDialog extends Dialog {
 	private Text text_1;
 	
 	private RiskManageView manageView;
+	
+	private CapitalRateService capitalRateService;
+	private CapitalRateDetailService capitalRateDetailService;
 
 	/**
 	 * Create the dialog.
@@ -45,7 +46,8 @@ public class RiskCapitalRateDialog extends Dialog {
         ClassPathXmlApplicationContext classPathXmlApplicationContext = new ClassPathXmlApplicationContext("applicationContext.xml");
         classPathXmlApplicationContext.start();
         logger.info("===================加载成功 !==================");*/
-        
+		capitalRateService = (CapitalRateService) SpringContextUtil.getBean("capitalRateService");
+		capitalRateDetailService = (CapitalRateDetailService) SpringContextUtil.getBean("capitalRateDetailService");
 	}
 
 	/**
