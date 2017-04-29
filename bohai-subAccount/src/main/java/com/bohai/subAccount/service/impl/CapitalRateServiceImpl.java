@@ -1,6 +1,6 @@
 package com.bohai.subAccount.service.impl;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,19 +21,19 @@ public class CapitalRateServiceImpl implements CapitalRateService {
 	private CapitalRateMapper capitalRateMapper;
 
 	@Override
-	public List<CapitalRate> getUserByUserName(String subuserid)throws FutureException  {
+	public CapitalRate getUserByUserName(String subuserid)throws FutureException  {
 
 		logger.info("capitalRate getUserByUserName入參：userName = "+subuserid);
 		
-		List<CapitalRate> list = null;
+		CapitalRate capitalRate = null;
 		try {
-			list = capitalRateMapper.getUserByUserName(subuserid);
+			capitalRate = capitalRateMapper.getUserByUserName(subuserid);
 		} catch (Exception e) {
 			logger.error("查询capitalRate失败",e);
 			throw new FutureException("","查询capitalRate失败");
 		}
 		
-		return list;
+		return capitalRate;
 	}
 
 
@@ -72,6 +72,56 @@ public class CapitalRateServiceImpl implements CapitalRateService {
 			logger.error("删除capitalRate失败",e);
 			throw new FutureException("","删除capitalRate失败");
 		}
+		
+	}
+
+
+	@Override
+	public void addCapitalRate(CapitalRate capitalRate) throws FutureException {
+		logger.info("addCapitalRate入參："+JSON.toJSONString(capitalRate));
+		CapitalRate tmpcapitalRate = new CapitalRate();
+		CapitalRate newcapitalRate = new CapitalRate();
+		double userCapitaltmp = 0;
+		double hostCapital1tmp = 0;
+		
+		//取得已有配资表总览的资金
+		tmpcapitalRate = capitalRateMapper.getUserByUserName(capitalRate.getUserName());
+		userCapitaltmp = capitalRate.getUserCapital().doubleValue();
+		hostCapital1tmp = capitalRate.getHostCapital().doubleValue();
+		userCapitaltmp = userCapitaltmp + tmpcapitalRate.getUserCapital().doubleValue();
+		hostCapital1tmp = hostCapital1tmp + tmpcapitalRate.getHostCapital().doubleValue();
+		
+		newcapitalRate.setUserName(capitalRate.getUserName());
+		newcapitalRate.setUpdateTime(capitalRate.getUpdateTime());
+		newcapitalRate.setUserCapital(new BigDecimal(userCapitaltmp));
+		newcapitalRate.setUserCapitalRate(tmpcapitalRate.getUserCapitalRate());
+		newcapitalRate.setHostCapital(new BigDecimal(hostCapital1tmp));
+		capitalRateMapper.update(newcapitalRate);
+		
+	}
+
+
+	@Override
+	public void distractCapitalRate(CapitalRate capitalRate) throws FutureException {
+		logger.info("distractCapitalRate入參："+JSON.toJSONString(capitalRate));
+		CapitalRate tmpcapitalRate = new CapitalRate();
+		CapitalRate newcapitalRate = new CapitalRate();
+		double userCapitaltmp = 0;
+		double hostCapital1tmp = 0;
+		
+		//取得已有配资表总览的资金
+		tmpcapitalRate = capitalRateMapper.getUserByUserName(capitalRate.getUserName());
+		userCapitaltmp = capitalRate.getUserCapital().doubleValue();
+		hostCapital1tmp = capitalRate.getHostCapital().doubleValue();
+		userCapitaltmp = userCapitaltmp + tmpcapitalRate.getUserCapital().doubleValue();
+		hostCapital1tmp = hostCapital1tmp + tmpcapitalRate.getHostCapital().doubleValue();
+		
+		newcapitalRate.setUserName(capitalRate.getUserName());
+		newcapitalRate.setUpdateTime(capitalRate.getUpdateTime());
+		newcapitalRate.setUserCapital(new BigDecimal(userCapitaltmp));
+		newcapitalRate.setUserCapitalRate(tmpcapitalRate.getUserCapitalRate());
+		newcapitalRate.setHostCapital(new BigDecimal(hostCapital1tmp));
+		capitalRateMapper.update(newcapitalRate);
 		
 	}
 

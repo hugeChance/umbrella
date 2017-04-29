@@ -14,7 +14,7 @@ public interface CapitalRateService {
 	 * @return
 	 * @throws FutureException
 	 */
-	public List<CapitalRate> getUserByUserName(String subuserid) throws FutureException;
+	public CapitalRate getUserByUserName(String subuserid) throws FutureException;
 	
 	/**
 	 * 保存交易员资金
@@ -37,7 +37,19 @@ public interface CapitalRateService {
 	 */
 	public void deleteCapitalRate(String subuserid) throws FutureException;
 	
+	/**
+	 * 入金
+	 * @param id
+	 * @throws FutureException
+	 */
+	public void addCapitalRate(CapitalRate capitalRate) throws FutureException;
 	
+	/**
+	 * 出金
+	 * @param id
+	 * @throws FutureException
+	 */
+	public void distractCapitalRate(CapitalRate capitalRate) throws FutureException;
 	
 	
 }

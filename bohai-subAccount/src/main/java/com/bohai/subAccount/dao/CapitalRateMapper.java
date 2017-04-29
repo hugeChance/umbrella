@@ -26,5 +26,5 @@ public interface CapitalRateMapper {
      */
     int insertSelective(CapitalRate record);
     
-    List<CapitalRate> getUserByUserName(String userName);
+    CapitalRate getUserByUserName(String userName);
 }
