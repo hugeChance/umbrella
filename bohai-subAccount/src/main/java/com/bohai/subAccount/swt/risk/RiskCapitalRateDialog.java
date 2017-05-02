@@ -262,6 +262,7 @@ public class RiskCapitalRateDialog extends Dialog {
 	private void setCapital(String userName,String inCapital,String outCapital,String userCapitalRate)
 	{
 		double hostCapital1 = 0;
+		double tmpAdd = 0;
 		CapitalRateDetail capitalRateDetail = new CapitalRateDetail();
 		CapitalRate capitalRate = new CapitalRate();
 		//入金
@@ -271,6 +272,7 @@ public class RiskCapitalRateDialog extends Dialog {
 			capitalRateDetail.setInsertTime(new Date());
 			capitalRateDetail.setHostCapital(new BigDecimal( hostCapital1));
 			capitalRateDetail.setUserCapital(new BigDecimal(inCapital));
+			tmpAdd = Double.valueOf(inCapital) + hostCapital1;
 			//配资表明细 插入数据
 			try {
 				capitalRateDetailService.saveOrder(capitalRateDetail);
@@ -292,7 +294,23 @@ public class RiskCapitalRateDialog extends Dialog {
 			}
 			
 			//推送COREAPP
-			// TODO
+			try {
+				
+				StringBuffer sb = new StringBuffer();
+				sb.append("risk");
+				sb.append("|"+userName);
+				sb.append("|CRJ");
+				sb.append("|");
+				sb.append(tmpAdd);
+				
+				manageView.inoutCapital(sb.toString());
+			} catch (FutureException e) {
+				MessageBox messagebox = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES );
+                messagebox.setText("提示");
+                messagebox.setMessage(e.getMessage()) ;
+                messagebox.open();
+				return;
+			}
 		}
 		
 		//出金
@@ -304,6 +322,7 @@ public class RiskCapitalRateDialog extends Dialog {
 			capitalRateDetail.setHostCapital(new BigDecimal( hostCapital1));
 			tmpinCapital = Double.valueOf(inCapital) * -1;
 			capitalRateDetail.setUserCapital(new BigDecimal(tmpinCapital));
+			tmpAdd = Double.valueOf(tmpinCapital) + hostCapital1;
 			//表明细 插入数据
 			try {
 				capitalRateDetailService.saveOrder(capitalRateDetail);
@@ -325,7 +344,21 @@ public class RiskCapitalRateDialog extends Dialog {
 			}
 			
 			//推送COREAPP
-			// TODO
+			try {
+				StringBuffer sb = new StringBuffer();
+				sb.append("risk");
+				sb.append("|"+userName);
+				sb.append("|CRJ");
+				sb.append("|");
+				sb.append(tmpAdd);
+				manageView.inoutCapital(sb.toString());
+			} catch (FutureException e) {
+				MessageBox messagebox = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES );
+                messagebox.setText("提示");
+                messagebox.setMessage(e.getMessage()) ;
+                messagebox.open();
+				return;
+			}
 		}
 		
 	}

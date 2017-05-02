@@ -774,6 +774,18 @@ public class RiskManageView {
 		}
     }
     
+    public void inoutCapital(String str) throws FutureException{
+    	try {
+			PrintWriter out = new PrintWriter(new OutputStreamWriter(getTradeSocket().getOutputStream(),"UTF-8"));
+			out.println(str);
+			out.flush();
+
+		} catch (Exception e) {
+			logger.error("请求出入金失败");
+			throw new FutureException("", "请求出入金失败");
+		}
+    }
+    
 	/**
      * 根据合约编号查询合约属性
      * @param contractNo
