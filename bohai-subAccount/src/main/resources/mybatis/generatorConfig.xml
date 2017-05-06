@@ -9,7 +9,7 @@
 
   <context id="OracleTables" targetRuntime="MyBatis3">
     <jdbcConnection driverClass="oracle.jdbc.driver.OracleDriver"
-        connectionURL="jdbc:oracle:thin:@192.168.1.103:1521:XE"
+        connectionURL="jdbc:oracle:thin:@192.168.1.102:1521:XE"
         userId="SUBACCOUNT"
         password="SUBACCOUNT">
     </jdbcConnection>
@@ -159,9 +159,9 @@
        enableUpdateByExample="false" selectByExampleQueryId="false">
     </table>
     
-    <table schema="" tableName="T_CAPITAL_RATE_DETAIL" domainObjectName="CapitalRateDetail" 
+    <!--  <table schema="" tableName="T_CAPITAL_RATE_DETAIL" domainObjectName="CapitalRateDetail" 
        enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
        enableUpdateByExample="false" selectByExampleQueryId="false">
-    </table>   
+    </table>  -->
   </context>
 </generatorConfiguration>
