@@ -49,4 +49,9 @@ public interface UserInfoService {
 	 */
 	public int checkUser(String userName, String password) throws FutureException;
 	
+	/**
+	 * 查询用户期初权益
+	 */
+	public String getUserInfoCapital(String userName) throws FutureException;
+	
 }

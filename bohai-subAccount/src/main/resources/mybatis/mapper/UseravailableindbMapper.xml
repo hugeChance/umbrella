@@ -16,6 +16,11 @@
     <result column="MARGIN" property="margin" jdbcType="DECIMAL" />
     <result column="INOUTMONEY" property="inoutmoney" jdbcType="DECIMAL" />
   </resultMap>
+  
+  <select id="selectAll" resultMap="BaseResultMap">
+  	select * from T_USERAVAILABLEINDB
+  </select>
+  
   <insert id="insert" parameterType="com.bohai.subAccount.entity.Useravailableindb" >
     <!--
       WARNING - @mbggenerated

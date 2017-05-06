@@ -1,5 +1,7 @@
 package com.bohai.subAccount.dao;
 
+import java.util.List;
+
 import com.bohai.subAccount.entity.Useravailableindb;
 
 public interface UseravailableindbMapper {
@@ -18,4 +20,6 @@ public interface UseravailableindbMapper {
      * @mbggenerated Sat May 06 15:46:40 CST 2017
      */
     int insertSelective(Useravailableindb record);
+    
+    List<Useravailableindb> selectAll();
 }
