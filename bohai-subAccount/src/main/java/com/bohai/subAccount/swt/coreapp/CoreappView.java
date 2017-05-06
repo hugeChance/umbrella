@@ -7,11 +7,13 @@ import static org.hraink.futures.ctp.thostftdcuserapidatatype.ThostFtdcUserApiDa
 import static org.hraink.futures.ctp.thostftdcuserapidatatype.ThostFtdcUserApiDataTypeLibrary.THOST_FTDC_VC_AV;
 import static org.hraink.futures.ctp.thostftdcuserapidatatype.ThostFtdcUserApiDataTypeLibrary.THOST_FTDC_AF_Delete;
 
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,6 +35,7 @@ import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcInvestorPositionD
 import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcInvestorPositionField;
 import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcOrderField;
 import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcQryInvestorPositionDetailField;
+import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcReqUserLoginField;
 import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcRspInfoField;
 import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcRspUserLoginField;
 import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcSettlementInfoConfirmField;
@@ -70,6 +73,7 @@ import com.bohai.subAccount.service.UserContractService;
 import com.bohai.subAccount.service.UserFrozenaccountService;
 import com.bohai.subAccount.service.UserInfoService;
 import com.bohai.subAccount.service.UserLoginService;
+import com.bohai.subAccount.swt.coreapp.help.CtpConnectThread;
 import com.bohai.subAccount.utils.ApplicationConfig;
 import com.bohai.subAccount.utils.SpringContextUtil;
 import com.bohai.subAccount.vo.UserAvailableMemorySave;
@@ -127,7 +131,10 @@ public class CoreappView {
 	
 	
 	private Socket CTPsocket;
-	private Socket Tradersocket;
+	
+	private Socket ctpFirst;
+	
+	private Socket ctpSecond;
 	
 	 private List<Socket> clients;
 	 
@@ -140,6 +147,9 @@ public class CoreappView {
 	 private Map<String,UserTradeRuleMemorySave> mapTradeRuleMemorySave;
 	 
 	 private Map<String,UserAvailableMemorySave> mapAvailableMemorySave;
+	 
+	 
+	 
 	 
 	/**
 	 * Launch the application.
@@ -371,11 +381,30 @@ public class CoreappView {
 		}
 		
 		//连接CTP
-		Thread connect = new Thread(new ConnectCTP());
+		/*Thread connect = new Thread(new ConnectCTP());
+		connect.setDaemon(true);
+		connect.start();*/
+		
+		try {
+            ctpFirst = new Socket("localhost", 3399);
+            PrintWriter out = new PrintWriter(new OutputStreamWriter(ctpFirst.getOutputStream(),"UTF-8"));
+            
+            //登录
+            
+            CThostFtdcReqUserLoginField userLoginField = new CThostFtdcReqUserLoginField();
+            userLoginField.setBrokerID("9999");
+            userLoginField.setUserID("090985");
+            userLoginField.setPassword("caojiactp");
+            out.println("reqUserLogin|"+JSON.toJSONString(userLoginField)+"|1");
+            out.flush();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+		
+		Thread connect = new Thread(new CtpConnectThread(CoreappView.this,ctpFirst));
 		connect.setDaemon(true);
 		connect.start();
-		
-		
 		
 		//服务端线程
         Thread serverThread = new Thread(new ServerThread(this));
