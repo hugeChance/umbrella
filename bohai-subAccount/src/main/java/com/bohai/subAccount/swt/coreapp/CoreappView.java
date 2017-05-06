@@ -45,6 +45,7 @@ import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.bohai.subAccount.constant.ErrorConstant;
+import com.bohai.subAccount.dao.UseravailableindbMapper;
 import com.bohai.subAccount.entity.InputOrder;
 import com.bohai.subAccount.entity.InvestorPosition;
 import com.bohai.subAccount.entity.MainAccount;
@@ -56,6 +57,7 @@ import com.bohai.subAccount.entity.UserContract;
 import com.bohai.subAccount.entity.UserFrozenaccount;
 import com.bohai.subAccount.entity.UserInfo;
 import com.bohai.subAccount.entity.UserLogin;
+import com.bohai.subAccount.entity.Useravailableindb;
 import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.service.InputOrderService;
 import com.bohai.subAccount.service.InvestorPositionService;
@@ -118,6 +120,7 @@ public class CoreappView {
 	private TradeRuleService tradeRuleService;
 	
 	private UserFrozenaccountService userFrozenaccountService;
+	private UseravailableindbMapper useravailableindbMapper;
 	
 	
 	
@@ -445,6 +448,7 @@ public class CoreappView {
      	
      	tradeRuleService = (TradeRuleService) SpringContextUtil.getBean("tradeRuleService");
         
+     	 useravailableindbMapper = (UseravailableindbMapper) SpringContextUtil.getBean("useravailableindbMapper");
         
         
 //        groupInfoService = (GroupInfoService) SpringContextUtil.getBean("groupInfoService");
@@ -1724,6 +1728,34 @@ public class CoreappView {
 //			getTradeResponse().append(socketStr+"\r\n");
 //			return ;
 //		}
+	}
+	public void closeAccount(){
+		//结算单准备生成，先把	
+		logger.info("mapAvailableMemorySave导出");
+		String userName = "";
+		
+		for (Map.Entry<String,UserAvailableMemorySave> entry : mapAvailableMemorySave.entrySet()) {
+			//Map.entry<Integer,String> 映射项（键-值对）  有几个方法：用上面的名字entry
+			//entry.getKey() ;entry.getValue(); entry.setValue();
+			//map.entrySet()  返回此映射中包含的映射关系的 Set视图。
+			logger.info("key= " + entry.getKey() + " and value= "
+					+ entry.getValue());
+			userName = entry.getKey();
+			UserAvailableMemorySave userAvailableMemorySave = entry.getValue();
+			Useravailableindb useravailableindb = new Useravailableindb();
+			useravailableindb.setUsername(userAvailableMemorySave.getUserName());
+			useravailableindb.setAvailable(new BigDecimal(userAvailableMemorySave.getAvailable()));
+			useravailableindb.setClosewin(new BigDecimal(userAvailableMemorySave.getCloseWin()));
+			useravailableindb.setCommission(new BigDecimal(userAvailableMemorySave.getCommission()));
+			useravailableindb.setFrozenavailable(new BigDecimal(userAvailableMemorySave.getFrozenAvailable()));
+			useravailableindb.setInoutmoney(new BigDecimal(userAvailableMemorySave.getInOutMoney()));
+			useravailableindb.setMargin(new BigDecimal(userAvailableMemorySave.getMargin()));
+			useravailableindb.setPositionwin(new BigDecimal(userAvailableMemorySave.getPositionWin()));
+			
+			useravailableindbMapper.insert(useravailableindb);
+		}
+		
+		logger.info("mapAvailableMemorySave导出完成");
 	}
 	
 	public void subLogin(String subAccount,String password){

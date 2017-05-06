@@ -1,6 +1,11 @@
 package com.bohai.subAccount.swt.admin;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -52,6 +57,8 @@ import com.bohai.subAccount.service.TradeRuleService;
 import com.bohai.subAccount.service.TradeService;
 import com.bohai.subAccount.service.UserInfoService;
 import com.bohai.subAccount.swt.admin.help.Settlement;
+import com.bohai.subAccount.swt.trader.helper.TradeReceiveThread;
+import com.bohai.subAccount.utils.ApplicationConfig;
 import com.bohai.subAccount.utils.DateFormatterUtil;
 import com.bohai.subAccount.utils.SpringContextUtil;
 import com.bohai.subAccount.vo.UserContractTradeRule;
@@ -100,6 +107,9 @@ public class AdminViewMain {
         Display display = Display.getDefault();
         createContents();
         shell.open();
+        
+        
+        
         shell.layout();
         while (!shell.isDisposed()) {
             if (!display.readAndDispatch()) {
@@ -298,53 +308,93 @@ public class AdminViewMain {
         clearButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                
-                DirectoryDialog dialog = new DirectoryDialog(shell);
-                dialog.setText("目录选择");
-                dialog.setMessage("结算文件存放目录");
-                String saveFile=dialog.open();  
-                if(saveFile!=null){  
-                    File directiory=new File(saveFile);
-                    logger.info(directiory.getPath());
-                    List<UserInfo> userList;
-                    try {
-                        userList = userInfoService.getUsersByGroup();
-                    } catch (FutureException e1) {
-                        return;
-                    }
-                    if(userList == null || userList.size() < 1 ){
-                        return;
-                    }
-                    for(UserInfo userInfo :userList){
-                        try {
-                            List<InvestorPosition> position = investorPositionService.getUserClosePostion(userInfo.getUserName());
-                            logger.info("查询用户："+userInfo.getUserName()+"的已平仓信息："+JSON.toJSONString(position));
-                            if(position == null || position.size() < 1 ){
-                                continue;
-                            }
-                            Settlement settlement = new Settlement();
-                            try {
-                                settlement.clear(directiory.getPath(), userInfo.getUserName(), position);
-                            } catch (Exception e1) {
-                                MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
-                                box.setMessage("结算失败:");
-                                box.setText(CommonConstant.MESSAGE_BOX_NOTICE);
-                                box.open();
-                                return;
-                            }
-                        } catch (FutureException e1) {
-                            return;
-                        }
-                        
-                    }
-                    
-                    MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+            	
+            	Thread thread = new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						try {
+							Socket socket = new Socket(ApplicationConfig.getProperty("tradeAddr"),3394);
+							PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(),"UTF-8"));
+							out.println("admin|closeAccount");
+							out.flush();
+							
+						} catch (Exception e) {
+							logger.error("建立socket通讯失败");
+						}
+						
+					}
+				});
+            	
+            	thread.start();
+            	
+            	try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+            	
+            	//生成结算数据
+            	if (settlement() == 0 ){
+            		//结算正常
+            		MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                     box.setMessage("结算完成");
                     box.setText(CommonConstant.MESSAGE_BOX_NOTICE);
                     box.open();
-                    
-                    lblNewLabel.setText("结算状态");
-                }
+            		lblNewLabel.setText("结算状态");
+            		
+            	} else {
+            		//结算异常
+            		
+            	}
+                
+//                DirectoryDialog dialog = new DirectoryDialog(shell);
+//                dialog.setText("目录选择");
+//                dialog.setMessage("结算文件存放目录");
+//                String saveFile=dialog.open();  
+//                if(saveFile!=null){  
+//                    File directiory=new File(saveFile);
+//                    logger.info(directiory.getPath());
+//                    List<UserInfo> userList;
+//                    try {
+//                        userList = userInfoService.getUsersByGroup();
+//                    } catch (FutureException e1) {
+//                        return;
+//                    }
+//                    if(userList == null || userList.size() < 1 ){
+//                        return;
+//                    }
+//                    for(UserInfo userInfo :userList){
+//                        try {
+//                            List<InvestorPosition> position = investorPositionService.getUserClosePostion(userInfo.getUserName());
+//                            logger.info("查询用户："+userInfo.getUserName()+"的已平仓信息："+JSON.toJSONString(position));
+//                            if(position == null || position.size() < 1 ){
+//                                continue;
+//                            }
+//                            Settlement settlement = new Settlement();
+//                            try {
+//                                settlement.clear(directiory.getPath(), userInfo.getUserName(), position);
+//                            } catch (Exception e1) {
+//                                MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+//                                box.setMessage("结算失败:");
+//                                box.setText(CommonConstant.MESSAGE_BOX_NOTICE);
+//                                box.open();
+//                                return;
+//                            }
+//                        } catch (FutureException e1) {
+//                            return;
+//                        }
+//                        
+//                    }
+//                    
+//                    MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+//                    box.setMessage("结算完成");
+//                    box.setText(CommonConstant.MESSAGE_BOX_NOTICE);
+//                    box.open();
+//                    
+//                    lblNewLabel.setText("结算状态");
+//                }
             }
         });
         clearButton.setText("结算");
@@ -370,6 +420,22 @@ public class AdminViewMain {
         
         createTableViewer(mainAccountComp);
         
+    }
+    
+    public int settlement(){
+    	//生成结算
+    	DirectoryDialog dialog = new DirectoryDialog(shell);
+        dialog.setText("目录选择");
+        dialog.setMessage("结算文件存放目录");
+        String saveFile=dialog.open();  
+        if(saveFile!=null){
+        	File directiory=new File(saveFile);
+            logger.info(directiory.getPath());
+        	
+    	  
+        }
+    	
+    	return 0;
     }
     
     /**

@@ -76,6 +76,14 @@ public class Task implements Runnable {
          controlID = templist[0];
          subAccount = templist[1];
          
+         if(controlID.equals("admin")){
+        	 logger.info("admin结算按下，结算单准备生成");
+        	 if (subAccount.equals("closeAccount")){
+        		 coreappView.closeAccount();
+        	 }
+        	 
+         }
+         
          if(controlID.equals("hello")){
         	 logger.info("TASK登入操作");
         	 password = templist[2];
