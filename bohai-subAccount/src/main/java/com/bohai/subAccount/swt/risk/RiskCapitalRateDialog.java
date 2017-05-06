@@ -149,7 +149,7 @@ public class RiskCapitalRateDialog extends Dialog {
 		
 		//自有资金=动态权益-配资资金1
 		double doublei = Double.valueOf(item.getText(1));
-		doublei = doublei - capitalRate.getHostCapital().doubleValue();
+		doublei = doublei - capitalRate.getHostCapital1().doubleValue();
 		Label label_5 = new Label(shell, SWT.NONE);
 		label_5.setBounds(77, 44, 96, 17);
 		label_5.setText(String.valueOf(doublei));
@@ -160,7 +160,7 @@ public class RiskCapitalRateDialog extends Dialog {
 		
 		Label label_6 = new Label(shell, SWT.NONE);
 		label_6.setBounds(249, 44, 96, 17);
-		label_6.setText(capitalRate.getHostCapital().toString());
+		label_6.setText(capitalRate.getHostCapital1().toString());
 		
 		Label label_7 = new Label(shell, SWT.NONE);
 		label_7.setBounds(10, 80, 61, 17);
@@ -197,7 +197,7 @@ public class RiskCapitalRateDialog extends Dialog {
 			public void widgetSelected(SelectionEvent e) {
 				returnCheckFlg = 0;
 				double doublej = Double.valueOf(item.getText(1));
-				doublej = doublej - capitalRate.getHostCapital().doubleValue();
+				doublej = doublej - capitalRate.getHostCapital1().doubleValue();
 				// 出入金CHECK
 				if (checkCapital(item.getText(0),text.getText(),text_1.getText(),String.valueOf(doublej),"0") == 1){
 					// 出入金操作
@@ -290,7 +290,7 @@ public class RiskCapitalRateDialog extends Dialog {
 			
 			//配资表总览更新数据
 			capitalRate.setUserName(userName);
-			capitalRate.setHostCapital(new BigDecimal( hostCapital1));
+			capitalRate.setHostCapital1(new BigDecimal( hostCapital1));
 			capitalRate.setUpdateTime(new Date());
 			capitalRate.setUserCapital(new BigDecimal(inCapital));
 			try {
@@ -340,7 +340,7 @@ public class RiskCapitalRateDialog extends Dialog {
 			
 			//配资表总览更新数据
 			capitalRate.setUserName(userName);
-			capitalRate.setHostCapital(new BigDecimal( hostCapital1));
+			capitalRate.setHostCapital1(new BigDecimal( hostCapital1));
 			capitalRate.setUpdateTime(new Date());
 			capitalRate.setUserCapital(new BigDecimal(inCapital));
 			try {
