@@ -154,14 +154,20 @@
        enableUpdateByExample="false" selectByExampleQueryId="false">
     </table>  -->
     
-    <table schema="" tableName="T_CAPITAL_RATE" domainObjectName="CapitalRate" 
+    <!-- <table schema="" tableName="T_CAPITAL_RATE" domainObjectName="CapitalRate" 
        enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
        enableUpdateByExample="false" selectByExampleQueryId="false">
-    </table>
+    </table> -->
     
     <!--  <table schema="" tableName="T_CAPITAL_RATE_DETAIL" domainObjectName="CapitalRateDetail" 
        enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
        enableUpdateByExample="false" selectByExampleQueryId="false">
     </table>  -->
+    
+    <table schema="" tableName="T_USERAVAILABLEINDB" domainObjectName="Useravailableindb" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>
+    
   </context>
 </generatorConfiguration>
