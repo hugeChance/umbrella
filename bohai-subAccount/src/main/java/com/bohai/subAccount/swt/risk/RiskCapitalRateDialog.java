@@ -24,8 +24,10 @@ import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.service.CapitalRateDetailService;
 import com.bohai.subAccount.service.CapitalRateService;
 import com.bohai.subAccount.service.InvestorPositionService;
+import com.bohai.subAccount.service.TradeService;
 import com.bohai.subAccount.swt.admin.AdminViewMain;
 import com.bohai.subAccount.swt.risk.helper.PositionThread;
+import com.bohai.subAccount.swt.risk.helper.TradeReceiveThread;
 import com.bohai.subAccount.utils.SpringContextUtil;
 import com.bohai.subAccount.vo.UserCapitalRateVO;
 
@@ -40,6 +42,7 @@ public class RiskCapitalRateDialog extends Dialog {
 	private Text text;
 	private Text text_1;
 	private int returnCheckFlg = 0;
+	private TradeService tradeService;
 	
 	private RiskManageView manageView;
 	
@@ -93,6 +96,10 @@ public class RiskCapitalRateDialog extends Dialog {
 //		Thread thread = new Thread(new PositionThread(item.getText(), this, manageView));
 //		thread.setDaemon(true);
 //		thread.start();
+		
+//		Thread tradethread = new Thread(new TradeReceiveThread(this, tradeService));
+//		tradethread.setDaemon(true);
+//		tradethread.start();
 		
 		
 		createContents();
