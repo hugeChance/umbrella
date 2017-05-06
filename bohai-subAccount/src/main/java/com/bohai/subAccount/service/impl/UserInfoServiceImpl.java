@@ -232,4 +232,15 @@ public class UserInfoServiceImpl implements UserInfoService {
         return r;
     }
 
+	@Override
+	public String getUserInfoCapital(String userName) throws FutureException {
+		logger.info("根据用户名查询用户期初资金：userName:"+userName);
+		String balance_start = "";
+		
+		
+		balance_start = userInfoMapper.getUserInfoByUserName(userName);
+		
+		return balance_start;
+	}
+
 }

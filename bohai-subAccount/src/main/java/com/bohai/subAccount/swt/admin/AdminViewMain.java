@@ -4,8 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -39,6 +42,7 @@ import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.bohai.subAccount.constant.CommonConstant;
+import com.bohai.subAccount.dao.UseravailableindbMapper;
 import com.bohai.subAccount.entity.CloseRule;
 import com.bohai.subAccount.entity.GroupInfo;
 import com.bohai.subAccount.entity.GroupRule;
@@ -46,6 +50,7 @@ import com.bohai.subAccount.entity.InvestorPosition;
 import com.bohai.subAccount.entity.MainAccount;
 import com.bohai.subAccount.entity.Trade;
 import com.bohai.subAccount.entity.UserInfo;
+import com.bohai.subAccount.entity.Useravailableindb;
 import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.service.ClearService;
 import com.bohai.subAccount.service.CloseRuleService;
@@ -61,6 +66,7 @@ import com.bohai.subAccount.swt.trader.helper.TradeReceiveThread;
 import com.bohai.subAccount.utils.ApplicationConfig;
 import com.bohai.subAccount.utils.DateFormatterUtil;
 import com.bohai.subAccount.utils.SpringContextUtil;
+import com.bohai.subAccount.vo.SettlemenetTitleVO;
 import com.bohai.subAccount.vo.UserContractTradeRule;
 
 import swing2swt.layout.BorderLayout;
@@ -83,7 +89,7 @@ public class AdminViewMain {
     private CloseRuleService closeRuleService;
     private InvestorPositionService investorPositionService;
     private GroupRuleService groupRuleService;
-    
+    private UseravailableindbMapper useravailableindbMapper;
     
     /**
      * Launch the application.
@@ -131,6 +137,7 @@ public class AdminViewMain {
         investorPositionService = (InvestorPositionService) SpringContextUtil.getBean("investorPositionService");
         closeRuleService = (CloseRuleService) SpringContextUtil.getBean("closeRuleService");
         groupRuleService = (GroupRuleService) SpringContextUtil.getBean("groupRuleService");
+        useravailableindbMapper = (UseravailableindbMapper) SpringContextUtil.getBean("useravailableindbMapper");
     }
 
     /**
@@ -428,9 +435,54 @@ public class AdminViewMain {
         dialog.setText("目录选择");
         dialog.setMessage("结算文件存放目录");
         String saveFile=dialog.open();  
+        String tmpStr = "";
+        
         if(saveFile!=null){
         	File directiory=new File(saveFile);
             logger.info(directiory.getPath());
+            List<Useravailableindb> listUseravailableindb = new ArrayList<Useravailableindb>();
+            listUseravailableindb = useravailableindbMapper.selectAll();
+            //循环按每个客户出文件
+            for (Useravailableindb useravailableindb : listUseravailableindb) {
+            	SettlemenetTitleVO settlemenetTitleVO = new SettlemenetTitleVO();
+            	settlemenetTitleVO.setCompanyName("赫城软件");
+            	settlemenetTitleVO.setUserName(useravailableindb.getUsername());
+            	settlemenetTitleVO.setTodayDate(String.valueOf(new Date()));
+            	//期初结存
+            	try {
+					tmpStr = userInfoService.getUserInfoCapital(useravailableindb.getUsername());
+				} catch (FutureException e) {
+					logger.info("期初结存取得出错！！");
+					e.printStackTrace();
+				}
+            	settlemenetTitleVO.setBalance_Start(tmpStr);
+            	//期末结存 计算
+            	//客户权益=上日结存+出入金-手续费+平仓盈亏（逐日盯市）+持仓盈亏（逐日盯市）；
+            	BigDecimal balanceBDec = useravailableindb.getAvailable().add(useravailableindb.getFrozenavailable()).add(useravailableindb.getMargin()) ;
+            	settlemenetTitleVO.setBalance_End(String.valueOf(balanceBDec));
+            	settlemenetTitleVO.setClient_Equity(String.valueOf(balanceBDec));
+            	settlemenetTitleVO.setCommission(String.valueOf(useravailableindb.getCommission()));
+            	settlemenetTitleVO.setDeposit(String.valueOf(useravailableindb.getInoutmoney()));
+            	//可用资金
+            	BigDecimal fund_availBDec = useravailableindb.getAvailable().add(useravailableindb.getFrozenavailable());
+            	settlemenetTitleVO.setFund_availible(String.valueOf(fund_availBDec));
+            	settlemenetTitleVO.setMargin(String.valueOf(useravailableindb.getMargin()));
+            	settlemenetTitleVO.setMTM(String.valueOf(useravailableindb.getPositionwin()));
+            	settlemenetTitleVO.setRealized(String.valueOf(useravailableindb.getClosewin()));
+            	//风险度=客户保证金占用/客户权益*100%；
+            	BigDecimal risk_DegreeBDec = useravailableindb.getMargin().divide(balanceBDec);
+            	settlemenetTitleVO.setRisk_Degree(String.valueOf(risk_DegreeBDec));
+            	//应追加资金
+            	BigDecimal margin_CallDBec = useravailableindb.getAvailable().add(useravailableindb.getFrozenavailable());
+            	
+            	if (margin_CallDBec.compareTo(new BigDecimal(0))<0){
+            		settlemenetTitleVO.setMargin_Call(String.valueOf(margin_CallDBec));
+            	} else {
+            		settlemenetTitleVO.setMargin_Call("0");
+            	}
+				
+			}
+            
         	
     	  
         }

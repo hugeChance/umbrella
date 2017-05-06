@@ -66,4 +66,7 @@ public interface UserInfoMapper {
     
     @Select("select count(1) from t_user_info where group_id = #{0}")
     int countByGroupId(String groupId);
+    
+    @Select("select CAPITAL from t_user_info where user_name = #{0} ")
+    String getUserInfoByUserName(String userName);
 }
