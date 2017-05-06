@@ -87,15 +87,15 @@ public class CapitalRateServiceImpl implements CapitalRateService {
 		//取得已有配资表总览的资金
 		tmpcapitalRate = capitalRateMapper.getUserByUserName(capitalRate.getUserName());
 		userCapitaltmp = capitalRate.getUserCapital().doubleValue();
-		hostCapital1tmp = capitalRate.getHostCapital().doubleValue();
+		hostCapital1tmp = capitalRate.getHostCapital1().doubleValue();
 		userCapitaltmp = userCapitaltmp + tmpcapitalRate.getUserCapital().doubleValue();
-		hostCapital1tmp = hostCapital1tmp + tmpcapitalRate.getHostCapital().doubleValue();
+		hostCapital1tmp = hostCapital1tmp + tmpcapitalRate.getHostCapital1().doubleValue();
 		
 		newcapitalRate.setUserName(capitalRate.getUserName());
 		newcapitalRate.setUpdateTime(capitalRate.getUpdateTime());
 		newcapitalRate.setUserCapital(new BigDecimal(userCapitaltmp));
 		newcapitalRate.setUserCapitalRate(tmpcapitalRate.getUserCapitalRate());
-		newcapitalRate.setHostCapital(new BigDecimal(hostCapital1tmp));
+		newcapitalRate.setHostCapital1(new BigDecimal(hostCapital1tmp));
 		capitalRateMapper.update(newcapitalRate);
 		
 	}
@@ -112,15 +112,15 @@ public class CapitalRateServiceImpl implements CapitalRateService {
 		//取得已有配资表总览的资金
 		tmpcapitalRate = capitalRateMapper.getUserByUserName(capitalRate.getUserName());
 		userCapitaltmp = capitalRate.getUserCapital().doubleValue();
-		hostCapital1tmp = capitalRate.getHostCapital().doubleValue();
+		hostCapital1tmp = capitalRate.getHostCapital1().doubleValue();
 		userCapitaltmp = userCapitaltmp + tmpcapitalRate.getUserCapital().doubleValue();
-		hostCapital1tmp = hostCapital1tmp + tmpcapitalRate.getHostCapital().doubleValue();
+		hostCapital1tmp = hostCapital1tmp + tmpcapitalRate.getHostCapital1().doubleValue();
 		
 		newcapitalRate.setUserName(capitalRate.getUserName());
 		newcapitalRate.setUpdateTime(capitalRate.getUpdateTime());
 		newcapitalRate.setUserCapital(new BigDecimal(userCapitaltmp));
 		newcapitalRate.setUserCapitalRate(tmpcapitalRate.getUserCapitalRate());
-		newcapitalRate.setHostCapital(new BigDecimal(hostCapital1tmp));
+		newcapitalRate.setHostCapital1(new BigDecimal(hostCapital1tmp));
 		capitalRateMapper.update(newcapitalRate);
 		
 	}
