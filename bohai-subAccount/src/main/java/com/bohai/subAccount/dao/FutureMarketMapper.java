@@ -1,5 +1,7 @@
 package com.bohai.subAccount.dao;
 
+import org.apache.ibatis.annotations.Select;
+
 import com.bohai.subAccount.entity.FutureMarket;
 
 public interface FutureMarketMapper {
@@ -18,4 +20,7 @@ public interface FutureMarketMapper {
      * @mbggenerated Fri Jan 13 09:40:50 CST 2017
      */
     int insertSelective(FutureMarket record);
+    
+    @Select("select * from t_future_market where instrument = #{0} and settlement_price is not null")
+    FutureMarket selectByInstrument(String Instrument);
 }
