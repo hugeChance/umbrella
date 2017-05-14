@@ -6,7 +6,7 @@ public class SettlemenetPart2Head {
 	
 	private String retPart2Head1;
 
-	public String getRetPart1Head1() {
+	public String getRetPart2Head1() {
 		retPart2Head1 = "                                                         平仓明细 Position Closed " ;
 		retPart2Head1 = retPart2Head1 + tmpStr;
 		retPart2Head1 = retPart2Head1 + "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
