@@ -31,6 +31,55 @@ public class SettlemenetTitleVO {
 	//应追加资金
 	private String margin_Call;
 	
+	//输出字段
+	private String retStr;
+	
+	private String tmpStr = "\r\n";
+	
+	public String getRetStr() {
+		//结算单头部输出
+		retStr = "";
+		retStr = retStr + "                                           " + companyName +"系统";
+		retStr = retStr + tmpStr;
+		retStr = retStr + "                                                                    制表时间 Creation Date：" + todayDate;
+		retStr = retStr + tmpStr;
+		retStr = retStr + "----------------------------------------------------------------------------------------------------";
+		retStr = retStr + tmpStr;
+		retStr = retStr + "                                           交易结算单";
+		retStr = retStr + tmpStr;
+		retStr = retStr + "客户名称 Client Name：  " + userName;
+		retStr = retStr + tmpStr;
+		retStr = retStr + "日期 Date：" + todayDate;
+		retStr = retStr + tmpStr;
+		retStr = retStr + tmpStr;
+		retStr = retStr + tmpStr;
+		retStr = retStr + "                   资金状况  币种：人民币  Account Summary  Currency：CNY ";
+		retStr = retStr + tmpStr;
+		retStr = retStr + "期初结存 Balance b/f：" + balance_Start;
+		retStr = retStr + tmpStr;
+		retStr = retStr + "期末结存 Balance c/f：" + balance_End;
+		retStr = retStr + tmpStr;
+		retStr = retStr + "出 入 金 Deposit/Withdrawal：" + deposit;
+		retStr = retStr + tmpStr;
+		retStr = retStr + "客户权益 Client Equity：" + client_Equity;
+		retStr = retStr + tmpStr;
+		retStr = retStr + "平仓盈亏 Realized P/L：" + realized;
+		retStr = retStr + tmpStr;
+		retStr = retStr + "持仓盯市盈亏 MTM P/L：" + MTM;
+		retStr = retStr + tmpStr;
+		retStr = retStr + "手 续 费 Commission：" + commission;
+		retStr = retStr + tmpStr;
+		retStr = retStr + "保证金占用 Margin Occupied：" + margin;
+		retStr = retStr + tmpStr;
+		retStr = retStr + "可用资金 Fund Avail.：" + fund_availible;
+		retStr = retStr + tmpStr;
+		retStr = retStr + "风 险 度 Risk Degree：" + risk_Degree;
+		retStr = retStr + tmpStr;
+		retStr = retStr + "应追加资金 Margin Call：" + margin_Call;
+		retStr = retStr + tmpStr;
+		
+		return retStr;
+	}
 	public String getCompanyName() {
 		return companyName;
 	}
