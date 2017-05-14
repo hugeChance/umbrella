@@ -68,6 +68,23 @@ public class ApplicationConfig {
 				setProperty("volume", "1");
 			}
 			
+			if(StringUtils.isEmpty(getProperty("addressFirst"))){
+                setProperty("addressFirst", "localhost");
+            }
+			
+			if(StringUtils.isEmpty(getProperty("portFirst"))){
+			    setProperty("portFirst", "3398");
+			}
+			
+
+            if(StringUtils.isEmpty(getProperty("addressSecond"))){
+                setProperty("addressSecond", "localhost");
+            }
+			
+			if(StringUtils.isEmpty(getProperty("portSecond"))){
+			    setProperty("portSecond", "3399");
+            }
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

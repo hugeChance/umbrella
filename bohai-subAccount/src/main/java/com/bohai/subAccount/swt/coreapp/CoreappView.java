@@ -41,6 +41,7 @@ import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcRspUserLoginField
 import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcSettlementInfoConfirmField;
 import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcTradeField;
 import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcTradingAccountField;
+import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcUserLogoutField;
 import org.hraink.futures.jctp.trader.JCTPTraderApi;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.StringUtils;
@@ -79,6 +80,8 @@ import com.bohai.subAccount.utils.SpringContextUtil;
 import com.bohai.subAccount.vo.UserAvailableMemorySave;
 import com.bohai.subAccount.vo.UserFlgMemorySave;
 import com.bohai.subAccount.vo.UserTradeRuleMemorySave;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.DisposeEvent;
 
 public class CoreappView {
     
@@ -391,18 +394,12 @@ public class CoreappView {
         
         try {
             //买开  卖平路线
-            ctpFirst = new Socket("localhost", 3399);
+            ctpFirst = new Socket(ApplicationConfig.getProperty("addressFirst"),
+                    Integer.parseInt(ApplicationConfig.getProperty("portFirst")));
             outFirst = new PrintWriter(new OutputStreamWriter(ctpFirst.getOutputStream(),"UTF-8"));
             Thread buyConnect = new Thread(new CtpConnectThread(CoreappView.this,ctpFirst));
             buyConnect.setDaemon(true);
             buyConnect.start();
-            
-            //卖开 买平路线
-            ctpSecond = new Socket("localhost", 3398);
-            outSecond = new PrintWriter(new OutputStreamWriter(ctpFirst.getOutputStream(),"UTF-8"));
-            Thread sellConnect = new Thread(new CtpConnectThread(CoreappView.this,ctpSecond));
-            sellConnect.setDaemon(true);
-            sellConnect.start();
             
             //登录
             
@@ -413,16 +410,43 @@ public class CoreappView {
             outFirst.println("reqUserLogin|"+JSON.toJSONString(userLoginField)+"|1");
             outFirst.flush();
         } catch (Exception e) {
-            logger.error("连接前置机失败");
+            logger.error("连接前置机1失败");
+            MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+            box.setMessage("连接前置机1失败");
+            box.setText("错误");
+            box.open();
         }
         
+            
+        try {
+            //卖开 买平路线
+            ctpSecond = new Socket(ApplicationConfig.getProperty("addressSecond"),
+                    Integer.parseInt(ApplicationConfig.getProperty("portSecond")));
+            outSecond = new PrintWriter(new OutputStreamWriter(ctpSecond.getOutputStream(),"UTF-8"));
+            Thread sellConnect = new Thread(new CtpConnectThread(CoreappView.this,ctpSecond));
+            sellConnect.setDaemon(true);
+            sellConnect.start();
+            
+            //登录
+            CThostFtdcReqUserLoginField userLoginField = new CThostFtdcReqUserLoginField();
+            userLoginField.setBrokerID("9999");
+            userLoginField.setUserID("090985");
+            userLoginField.setPassword("caojiactp");
+            outSecond.println("reqUserLogin|"+JSON.toJSONString(userLoginField)+"|1");
+            outSecond.flush();
+        } catch (Exception e) {
+            logger.error("连接前置机2失败");
+            MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+            box.setMessage("连接前置机2失败");
+            box.setText("错误");
+            box.open();
+        }
         
+            
         //服务端线程
         Thread serverThread = new Thread(new ServerThread(this));
         serverThread.setDaemon(true);
         serverThread.start();
-        
-        
         
         //TEST
         
@@ -502,6 +526,30 @@ public class CoreappView {
      */
     protected void createContents() {
         shell = new Shell();
+        shell.addDisposeListener(new DisposeListener() {
+            public void widgetDisposed(DisposeEvent e) {
+                if(outFirst != null){
+                    CThostFtdcUserLogoutField pUserLogout = new CThostFtdcUserLogoutField();
+                    pUserLogout.setBrokerID("090985");
+                    StringBuffer sb = new StringBuffer();
+                    sb.append("reqUserLogout|");
+                    sb.append(JSON.toJSONString(pUserLogout)+"|");
+                    sb.append(++nRequestID);
+                    outFirst.println(sb.toString());
+                    outFirst.flush();
+                }
+                if(outSecond != null){
+                    CThostFtdcUserLogoutField pUserLogout = new CThostFtdcUserLogoutField();
+                    pUserLogout.setBrokerID("090985");
+                    StringBuffer sb = new StringBuffer();
+                    sb.append("reqUserLogout|");
+                    sb.append(JSON.toJSONString(pUserLogout)+"|");
+                    sb.append(++nRequestID);
+                    outSecond.println(sb.toString());
+                    outSecond.flush();
+                }
+            }
+        });
         shell.setSize(613, 399);
         shell.setText("SWT Application");
         shell.setLayout(null);
