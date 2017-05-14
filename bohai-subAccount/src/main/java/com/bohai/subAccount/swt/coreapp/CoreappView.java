@@ -197,7 +197,7 @@ public class CoreappView {
                 logger.info("setMemory="+JSON.toJSONString(userContract2));
                 
 //                listUserContractMemorySave.set
-                mapUserContractMemorySave.put(userContract2.getContractNo(), userContract2);
+                mapUserContractMemorySave.put(userContract2.getUserNo() +userContract2.getContractNo(), userContract2);
                 
                 
             }
@@ -260,7 +260,7 @@ public class CoreappView {
                 List<InvestorPosition> getUserByUserName = investorPositionService.getUserByUserName(subTradingaccount2.getAccountid());
                 if (getUserByUserName.size() > 0) {
                     for (InvestorPosition investorPosition2 : getUserByUserName) {
-                        userContract = mapUserContractMemorySave.get(investorPosition2.getInstrumentid());
+                        userContract = mapUserContractMemorySave.get(investorPosition2.getSubuserid() +investorPosition2.getInstrumentid());
                         if(investorPosition2.getPosition() == 0){
                             pcyk = 0;
                             //平仓盈亏
@@ -754,7 +754,7 @@ public class CoreappView {
         String heyue = pTrade.getInstrumentID();
         UserContract userContract = new UserContract();
         String userAccount = mapUserAccountMemorySave.get(subAccount);
-        userContract = mapUserContractMemorySave.get(heyue);
+        userContract = mapUserContractMemorySave.get(subAccount +heyue);
         
         logger.info("成交step5");
         
@@ -961,7 +961,7 @@ public class CoreappView {
         
         for (InvestorPosition investorPosition2 : listInvestorPosition) {
             
-            UserContract positionContract = mapUserContractMemorySave.get(investorPosition2.getInstrumentid());
+            UserContract positionContract = mapUserContractMemorySave.get(investorPosition2.getSubuserid() +investorPosition2.getInstrumentid());
             if(investorPosition2.getPosition() == 0){
                 pcyk = 0;
                 //平仓盈亏
@@ -1550,7 +1550,7 @@ public class CoreappView {
 //        String userAccount = mapUserAccountMemorySave.get(subAccount);
         UserAvailableMemorySave userAvailableMemorySave  = mapAvailableMemorySave.get(subAccount);
         String userAccount = availableCalc(userAvailableMemorySave);
-        userContract = mapUserContractMemorySave.get(heyue);
+        userContract = mapUserContractMemorySave.get(subAccount + heyue);
         //账户可用资金
         double keyongzijin;
         //开仓手续费
