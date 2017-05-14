@@ -5,19 +5,18 @@ public class SettlemenetPart1Body {
 	private String tmpStr = "|";
 	
 	private String Date                         ; 
-	private String Exchange                     ;
-	private String Product                      ;
-	private String Instrument                   ;
-	private String BS                          ;
-	private String SH                          ;
-	private String Price                        ;
-	private String Lots                         ;
-	private String Turnover                     ;
-	private String OC                          ;
-	private String Fee                          ;
-	private String Realized                  ;
-	private String Premium         ;
-	private String TransNo                    ;
+	private String Exchange                     ; //EXCHANGEID
+	private String Product                      ; //INSTRUMENTID
+	private String Instrument                   ; //INSTRUMENTID
+	private String BS                          ; //DIRECTION
+	private String SH                          ; //投
+	private String Price                        ; //PRICE
+	private String Lots                         ; //VOLUME
+	private String Turnover                     ; //成交额
+	private String OC                          ; //OFFSETFLAG
+	private String Fee                          ; //手续费
+	private String Premium         ;              // 权利金收支 0.00
+	private String TransNo                    ; //ORDERSYSID
 	
 	private String retStr;
 	public String getRetStr() {
@@ -56,9 +55,6 @@ public class SettlemenetPart1Body {
 		retStr = retStr + tmpStr;
 		//手续费 半角
 		retStr = retStr + retStrAddSpace(Fee,1,10);
-		retStr = retStr + tmpStr;
-		//平仓盈亏 半角
-		retStr = retStr + retStrAddSpace(Realized,1,12);
 		retStr = retStr + tmpStr;
 		//权利金收支  半角
 		retStr = retStr + retStrAddSpace(Premium,1,21);

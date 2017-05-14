@@ -1,15 +1,15 @@
 package com.bohai.subAccount.swt.admin;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -44,11 +44,13 @@ import com.alibaba.fastjson.JSON;
 import com.bohai.subAccount.constant.CommonConstant;
 import com.bohai.subAccount.dao.UseravailableindbMapper;
 import com.bohai.subAccount.entity.CloseRule;
+import com.bohai.subAccount.entity.FutureMarket;
 import com.bohai.subAccount.entity.GroupInfo;
 import com.bohai.subAccount.entity.GroupRule;
 import com.bohai.subAccount.entity.InvestorPosition;
 import com.bohai.subAccount.entity.MainAccount;
 import com.bohai.subAccount.entity.Trade;
+import com.bohai.subAccount.entity.UserContract;
 import com.bohai.subAccount.entity.UserInfo;
 import com.bohai.subAccount.entity.Useravailableindb;
 import com.bohai.subAccount.exception.FutureException;
@@ -60,12 +62,17 @@ import com.bohai.subAccount.service.InvestorPositionService;
 import com.bohai.subAccount.service.MainAccountService;
 import com.bohai.subAccount.service.TradeRuleService;
 import com.bohai.subAccount.service.TradeService;
+import com.bohai.subAccount.service.UserContractService;
 import com.bohai.subAccount.service.UserInfoService;
-import com.bohai.subAccount.swt.admin.help.Settlement;
-import com.bohai.subAccount.swt.trader.helper.TradeReceiveThread;
 import com.bohai.subAccount.utils.ApplicationConfig;
 import com.bohai.subAccount.utils.DateFormatterUtil;
 import com.bohai.subAccount.utils.SpringContextUtil;
+import com.bohai.subAccount.vo.SettlemenetPart1Body;
+import com.bohai.subAccount.vo.SettlemenetPart1Head;
+import com.bohai.subAccount.vo.SettlemenetPart2Body;
+import com.bohai.subAccount.vo.SettlemenetPart2Head;
+import com.bohai.subAccount.vo.SettlemenetPart3Body;
+import com.bohai.subAccount.vo.SettlemenetPart3Head;
 import com.bohai.subAccount.vo.SettlemenetTitleVO;
 import com.bohai.subAccount.vo.UserContractTradeRule;
 
@@ -90,6 +97,10 @@ public class AdminViewMain {
     private InvestorPositionService investorPositionService;
     private GroupRuleService groupRuleService;
     private UseravailableindbMapper useravailableindbMapper;
+	private TradeService tradeService;
+	private UserContractService userContractService;
+	
+	private Map<String,UserContract> mapUserContractMemorySave;
     
     /**
      * Launch the application.
@@ -100,10 +111,31 @@ public class AdminViewMain {
         try {
             AdminViewMain window = new AdminViewMain();
             window.loadSpringContext();
+            window.setMemory();
             window.open();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    public void setMemory(){
+    	mapUserContractMemorySave = new HashMap<String,UserContract>();
+    	
+    	List<UserContract> listUserContract;
+		try {
+			listUserContract = userContractService.queryUserContractByAll();
+			for (UserContract userContract2 : listUserContract) {
+				logger.info("setMemory="+JSON.toJSONString(userContract2));
+				
+//				listUserContractMemorySave.set
+				mapUserContractMemorySave.put(userContract2.getUserNo() + userContract2.getContractNo(), userContract2);
+				
+				
+			}
+		} catch (FutureException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
     }
 
     /**
@@ -138,6 +170,7 @@ public class AdminViewMain {
         closeRuleService = (CloseRuleService) SpringContextUtil.getBean("closeRuleService");
         groupRuleService = (GroupRuleService) SpringContextUtil.getBean("groupRuleService");
         useravailableindbMapper = (UseravailableindbMapper) SpringContextUtil.getBean("useravailableindbMapper");
+        tradeService = (TradeService) SpringContextUtil.getBean("tradeService");
     }
 
     /**
@@ -480,13 +513,162 @@ public class AdminViewMain {
             	} else {
             		settlemenetTitleVO.setMargin_Call("0");
             	}
-				
+				//账单头部
+            	fileLineWrite(settlemenetTitleVO.getRetStr());
+            	fileLineWrite("");
+            	fileLineWrite("");
+            	//格式化输出明细
+            	SettlemenetPart1Head settlemenetPart1Head = new SettlemenetPart1Head();
+            	SettlemenetPart2Head settlemenetPart2Head = new SettlemenetPart2Head();
+            	SettlemenetPart3Head settlemenetPart3Head = new SettlemenetPart3Head();
+            	SettlemenetPart1Body settlemenetPart1Body = new SettlemenetPart1Body();
+            	SettlemenetPart2Body settlemenetPart2Body = new SettlemenetPart2Body();
+            	SettlemenetPart3Body settlemenetPart3Body = new SettlemenetPart3Body();
+            	
+            	//查询成交表
+            	try {
+					List<Trade> listTrade = tradeService.getUserByUserName2(useravailableindb.getUsername());
+					UserContract userContract = new UserContract();
+					
+					if (listTrade.size() > 0) {
+						//有成交则出明细
+						fileLineWrite(settlemenetPart1Head.getRetPart1Head1());
+						for (Trade trade : listTrade) {
+							//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+							//|成交日期| 交易所 |       品种       |      合约      |买/卖|   投/保    |  成交价  | 手数 |   成交额   |       开平       |  手续费  |  平仓盈亏  |     权利金收支      |  成交序号  |
+							//|  Date  |Exchange|     Product      |   Instrument   | B/S |    S/H     |   Price  | Lots |  Turnover  |       O/C        |   Fee    |Realized P/L|Premium Received/Paid|  Trans.No. |
+							//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+							//|20170512|上期所  |铝                |     al1706     |买   |投          | 13840.000|     1|    69200.00|开                |      3.00|        0.00|                 0.00|98274       |
+							userContract = mapUserContractMemorySave.get(useravailableindb.getUsername() + trade.getInstrumentid());
+							settlemenetPart1Body.setDate(settlemenetTitleVO.getTodayDate());
+							settlemenetPart1Body.setExchange(trade.getExchangeid());
+							settlemenetPart1Body.setProduct(trade.getInstrumentid());
+							settlemenetPart1Body.setInstrument(trade.getInstrumentid());
+							settlemenetPart1Body.setBS(trade.getDirection());
+							settlemenetPart1Body.setSH("投");
+							settlemenetPart1Body.setPrice(trade.getPrice().toString());
+							settlemenetPart1Body.setLots(trade.getVolume().toString());
+							//成交额
+							BigDecimal turnover = new BigDecimal(0);
+							turnover =trade.getPrice().multiply(new BigDecimal(trade.getVolume())).multiply(new BigDecimal(userContract.getContractUnit()));
+							settlemenetPart1Body.setTurnover(turnover.toString());
+							//
+							if(trade.getOffsetflag().equals("0")){
+								settlemenetPart1Body.setOC("开");
+							} else {
+								settlemenetPart1Body.setOC("平");
+							}
+							//手续费
+							double commission = 0;
+							//手数
+							int shoushu = Integer.valueOf(trade.getVolume().toString());
+							//手续费
+							if(trade.getOffsetflag().equals("0")){
+								//开仓手续费 = 手数 * 开仓手续费 + 价格 * 合约单位* 手数  * 开仓手续费比例  
+								commission = shoushu * userContract.getOpenCharge().doubleValue() +    trade.getPrice().doubleValue()  * userContract.getContractUnit().doubleValue() * userContract.getOpenChargeRate().doubleValue()*shoushu ;
+								logger.info("开仓手续费手数 ="+shoushu);
+								logger.info("开仓开仓手续费  ="+ userContract.getOpenCharge().doubleValue() );
+								logger.info("开仓手续费价格 ="+trade.getPrice());
+								logger.info("开仓合约单位 ="+userContract.getContractUnit().doubleValue() );
+								logger.info("开仓手开仓手续费比例 ="+userContract.getOpenChargeRate().doubleValue());
+								
+								
+								
+								
+							} else {
+								//平仓手续费 = 手数 * 平仓手续费 + 价格 * 合约单位* 手数  * 平仓手续费比例  
+								commission = shoushu * userContract.getCloseCurrCharge().doubleValue() +    trade.getPrice().doubleValue()  * userContract.getContractUnit().doubleValue() * userContract.getCloseCurrChargeRate().doubleValue()*shoushu ;
+							}
+							
+							
+							
+							settlemenetPart1Body.setFee(String.valueOf(commission));
+							
+							settlemenetPart1Body.setPremiumReceived("0.00");
+							settlemenetPart1Body.setTransNo(trade.getOrdersysid());
+							fileLineWrite(settlemenetPart1Body.getRetStr());
+							
+						}
+						
+					}
+				} catch (FutureException e) {
+					logger.info("结算单查询成交表！！");
+					e.printStackTrace();
+				}
+            	
+            	//查询平仓表
+            	// TODO 由COREAPP 增加新功能当平仓时写入平仓表
+            	
+            	//查询持仓汇总表
+            	List<InvestorPosition> listInvestorPosition = new ArrayList<InvestorPosition>();
+            	try {
+            		listInvestorPosition = investorPositionService.getUserUnClosePostion(useravailableindb.getUsername());
+            		if (listInvestorPosition.size() > 0) {
+						//有成交则出明细
+						fileLineWrite(settlemenetPart3Head.getRetPart3Head1());	
+	            		for (InvestorPosition investorPosition : listInvestorPosition) {
+		            			//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		            			//|       品种       |      合约      |    买持     |    买均价   |     卖持     |    卖均价    |  昨结算  |  今结算  |持仓盯市盈亏|  保证金占用   |  投/保     |   多头期权市值   |   空头期权市值    |
+		            			//|      Product     |   Instrument   |  Long Pos.  |Avg Buy Price|  Short Pos.  |Avg Sell Price|Prev. Sttl|Sttl Today|  MTM P/L   |Margin Occupied|    S/H     |Market Value(Long)|Market Value(Short)|
+		            			//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		            			//|        铝        |     al1706     |            1|    13840.000|             0|         0.000| 13765.000| 13790.000|     -250.00|        6895.00|投          |              0.00|               0.00|
+	            			settlemenetPart3Body.setProduct(investorPosition.getInstrumentid());
+	            			settlemenetPart3Body.setInstrument(investorPosition.getInstrumentid());
+	            			if(investorPosition.getPosidirection().equals("0"))
+	            			{
+	            				//买
+	            				settlemenetPart3Body.setLongPos(investorPosition.getPosition().toString());
+		            			settlemenetPart3Body.setAvgBuyPrice(investorPosition.getPositioncost().toString());
+		            			settlemenetPart3Body.setShortPos("0");
+		            			settlemenetPart3Body.setAvgSellPrice("0");
+
+	            			} else {
+	            				//卖
+	            				settlemenetPart3Body.setLongPos("0");
+		            			settlemenetPart3Body.setAvgBuyPrice("0");
+		            			settlemenetPart3Body.setShortPos(investorPosition.getPosition().toString());
+		            			settlemenetPart3Body.setAvgSellPrice(investorPosition.getPositioncost().toString());
+		            			
+	            			}
+	            			
+	            			FutureMarket futureMarket = new FutureMarket();
+	            			
+	            			// TODO: 需要曹佳给SErVICE接口
+	            			settlemenetPart3Body.setPrev(futureMarket.getPreSettlementPrice().toString());
+	            			settlemenetPart3Body.setSttlToday(futureMarket.getSettlementPrice());
+	            			double mTM = 0;
+	            			mTM = investorPosition.getPositioncost().doubleValue() - Double.valueOf(futureMarket.getSettlementPrice()) ;
+	            			mTM = mTM * investorPosition.getPosition().doubleValue();
+	            			settlemenetPart3Body.setMTM(String.valueOf(mTM));
+	            			settlemenetPart3Body.setMarginOccupied(investorPosition.getUsemargin().toString());
+	            			settlemenetPart3Body.setSH("投");
+	            			settlemenetPart3Body.setMarketValueLong("0.00");
+	            			settlemenetPart3Body.setMarketValueShort("0.00");
+	            			fileLineWrite(settlemenetPart3Body.getRetStr());
+								
+							}
+            		}
+				} catch (FutureException e) {
+					logger.info("结算单查询持仓汇总表！！");
+					e.printStackTrace();
+				}
+            	
+            	
 			}
             
         	
     	  
         }
     	
+    	return 0;
+    }
+    
+    /**
+     * 创建主账户表格
+     * @param parent
+     */
+    public int fileLineWrite(String writeLine){
+    	//0 写结算单正常，其他为异常
     	return 0;
     }
     
