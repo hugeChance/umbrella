@@ -1,6 +1,8 @@
 package com.bohai.subAccount.swt.admin;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
@@ -56,6 +58,7 @@ import com.bohai.subAccount.entity.Useravailableindb;
 import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.service.ClearService;
 import com.bohai.subAccount.service.CloseRuleService;
+import com.bohai.subAccount.service.FutureMarketService;
 import com.bohai.subAccount.service.GroupInfoService;
 import com.bohai.subAccount.service.GroupRuleService;
 import com.bohai.subAccount.service.InvestorPositionService;
@@ -99,6 +102,7 @@ public class AdminViewMain {
     private UseravailableindbMapper useravailableindbMapper;
 	private TradeService tradeService;
 	private UserContractService userContractService;
+	private FutureMarketService futureMarketService;
 	
 	private Map<String,UserContract> mapUserContractMemorySave;
     
@@ -171,6 +175,7 @@ public class AdminViewMain {
         groupRuleService = (GroupRuleService) SpringContextUtil.getBean("groupRuleService");
         useravailableindbMapper = (UseravailableindbMapper) SpringContextUtil.getBean("useravailableindbMapper");
         tradeService = (TradeService) SpringContextUtil.getBean("tradeService");
+        futureMarketService = (FutureMarketService) SpringContextUtil.getBean("futureMarketService");
     }
 
     /**
@@ -631,9 +636,8 @@ public class AdminViewMain {
 		            			
 	            			}
 	            			
-	            			FutureMarket futureMarket = new FutureMarket();
+	            			FutureMarket futureMarket = this.futureMarketService.queryFutureMarketByInstrument(investorPosition.getInstrumentid());
 	            			
-	            			// TODO: 需要曹佳给SErVICE接口
 	            			settlemenetPart3Body.setPrev(futureMarket.getPreSettlementPrice().toString());
 	            			settlemenetPart3Body.setSttlToday(futureMarket.getSettlementPrice());
 	            			double mTM = 0;
@@ -649,8 +653,8 @@ public class AdminViewMain {
 							}
             		}
 				} catch (FutureException e) {
-					logger.info("结算单查询持仓汇总表！！");
-					e.printStackTrace();
+					logger.error("结算单查询持仓汇总表失败！！",e);
+					return 1;
 				}
             	
             	
@@ -667,9 +671,25 @@ public class AdminViewMain {
      * 创建主账户表格
      * @param parent
      */
-    public int fileLineWrite(String writeLine){
-    	//0 写结算单正常，其他为异常
-    	return 0;
+    public int fileLineWrite(String path,String writeLine){
+    	
+        FileWriter fw = null;
+        try {
+            fw = new FileWriter(path);
+            fw.write(writeLine);  
+            
+        } catch (IOException e) {
+            
+            logger.error("创建文件失败");
+            return 0;
+        } finally {
+            try {
+                fw.close();
+            } catch (IOException e) {
+                logger.error("关闭写入流失败");
+            }
+        }
+    	return 1;
     }
     
     /**
