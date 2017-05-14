@@ -1469,6 +1469,17 @@ public class TraderView {
         field.setActionFlag(THOST_FTDC_AF_Delete);
         //撤单数
         field.setVolumeChange(order.getVolumetotaloriginal().intValue()-order.getVolumetraded().intValue());
+        //orderSysID
+        field.setOrderSysID(order.getOrdersysid());
+        //exchangeID
+        field.setExchangeID(order.getExchangeid());
+        //买卖标志放在用户ID用来区分走哪条路
+        if((order.getDirection().equals("0") && order.getComboffsetflag().equals("0")) 
+                || order.getDirection().equals("1") && !order.getComboffsetflag().equals("0")){
+            field.setUserID("0");
+        }else {
+            field.setUserID("1");
+        }
         
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append("cancel");

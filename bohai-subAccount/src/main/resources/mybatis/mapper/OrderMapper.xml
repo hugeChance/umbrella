@@ -516,7 +516,7 @@
     -->
    
     select 
-    distinct t.INSTRUMENTID,t.SESSIONID,t.ORDERREF,t.FRONTID
+    distinct t.INSTRUMENTID,t.SESSIONID,t.ORDERREF,t.FRONTID,t.EXCHANGEID,t.ORDERSYSID,t.DIRECTION,t.COMBOFFSETFLAG
     from T_ORDER t
     where t.SUBUSERID = #{0,jdbcType=VARCHAR}
     and not exists (select 1 
@@ -527,15 +527,15 @@
                     and t1.ORDERSTATUS in('0','2','4','5')
                    )
   </select>
-  
+   
   <select id="getUserCloseOrderByInstrumentIDAndDirection" resultMap="BaseResultMap" parameterType="java.lang.String">
     select 
-    distinct t.INSTRUMENTID,t.SESSIONID,t.ORDERREF,t.FRONTID
+    distinct t.INSTRUMENTID,t.SESSIONID,t.ORDERREF,t.FRONTID,t.EXCHANGEID,t.ORDERSYSID,t.DIRECTION,t.COMBOFFSETFLAG
     from T_ORDER t
     where t.SUBUSERID = #{0,jdbcType=VARCHAR}
     and t.INSTRUMENTID = #{1,jdbcType=VARCHAR}
     and t.DIRECTION = #{2,jdbcType=VARCHAR}
-    and t.COMBOFFSETFLAG = '3'
+    and t.COMBOFFSETFLAG != '0'
     and not exists (select 1 
                     from T_ORDER t1 
                     where t.SESSIONID = t1.SESSIONID 

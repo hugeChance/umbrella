@@ -156,6 +156,10 @@ public class TradeReceiveThread implements Runnable {
                         order.setFrontid(jo.getBigDecimal("frontid"));
                         //orderRef
                         order.setOrderref(jo.getString("orderref"));
+                        //orderSysID
+                        order.setOrdersysid(jo.getString("orderSysID"));
+                        //exchangeID
+                        order.setExchangeid(jo.getString("exchangeID"));
                         
                         logger.info("报单回报："+JSON.toJSONString(order));
                         Display.getDefault().syncExec(new Runnable() {
