@@ -393,7 +393,9 @@ public class CoreappView {
         connect.start();*/
         
         try {
-            //买开  卖平路线
+            //买开  卖平路线   账户主
+            
+            MainAccount accountPrimary = this.mainAccountService.getAccountByType("1");
             ctpFirst = new Socket(ApplicationConfig.getProperty("addressFirst"),
                     Integer.parseInt(ApplicationConfig.getProperty("portFirst")));
             outFirst = new PrintWriter(new OutputStreamWriter(ctpFirst.getOutputStream(),"UTF-8"));
@@ -404,22 +406,28 @@ public class CoreappView {
             //登录
             
             CThostFtdcReqUserLoginField userLoginField = new CThostFtdcReqUserLoginField();
-            userLoginField.setBrokerID("9999");
-            userLoginField.setUserID("090985");
-            userLoginField.setPassword("caojiactp");
+            userLoginField.setBrokerID(accountPrimary.getBrokerId());
+            userLoginField.setUserID(accountPrimary.getAccountNo());
+            userLoginField.setPassword(accountPrimary.getPasswd());
             outFirst.println("reqUserLogin|"+JSON.toJSONString(userLoginField)+"|1");
             outFirst.flush();
+        } catch (FutureException e) {
+            logger.error("查询主账户信息失败",e);
+            MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+            box.setMessage("查询主账户信息失败");
+            box.setText("错误");
+            box.open();
         } catch (Exception e) {
-            logger.error("连接前置机1失败");
+            logger.error("连接前置机1失败",e);
             MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
             box.setMessage("连接前置机1失败");
             box.setText("错误");
             box.open();
         }
-        
             
         try {
-            //卖开 买平路线
+            //卖开 买平路线     账户备
+            MainAccount accountSecondary = this.mainAccountService.getAccountByType("2");
             ctpSecond = new Socket(ApplicationConfig.getProperty("addressSecond"),
                     Integer.parseInt(ApplicationConfig.getProperty("portSecond")));
             outSecond = new PrintWriter(new OutputStreamWriter(ctpSecond.getOutputStream(),"UTF-8"));
@@ -429,11 +437,17 @@ public class CoreappView {
             
             //登录
             CThostFtdcReqUserLoginField userLoginField = new CThostFtdcReqUserLoginField();
-            userLoginField.setBrokerID("9999");
-            userLoginField.setUserID("090985");
-            userLoginField.setPassword("caojiactp");
+            userLoginField.setBrokerID(accountSecondary.getBrokerId());
+            userLoginField.setUserID(accountSecondary.getAccountNo());
+            userLoginField.setPassword(accountSecondary.getPasswd());
             outSecond.println("reqUserLogin|"+JSON.toJSONString(userLoginField)+"|1");
             outSecond.flush();
+        }  catch (FutureException e) {
+            logger.error("查询备账户信息失败",e);
+            MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+            box.setMessage("查询备账户信息失败");
+            box.setText("错误");
+            box.open();
         } catch (Exception e) {
             logger.error("连接前置机2失败");
             MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);

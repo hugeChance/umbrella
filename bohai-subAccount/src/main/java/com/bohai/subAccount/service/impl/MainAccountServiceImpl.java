@@ -28,11 +28,11 @@ public class MainAccountServiceImpl implements MainAccountService{
 
 		logger.info("保存主账户信息入参："+JSON.toJSONString(account));
 		
-		Integer count = this.mainAccountMapper.selectCount();
+		Integer count = this.mainAccountMapper.selectCount(account);
 		
 		if(count >0){
-			logger.warn("只能添加一个主账户");
-			throw new FutureException("", "只能添加一个主账户");
+			logger.warn("只能添加一个"+(account.getAccountType().equals("1") ?"主":"备")+"账户");
+			throw new FutureException("", "只能添加一个"+(account.getAccountType().equals("1") ?"主":"备")+"账户");
 		}
 		
 		try {
@@ -47,6 +47,14 @@ public class MainAccountServiceImpl implements MainAccountService{
 	@Override
 	public void updateMainAccount(MainAccount account) throws FutureException {
 		logger.info("更新主账户信息入参："+JSON.toJSONString(account));
+		
+		Integer count = this.mainAccountMapper.selectCount(account);
+        
+        if(count >0){
+            logger.warn("只能添加一个"+(account.getAccountType().equals("1") ?"主":"备")+"账户");
+            throw new FutureException("", "只能添加一个"+(account.getAccountType().equals("1") ?"主":"备")+"账户");
+        }
+		
 		try {
 			this.mainAccountMapper.updateByPrimaryKeySelective(account);
 		} catch (Exception e) {
@@ -80,6 +88,20 @@ public class MainAccountServiceImpl implements MainAccountService{
 		}
 		
 		return list;
+	}
+	
+	public MainAccount getAccountByType(String accountType) throws FutureException {
+	    
+	    MainAccount account = null;
+	    
+	    try {
+            account = this.mainAccountMapper.selectByAccountType(accountType);
+        } catch (Exception e) {
+            logger.error("查询账户信息失败",e);
+            throw new FutureException("", "查询账户信息失败");
+        }
+	    
+	    return account;
 	}
 
 }
