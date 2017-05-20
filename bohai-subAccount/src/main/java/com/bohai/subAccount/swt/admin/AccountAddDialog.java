@@ -118,9 +118,9 @@ public class AccountAddDialog extends Dialog {
                     box.setText("错误");
                     box.open();
 				}else if (combo.getText().equals("账户主")) {
-                    
+                    mainAccount.setAccountType("1");
                 }else if (combo.getText().equals("账户备")) {
-                    
+                    mainAccount.setAccountType("2");
                 }
 				
 				try {

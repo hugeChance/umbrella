@@ -13,11 +13,13 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.springframework.util.StringUtils;
 
 import com.bohai.subAccount.entity.MainAccount;
 import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.service.MainAccountService;
 import com.bohai.subAccount.utils.SpringContextUtil;
+import org.eclipse.swt.widgets.Combo;
 
 public class AccountEditDialog extends Dialog {
 
@@ -27,6 +29,8 @@ public class AccountEditDialog extends Dialog {
 	private Text passwd;
 	//期货公司代码
 	private Text brokerId;
+	
+	private Combo combo;
 	
 	private MainAccount mainAccount;
 	private AdminViewMain mainView;
@@ -65,7 +69,7 @@ public class AccountEditDialog extends Dialog {
 	 */
 	private void createContents() {
 		shell = new Shell(getParent(), getStyle());
-		shell.setSize(296, 261);
+		shell.setSize(296, 314);
 		shell.setText("更新账户");
 		shell.setLayout(null);
 		
@@ -100,9 +104,15 @@ public class AccountEditDialog extends Dialog {
 		accountNo.setText(mainAccount.getAccountNo());
 		passwd.setText(mainAccount.getPasswd());
 		
+		combo = new Combo(shell, SWT.NONE);
+        combo.setBounds(161, 156, 105, 23);
+        String[] s = {"账户主","账户备"};
+        combo.setItems(s);
+        combo.setText(mainAccount.getAccountType().equals("1")?"账户主":"账户备");
+        
 		Button button = new Button(shell, SWT.NONE);
 		button.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		button.setBounds(38, 175, 64, 27);
+		button.setBounds(37, 220, 64, 27);
 		button.setText("更新");
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -115,6 +125,16 @@ public class AccountEditDialog extends Dialog {
 				mainAccount.setBrokerId(brokerId.getText());
 				mainAccount.setPasswd(passwd.getText());
 				mainAccount.setUpdateTime(new Date());
+				if(StringUtils.isEmpty(combo.getText())){
+                    MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                    box.setMessage("账户类型不能为空！");
+                    box.setText("错误");
+                    box.open();
+                }else if (combo.getText().equals("账户主")) {
+                    mainAccount.setAccountType("1");
+                }else if (combo.getText().equals("账户备")) {
+                    mainAccount.setAccountType("2");
+                }
 				
 				try {
 					mainAccountService.updateMainAccount(mainAccount);
@@ -135,7 +155,7 @@ public class AccountEditDialog extends Dialog {
 		
 		Button cancel = new Button(shell, SWT.NONE);
 		cancel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		cancel.setBounds(179, 175, 68, 27);
+		cancel.setBounds(181, 220, 68, 27);
 		cancel.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -143,6 +163,13 @@ public class AccountEditDialog extends Dialog {
 			}
 		});
 		cancel.setText("取消");
+		
+		Label accountType = new Label(shell, SWT.NONE);
+		accountType.setAlignment(SWT.RIGHT);
+		accountType.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
+		accountType.setBounds(37, 156, 98, 23);
+		accountType.setText("账户类型：");
+		
 	}
 
 }

@@ -743,7 +743,7 @@ public class AdminViewMain {
         new TableColumn(mainAccountTable, SWT.NONE).setText("期货公司代码");
         
         tLayout.addColumnData(new ColumnWeightData(30));//这个是设置ID列的列宽为10像素
-        new TableColumn(mainAccountTable, SWT.NONE).setText("前置机地址");
+        new TableColumn(mainAccountTable, SWT.NONE).setText("账户类型");
         
         tLayout.addColumnData(new ColumnWeightData(20));//这个是设置ID列的列宽为70像素
         new TableColumn(mainAccountTable, SWT.NONE).setText("记录建立时间");
@@ -996,6 +996,9 @@ public class AdminViewMain {
                 item.setData(mainAccount);
                 item.setText(0,mainAccount.getAccountNo());
                 item.setText(1,mainAccount.getBrokerId());
+                if(!StringUtils.isEmpty(mainAccount.getAccountType())){
+                    item.setText(2,mainAccount.getAccountType().equals("1") ? "账户主" : "账户备");
+                }
                 item.setText(3, mainAccount.getCreateTime()==null?"":DateFormatterUtil.getDateStr(mainAccount.getCreateTime()));
                 item.setText(4, mainAccount.getUpdateTime()==null?"":DateFormatterUtil.getDateStr(mainAccount.getUpdateTime()));
             }

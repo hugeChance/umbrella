@@ -31,8 +31,8 @@ public class MainAccountServiceImpl implements MainAccountService{
 		Integer count = this.mainAccountMapper.selectCount();
 		
 		if(count >0){
-			logger.warn("只能添加一个主账户");
-			throw new FutureException("", "只能添加一个主账户");
+			logger.warn("只能添加一个"+(account.getAccountType().equals("1") ?"主":"备")+"账户");
+			throw new FutureException("", "只能添加一个"+(account.getAccountType().equals("1") ?"主":"备")+"账户");
 		}
 		
 		try {
@@ -47,6 +47,14 @@ public class MainAccountServiceImpl implements MainAccountService{
 	@Override
 	public void updateMainAccount(MainAccount account) throws FutureException {
 		logger.info("更新主账户信息入参："+JSON.toJSONString(account));
+		
+		Integer count = this.mainAccountMapper.selectCount();
+        
+        if(count >0){
+            logger.warn("只能添加一个"+(account.getAccountType().equals("1") ?"主":"备")+"账户");
+            throw new FutureException("", "只能添加一个"+(account.getAccountType().equals("1") ?"主":"备")+"账户");
+        }
+		
 		try {
 			this.mainAccountMapper.updateByPrimaryKeySelective(account);
 		} catch (Exception e) {
