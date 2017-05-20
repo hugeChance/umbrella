@@ -831,12 +831,6 @@ public class CoreappView {
             }
             
             
-            
-            
-            
-                
-        
-            
         } else {
             //平仓
             logger.info("成交step6-2");
@@ -853,6 +847,26 @@ public class CoreappView {
                     getTradeResponse().append(sb.toString()+"\r\n");
                 }
             });
+            //平仓表插入 FOR 结算单 start
+//            | 平仓日期 | 交易所 |       品种       |      合约      |开仓日期 |买/卖|   手数   |     开仓价    |     昨结算     |   成交价   |  平仓盈亏  |     权利金收支      |
+//            |Close Date|Exchange|      Product     |   Instrument   |Open Date| B/S |   Lots   |Pos. Open Price|   Prev. Sttl   |Trans. Price|Realized P/L|Premium Received/Paid|
+//            ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//            |20170512  |上期所  |铝                |al1707          |20170512 |   卖|         1|      13880.000|       13805.000|   13875.000|      -25.00|                 0.000|
+
+            //平仓日期
+            pTrade.getTradeDate();
+            //交易所
+            pTrade.getExchangeID();
+            //合约
+            pTrade.getInstrumentID();
+            
+            
+            
+            
+            
+            
+            //平仓表插入 FOR 结算单 end
+ 
             
             //补丁结束
             

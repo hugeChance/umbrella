@@ -604,6 +604,10 @@ public class AdminViewMain {
             	//查询平仓表
             	// TODO 由COREAPP 增加新功能当平仓时写入平仓表
             	
+            	
+            	//查询持仓明细表
+            	// TODO 由COREAPP 增加新功能当平仓时写入平仓表
+            	
             	//查询持仓汇总表
             	List<InvestorPosition> listInvestorPosition = new ArrayList<InvestorPosition>();
             	try {
