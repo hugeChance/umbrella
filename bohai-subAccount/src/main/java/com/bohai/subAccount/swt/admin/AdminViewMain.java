@@ -176,6 +176,7 @@ public class AdminViewMain {
         useravailableindbMapper = (UseravailableindbMapper) SpringContextUtil.getBean("useravailableindbMapper");
         tradeService = (TradeService) SpringContextUtil.getBean("tradeService");
         futureMarketService = (FutureMarketService) SpringContextUtil.getBean("futureMarketService");
+        userContractService = (UserContractService) SpringContextUtil.getBean("userContractService");
     }
 
     /**

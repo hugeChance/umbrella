@@ -58,5 +58,7 @@ public interface MainAccountMapper {
     int updateByPrimaryKey(MainAccount record);
     
     @Select("select count(1) from t_main_account where account_type = #{accountType}")
-    Integer selectCount();
+    Integer selectCount(MainAccount record);
+    
+    MainAccount selectByAccountType(String accountType);
 }

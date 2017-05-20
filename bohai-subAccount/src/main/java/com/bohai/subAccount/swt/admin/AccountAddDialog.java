@@ -117,6 +117,7 @@ public class AccountAddDialog extends Dialog {
                     box.setMessage("账户类型不能为空！");
                     box.setText("错误");
                     box.open();
+                    return;
 				}else if (combo.getText().equals("账户主")) {
                     mainAccount.setAccountType("1");
                 }else if (combo.getText().equals("账户备")) {

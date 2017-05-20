@@ -32,5 +32,13 @@ public interface MainAccountService {
 	 * @param account
 	 */
 	public void removeMainAccount(String id) throws FutureException;
+	
+	/**
+	 * 根据账户类型查询账户信息
+	 * @param accountType
+	 * @return
+	 * @throws FutureException
+	 */
+	public MainAccount getAccountByType(String accountType) throws FutureException;
 
 }

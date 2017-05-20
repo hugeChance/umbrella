@@ -173,4 +173,11 @@
       UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
     where ID = #{id,jdbcType=VARCHAR}
   </update>
+  
+  <select id="selectByAccountType" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select 
+    <include refid="Base_Column_List" />
+    from T_MAIN_ACCOUNT
+    where account_type = #{accountType,jdbcType=VARCHAR}
+  </select>
 </mapper>
