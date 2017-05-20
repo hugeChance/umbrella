@@ -648,7 +648,7 @@ public class AdminViewMain {
 	            			settlemenetPart3Body.setSH("投");
 	            			settlemenetPart3Body.setMarketValueLong("0.00");
 	            			settlemenetPart3Body.setMarketValueShort("0.00");
-	            			fileLineWrite(settlemenetPart3Body.getRetStr());
+	            			fileLineWrite(directiory.getPath(),useravailableindb.getUsername(),settlemenetPart3Body.getRetStr());
 								
 							}
             		}
@@ -671,7 +671,9 @@ public class AdminViewMain {
      * 创建主账户表格
      * @param parent
      */
-    public int fileLineWrite(String path,String writeLine){
+    public int fileLineWrite(String path, String username, String writeLine){
+        
+        path += "\\"+username+".txt";
     	
         FileWriter fw = null;
         try {

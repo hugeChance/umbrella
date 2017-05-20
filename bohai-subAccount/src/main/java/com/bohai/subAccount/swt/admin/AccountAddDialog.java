@@ -13,11 +13,13 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.springframework.util.StringUtils;
 
 import com.bohai.subAccount.entity.MainAccount;
 import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.service.MainAccountService;
 import com.bohai.subAccount.utils.SpringContextUtil;
+import org.eclipse.swt.widgets.Combo;
 
 public class AccountAddDialog extends Dialog {
 
@@ -27,6 +29,8 @@ public class AccountAddDialog extends Dialog {
 	private Text passwd;
 	//期货公司代码
 	private Text brokerId;
+	
+	private Combo combo;
 	
 	private AdminViewMain mainView;
 
@@ -63,7 +67,7 @@ public class AccountAddDialog extends Dialog {
 	 */
 	private void createContents() {
 		shell = new Shell(getParent(), getStyle());
-		shell.setSize(296, 257);
+		shell.setSize(296, 300);
 		shell.setText("添加账户");
 		shell.setLayout(null);
 		
@@ -96,7 +100,7 @@ public class AccountAddDialog extends Dialog {
 		
 		Button button = new Button(shell, SWT.NONE);
 		button.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		button.setBounds(38, 175, 64, 27);
+		button.setBounds(39, 207, 64, 27);
 		button.setText("添加");
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -108,6 +112,16 @@ public class AccountAddDialog extends Dialog {
 				mainAccount.setBrokerId(brokerId.getText());
 				mainAccount.setPasswd(passwd.getText());
 				mainAccount.setCreateTime(new Date());
+				if(StringUtils.isEmpty(combo.getText())){
+				    MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                    box.setMessage("账户类型不能为空！");
+                    box.setText("错误");
+                    box.open();
+				}else if (combo.getText().equals("账户主")) {
+                    
+                }else if (combo.getText().equals("账户备")) {
+                    
+                }
 				
 				try {
 					mainAccountService.saveMainAccount(mainAccount);
@@ -128,7 +142,7 @@ public class AccountAddDialog extends Dialog {
 		
 		Button cancel = new Button(shell, SWT.NONE);
 		cancel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		cancel.setBounds(179, 175, 68, 27);
+		cancel.setBounds(180, 207, 68, 27);
 		cancel.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -136,6 +150,17 @@ public class AccountAddDialog extends Dialog {
 			}
 		});
 		cancel.setText("取消");
+		
+		combo = new Combo(shell, SWT.NONE|SWT.READ_ONLY);
+		combo.setBounds(160, 162, 106, 23);
+		String[] s = {"账户主","账户备"};
+		combo.setItems(s);
+		
+		Label accountType = new Label(shell, SWT.NONE);
+		accountType.setAlignment(SWT.RIGHT);
+		accountType.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
+		accountType.setBounds(39, 162, 96, 23);
+		accountType.setText("账户类型：");
+		
 	}
-
 }
