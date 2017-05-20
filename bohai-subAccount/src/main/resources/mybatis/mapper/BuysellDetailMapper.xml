@@ -100,7 +100,7 @@
       SESSIONID, PRICE2, VOLUME2, 
       SEQID2, TRADEDATE2, TRADETIME2
       )
-    values (#{seqid,jdbcType=DECIMAL}, #{brokerid,jdbcType=VARCHAR}, #{investorid,jdbcType=VARCHAR}, 
+    values (T_BUYSELL_SEQ.nextval, #{brokerid,jdbcType=VARCHAR}, #{investorid,jdbcType=VARCHAR}, 
       #{instrumentid,jdbcType=VARCHAR}, #{orderref,jdbcType=VARCHAR}, #{userid,jdbcType=VARCHAR}, 
       #{exchangeid,jdbcType=VARCHAR}, #{tradeid,jdbcType=VARCHAR}, #{direction,jdbcType=VARCHAR}, 
       #{ordersysid,jdbcType=VARCHAR}, #{participantid,jdbcType=VARCHAR}, #{clientid,jdbcType=VARCHAR}, 
