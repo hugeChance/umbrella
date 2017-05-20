@@ -480,8 +480,10 @@ public class AdminViewMain {
             logger.info(directiory.getPath());
             List<Useravailableindb> listUseravailableindb = new ArrayList<Useravailableindb>();
             listUseravailableindb = useravailableindbMapper.selectAll();
+            
             //循环按每个客户出文件
             for (Useravailableindb useravailableindb : listUseravailableindb) {
+            	StringBuffer strB = new StringBuffer();
             	SettlemenetTitleVO settlemenetTitleVO = new SettlemenetTitleVO();
             	settlemenetTitleVO.setCompanyName("赫城软件");
             	settlemenetTitleVO.setUserName(useravailableindb.getUsername());
@@ -519,9 +521,12 @@ public class AdminViewMain {
             		settlemenetTitleVO.setMargin_Call("0");
             	}
 				//账单头部
-            	fileLineWrite(settlemenetTitleVO.getRetStr());
-            	fileLineWrite("");
-            	fileLineWrite("");
+            	strB.append(settlemenetTitleVO.getRetStr());
+            	strB.append("\r\n");
+            	strB.append("\r\n");
+//            	fileLineWrite();
+//            	fileLineWrite("");
+//            	fileLineWrite("");
             	//格式化输出明细
             	SettlemenetPart1Head settlemenetPart1Head = new SettlemenetPart1Head();
             	SettlemenetPart2Head settlemenetPart2Head = new SettlemenetPart2Head();
@@ -537,7 +542,9 @@ public class AdminViewMain {
 					
 					if (listTrade.size() > 0) {
 						//有成交则出明细
-						fileLineWrite(settlemenetPart1Head.getRetPart1Head1());
+//						fileLineWrite(settlemenetPart1Head.getRetPart1Head1());
+						strB.append(settlemenetPart1Head.getRetPart1Head1());
+						strB.append("\r\n");
 						for (Trade trade : listTrade) {
 							//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 							//|成交日期| 交易所 |       品种       |      合约      |买/卖|   投/保    |  成交价  | 手数 |   成交额   |       开平       |  手续费  |  平仓盈亏  |     权利金收支      |  成交序号  |
@@ -591,7 +598,9 @@ public class AdminViewMain {
 							
 							settlemenetPart1Body.setPremiumReceived("0.00");
 							settlemenetPart1Body.setTransNo(trade.getOrdersysid());
-							fileLineWrite(settlemenetPart1Body.getRetStr());
+//							fileLineWrite(settlemenetPart1Body.getRetStr());
+							strB.append(settlemenetPart1Body.getRetStr());
+							strB.append("\r\n");
 							
 						}
 						
@@ -604,13 +613,19 @@ public class AdminViewMain {
             	//查询平仓表
             	// TODO 由COREAPP 增加新功能当平仓时写入平仓表
             	
+            	
+            	//查询持仓明细表
+            	// TODO 由COREAPP 增加新功能当平仓时写入平仓表
+            	
             	//查询持仓汇总表
             	List<InvestorPosition> listInvestorPosition = new ArrayList<InvestorPosition>();
             	try {
             		listInvestorPosition = investorPositionService.getUserUnClosePostion(useravailableindb.getUsername());
             		if (listInvestorPosition.size() > 0) {
 						//有成交则出明细
-						fileLineWrite(settlemenetPart3Head.getRetPart3Head1());	
+//						fileLineWrite(settlemenetPart3Head.getRetPart3Head1());	
+						strB.append(settlemenetPart3Head.getRetPart3Head1());
+						strB.append("\r\n");
 	            		for (InvestorPosition investorPosition : listInvestorPosition) {
 		            			//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 		            			//|       品种       |      合约      |    买持     |    买均价   |     卖持     |    卖均价    |  昨结算  |  今结算  |持仓盯市盈亏|  保证金占用   |  投/保     |   多头期权市值   |   空头期权市值    |
@@ -648,8 +663,9 @@ public class AdminViewMain {
 	            			settlemenetPart3Body.setSH("投");
 	            			settlemenetPart3Body.setMarketValueLong("0.00");
 	            			settlemenetPart3Body.setMarketValueShort("0.00");
-	            			fileLineWrite(directiory.getPath(),useravailableindb.getUsername(),settlemenetPart3Body.getRetStr());
-								
+//	            			fileLineWrite(directiory.getPath(),useravailableindb.getUsername(),settlemenetPart3Body.getRetStr());
+	            			strB.append(settlemenetPart3Body.getRetStr());
+							strB.append("\r\n");
 							}
             		}
 				} catch (FutureException e) {
@@ -657,7 +673,7 @@ public class AdminViewMain {
 					return 1;
 				}
             	
-            	
+            	fileLineWrite(directiory.getPath(),useravailableindb.getUsername(),strB.toString());
 			}
             
         	
