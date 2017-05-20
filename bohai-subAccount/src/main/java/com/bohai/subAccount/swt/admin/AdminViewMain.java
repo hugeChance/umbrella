@@ -584,16 +584,11 @@ public class AdminViewMain {
 								logger.info("开仓合约单位 ="+userContract.getContractUnit().doubleValue() );
 								logger.info("开仓手开仓手续费比例 ="+userContract.getOpenChargeRate().doubleValue());
 								
-								
-								
-								
 							} else {
 								//平仓手续费 = 手数 * 平仓手续费 + 价格 * 合约单位* 手数  * 平仓手续费比例  
 								commission = shoushu * userContract.getCloseCurrCharge().doubleValue() +    trade.getPrice().doubleValue()  * userContract.getContractUnit().doubleValue() * userContract.getCloseCurrChargeRate().doubleValue()*shoushu ;
 							}
-							
-							
-							
+										
 							settlemenetPart1Body.setFee(String.valueOf(commission));
 							
 							settlemenetPart1Body.setPremiumReceived("0.00");
