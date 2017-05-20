@@ -115,6 +115,7 @@ public class MyMdSpi extends JCTPMdSpi {
 		logger.debug("订阅合约信息:"+JSON.toJSONString(contractNo));
 		//logger.debug("读取文件合约信息："+JSON.toJSONString(ss));
 		
+		
 		subResult = mdApi.subscribeMarketData(contractNo);
 		System.out.println(subResult == 0 ? "订阅成功" : "订阅失败");
 	}

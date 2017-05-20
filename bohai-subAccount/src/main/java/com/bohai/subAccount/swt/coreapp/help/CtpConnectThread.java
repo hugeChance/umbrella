@@ -174,6 +174,7 @@ public class CtpConnectThread implements Runnable{
                     }
                 } catch (Exception e) {
                     logger.error("解析响应失败",e);
+                    break;
                 }
                 
                     
