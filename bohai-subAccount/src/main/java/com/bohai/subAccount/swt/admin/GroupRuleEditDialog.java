@@ -39,21 +39,24 @@ public class GroupRuleEditDialog extends Dialog {
 	private Text groupNameText;
 	//private Combo accountCombo;
 	
-	private AdminViewMain adminView;
+	//private AdminViewMain adminView;
 	private GroupRule groupRule;
 	private GroupInfo groupInfo;
+	
+	private MainForm mainForm;
 
 	/**
 	 * Create the dialog.
 	 * @param parent
 	 * @param style
 	 */
-	public GroupRuleEditDialog(Shell parent, int style, GroupInfo groupInfo, AdminViewMain adminView, GroupRule groupRule) {
+	public GroupRuleEditDialog(Shell parent, int style, GroupInfo groupInfo, MainForm mainForm, GroupRule groupRule) {
 		super(parent, style);
 		setText("修改用户组规则");
 		this.groupInfo = groupInfo;
-		this.adminView = adminView;
+		//this.adminView = adminView;
 		this.groupRule = groupRule;
+		this.mainForm = mainForm;
 	}
 
 	/**
@@ -147,7 +150,7 @@ public class GroupRuleEditDialog extends Dialog {
 					box.setMessage("更新成功！");
 					box.setText("提示");
 					box.open();
-					adminView.refreshGroupRuleTable();
+					mainForm.refreshGroupRuleTable();
 					shell.dispose();
 				} catch (FutureException e1) {
 					MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);

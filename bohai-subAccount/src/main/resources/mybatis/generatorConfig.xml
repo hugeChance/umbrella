@@ -9,7 +9,7 @@
 
   <context id="OracleTables" targetRuntime="MyBatis3">
     <jdbcConnection driverClass="oracle.jdbc.driver.OracleDriver"
-        connectionURL="jdbc:oracle:thin:@192.168.1.102:1521:XE"
+        connectionURL="jdbc:oracle:thin:@192.168.1.101:1521:XE"
         userId="SUBACCOUNT"
         password="SUBACCOUNT">
     </jdbcConnection>
@@ -164,10 +164,23 @@
        enableUpdateByExample="false" selectByExampleQueryId="false">
     </table>  -->
     
-    <table schema="" tableName="T_USERAVAILABLEINDB" domainObjectName="Useravailableindb" 
+    <!-- <table schema="" tableName="T_USERAVAILABLEINDB" domainObjectName="Useravailableindb" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table> -->
+    
+    <!-- T_BUYSELL_DETAIL -->
+    <table schema="" tableName="T_BUYSELL_DETAIL" domainObjectName="BuysellDetail" 
        enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
        enableUpdateByExample="false" selectByExampleQueryId="false">
     </table>
+    
+    <!-- T_CLOSE_DETAIL -->
+    <table schema="" tableName="T_CLOSE_DETAIL" domainObjectName="CloseDetail" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>
+    
     
   </context>
 </generatorConfiguration>

@@ -35,6 +35,8 @@ public class CloseRuleAddDialog extends Dialog {
 	
 	private AdminViewMain main;
 	private TreeItem treeItem;
+	
+	private MainForm mainForm;
 
 	/**
 	 * Create the dialog.
@@ -47,6 +49,12 @@ public class CloseRuleAddDialog extends Dialog {
 		this.main = main;
 		this.treeItem = treeItem;
 	}
+	
+	   public CloseRuleAddDialog(Shell parent, int style, MainForm mainForm) {
+	        super(parent, style);
+	        setText("添加开平仓规则");
+	        this.mainForm = mainForm;
+	    }
 
 	/**
 	 * Open the dialog.
@@ -160,7 +168,13 @@ public class CloseRuleAddDialog extends Dialog {
 					return;
 				}
 				
-				main.refreshTradeRule(treeItem);
+				if(main != null){
+				    main.refreshTradeRule(treeItem);
+				}
+				if(mainForm != null){
+				    //刷新风控平仓信息
+				    mainForm.refreshRiskClose();
+				}
 				shell.close();
 			}
 		});

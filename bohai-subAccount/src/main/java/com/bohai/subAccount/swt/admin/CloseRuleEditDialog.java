@@ -38,6 +38,8 @@ public class CloseRuleEditDialog extends Dialog {
 	private AdminViewMain main;
 	private TreeItem treeItem;
 	private TableItem tableItem;
+	
+	private MainForm mainForm;
 
 	/**
 	 * Create the dialog.
@@ -51,6 +53,13 @@ public class CloseRuleEditDialog extends Dialog {
 		this.treeItem = treeItem;
 		this.tableItem = tableItem;
 	}
+	
+	public CloseRuleEditDialog(Shell parent, int style, MainForm mainForm, TableItem tableItem) {
+        super(parent, style);
+        setText("更新平仓规则");
+        this.mainForm = mainForm;
+        this.tableItem = tableItem;
+    }
 
 	/**
 	 * Open the dialog.
@@ -176,7 +185,12 @@ public class CloseRuleEditDialog extends Dialog {
 					return;
 				}
 				
-				main.refreshTradeRule(treeItem);
+				if (main != null) {
+				    main.refreshTradeRule(treeItem);
+                }
+				if (mainForm != null) {
+                    mainForm.refreshRiskClose();
+                }
 				shell.close();
 			}
 		});

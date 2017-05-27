@@ -44,21 +44,24 @@ public class TradeRuleEditDialog extends Dialog {
 	private Text closeCurrChargeRate;
 	
 	private TableItem selected;
-	private AdminViewMain main;
+	//private AdminViewMain main;
 	private TreeItem treeItem;
 	private Text tickSize;
+	
+	private MainForm mainForm;
 	
 	/**
 	 * Create the dialog.
 	 * @param parent
 	 * @param style
 	 */
-	public TradeRuleEditDialog(Shell parent, int style, TableItem selected, AdminViewMain main, TreeItem treeItem) {
+	public TradeRuleEditDialog(Shell parent, int style, TableItem selected, MainForm mainForm, TreeItem treeItem) {
 		super(parent, style);
 		setText("修改组规则");
 		this.selected = selected;
-		this.main = main;
+		//this.main = main;
 		this.treeItem = treeItem;
+		this.mainForm = mainForm;
 	}
 
 	/**
@@ -287,7 +290,7 @@ public class TradeRuleEditDialog extends Dialog {
 					box.open();
 				}
 				logger.debug("更新交易规则成功，刷新主页面表格");
-				main.refreshTradeRule(treeItem);
+				mainForm.refreshTradeRule(treeItem);
 				shell.close();
 			}
 		});

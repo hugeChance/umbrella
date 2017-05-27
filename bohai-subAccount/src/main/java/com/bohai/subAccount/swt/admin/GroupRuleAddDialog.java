@@ -42,18 +42,27 @@ public class GroupRuleAddDialog extends Dialog {
 	private AdminViewMain adminView;
 	
 	private GroupInfo groupInfo;
+	private MainForm mainForm;
 
 	/**
 	 * Create the dialog.
 	 * @param parent
 	 * @param style
 	 */
-	public GroupRuleAddDialog(Shell parent, int style, GroupInfo groupInfo, AdminViewMain adminView) {
+	public GroupRuleAddDialog(Shell parent, int style, GroupInfo groupInfo, MainForm mainForm) {
 		super(parent, style);
 		setText("添加用户组规则");
 		this.groupInfo = groupInfo;
-		this.adminView = adminView;
+		//this.adminView = adminView;
+		this.mainForm = mainForm;
 	}
+	
+   public GroupRuleAddDialog(Shell parent, int style, GroupInfo groupInfo, AdminViewMain adminView) {
+        super(parent, style);
+        setText("添加用户组规则");
+        this.groupInfo = groupInfo;
+        this.adminView = adminView;
+    }
 
 	/**
 	 * Open the dialog.
@@ -144,7 +153,13 @@ public class GroupRuleAddDialog extends Dialog {
 					box.setMessage("创建成功！");
 					box.setText("提示");
 					box.open();
-					adminView.refreshGroupRuleTable();
+					if(adminView != null){
+					    adminView.refreshGroupRuleTable();
+					}
+					
+					if (mainForm != null) {
+					    mainForm.refreshGroupRuleTable();
+                    }
 					shell.dispose();
 				} catch (FutureException e1) {
 					MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);

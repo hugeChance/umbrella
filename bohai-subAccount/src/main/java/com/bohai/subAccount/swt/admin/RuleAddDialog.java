@@ -46,21 +46,23 @@ public class RuleAddDialog extends Dialog {
 	private Text openChargeRate;
 	private Text closeCurrChargeRate;
 	
-	private AdminViewMain main;
+	//private AdminViewMain main;
 	private TreeItem treeItem;
 	private Text contract;
 	private Text tickSize;
+	private MainForm mainForm;
 
 	/**
 	 * Create the dialog.
 	 * @param parent
 	 * @param style
 	 */
-	public RuleAddDialog(Shell parent, int style, AdminViewMain main, TreeItem treeItem) {
+	public RuleAddDialog(Shell parent, int style, MainForm mainForm, TreeItem treeItem) {
 		super(parent, style);
 		setText("添加组规则");
-		this.main = main;
+		//this.main = main;
 		this.treeItem = treeItem;
+		this.mainForm = mainForm;
 	}
 
 	/**
@@ -282,7 +284,7 @@ public class RuleAddDialog extends Dialog {
 					return;
 				}
 				logger.debug("保存交易规则成功，刷新主页面表格");
-				main.refreshTradeRule(treeItem);
+				mainForm.refreshTradeRule(treeItem);
 				shell.close();
 			}
 		});
