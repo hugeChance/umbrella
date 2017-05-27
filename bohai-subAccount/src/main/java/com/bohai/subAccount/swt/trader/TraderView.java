@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.net.Socket;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,12 +27,12 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.TableCursor;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -41,21 +40,27 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.ExpandBar;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcInputOrderActionField;
 import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcInputOrderField;
 import org.springframework.util.StringUtils;
@@ -72,9 +77,6 @@ import com.bohai.subAccount.swt.trader.helper.TradeReceiveThread;
 import com.bohai.subAccount.utils.ApplicationConfig;
 
 import swing2swt.layout.BorderLayout;
-import org.eclipse.wb.swt.SWTResourceManager;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
 
 public class TraderView {
 
@@ -111,6 +113,11 @@ public class TraderView {
     private Label volumePermit;
     
     private Button killButton;
+    
+    private CTabFolder tabFolder;
+	private Composite composite;
+	private CTabFolder centerFolder;
+	private CTabFolder southFolder;
     
     //成交提示声音选项
     public MenuItem dealMenuItem;
@@ -198,6 +205,18 @@ public class TraderView {
      */
     protected void createContents() {
         shell = new Shell();
+//        shell.setSize(800, 600);
+//		shell.setMinimumSize(800, 600);
+//		shell.setText("SWT Application");
+//
+//		Rectangle bounds = Display.getDefault().getPrimaryMonitor().getBounds();
+//		Rectangle rect = shell.getBounds();
+//		int x = bounds.x + (bounds.width - rect.width) / 2;
+//		int y = bounds.y + (bounds.height - rect.height) / 2;
+//		shell.setLocation(x, y);
+
+//		shell.setLayout(new FillLayout(SWT.HORIZONTAL));
+        
         shell.addDisposeListener(new DisposeListener() {
         	
             public void widgetDisposed(DisposeEvent e) {
@@ -301,9 +320,138 @@ public class TraderView {
         
       //创建菜单栏  end
         
-        CTabFolder tabFolder = new CTabFolder(shell, SWT.BORDER);
-        tabFolder.setLayoutData(BorderLayout.NORTH);
-        tabFolder.setSelectionBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
+        SashForm sashform = new SashForm(shell, SWT.HORIZONTAL);
+        sashform.setLayout(new FillLayout());
+        
+        final SashForm headForm = new SashForm(shell, SWT.BORDER | SWT.VERTICAL);
+        headForm.setLayout(new FillLayout(SWT.HORIZONTAL));
+        
+        tabFolder = new CTabFolder(headForm, SWT.FLAT | SWT.RIGHT | SWT.SHADOW_OUT);
+		createHeadForm();
+		
+		final SashForm centerForm = new SashForm(headForm, SWT.HORIZONTAL);
+		centerForm.setLayout(new FillLayout(SWT.HORIZONTAL));
+		
+		composite = new Composite(centerForm, SWT.NONE);
+		createComposite();
+
+		centerFolder = new CTabFolder(centerForm, SWT.NONE);
+		createCenterFolder();
+		
+		final SashForm bottomForm = new SashForm(headForm, SWT.HORIZONTAL);
+		bottomForm.setLayout(new FillLayout(SWT.HORIZONTAL));
+        
+		southFolder = new CTabFolder(bottomForm, SWT.NONE);
+		createSouthFolder();
+        
+        
+        
+       
+        
+    }
+    
+    /**
+     * 快捷下单注册快捷键
+     */
+    public void regeditQuickOrder(Listener listener){
+        
+        if(StringUtils.isEmpty(mode.getText())){
+            return;
+        }
+        
+        logger.debug("启动快捷键");
+        shell.getDisplay().addFilter(SWT.KeyDown, listener);
+    }
+    
+    
+    
+    
+    public void createMarketTableViewer(Composite parent){
+        
+        marketTable = new Table(parent, SWT.BORDER | SWT.FULL_SELECTION);
+        TableCursor tableCursor = new TableCursor(marketTable, SWT.NONE);
+        //选中事件
+        tableCursor.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                TableItem row = tableCursor.getRow();
+                if(row != null){
+                    //所在行
+                    combo.setText(row.getText());
+                    //所在列
+                    int column = tableCursor.getColumn();
+                    
+                    if(column == 3){
+                        sellButton.setSelection(true);
+                        buyButton.setSelection(false);
+                    }else if(column == 4) {
+                        buyButton.setSelection(true);
+                        sellButton.setSelection(false);
+                    }
+                    
+                    priceText.setText(row.getText(1));
+                    
+                }
+            }
+        });
+        
+        
+        marketTable.setHeaderVisible(true);//设置表头
+        marketTable.setLinesVisible(true);//显示表格线
+        TableLayout tLayout = new TableLayout();//专用于表格的布局
+        marketTable.setLayout(tLayout);
+
+
+        /* 第三步:建立TableViewer中的列
+           */
+        tLayout.addColumnData(new ColumnWeightData(30));//这个是设置ID列的列宽为10像素
+        new TableColumn(marketTable, SWT.NONE).setText("合约");
+        
+        tLayout.addColumnData(new ColumnWeightData(30));//这个是设置ID列的列宽为40像素
+        new TableColumn(marketTable, SWT.NONE).setText("最新价");
+          
+        tLayout.addColumnData(new ColumnWeightData(30));
+        new TableColumn(marketTable, SWT.NONE).setText("买量");
+        
+        tLayout.addColumnData(new ColumnWeightData(35));//这个是设置ID列的列宽为10像素
+        new TableColumn(marketTable, SWT.NONE).setText("买价");
+        
+        tLayout.addColumnData(new ColumnWeightData(35));//这个是设置ID列的列宽为70像素
+        new TableColumn(marketTable, SWT.NONE).setText("卖价");
+
+        tLayout.addColumnData(new ColumnWeightData(30));
+        new TableColumn(marketTable, SWT.NONE).setText("卖量");
+        
+        tLayout.addColumnData(new ColumnWeightData(30));//这个是设置ID列的列宽为10像素
+        new TableColumn(marketTable, SWT.NONE).setText("涨跌");
+        
+        tLayout.addColumnData(new ColumnWeightData(30));
+        new TableColumn(marketTable, SWT.NONE).setText("涨跌幅");
+        
+        tLayout.addColumnData(new ColumnWeightData(35));
+        new TableColumn(marketTable, SWT.NONE).setText("涨停价");
+        
+        tLayout.addColumnData(new ColumnWeightData(35));
+        new TableColumn(marketTable, SWT.NONE).setText("跌停价");
+        
+        tLayout.addColumnData(new ColumnWeightData(35));
+        new TableColumn(marketTable, SWT.NONE).setText("最高价");
+        
+        tLayout.addColumnData(new ColumnWeightData(35));
+        new TableColumn(marketTable, SWT.NONE).setText("最低价");
+        
+        tLayout.addColumnData(new ColumnWeightData(40));
+        new TableColumn(marketTable, SWT.NONE).setText("成交量");
+        
+        tLayout.addColumnData(new ColumnWeightData(40));
+        new TableColumn(marketTable, SWT.NONE).setText("持仓量");
+        
+    }
+    
+    private void createHeadForm() {
+//    	CTabFolder tabFolder = new CTabFolder(tabFolderN, SWT.NONE);
+    	tabFolder.setLayoutData(BorderLayout.NORTH);
+    	tabFolder.setSelectionBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
         
         CTabItem tbtmNewItem = new CTabItem(tabFolder, SWT.NONE);
         tbtmNewItem.setFont(SWTResourceManager.getFont("微软雅黑", 7, SWT.NORMAL));
@@ -328,144 +476,10 @@ public class TraderView {
                 item.setForeground(11, SWTResourceManager.getColor(78,178,88));
             }
         }
-        
-        CTabFolder centerFolder = new CTabFolder(shell, SWT.BORDER);
-        centerFolder.setLayoutData(BorderLayout.CENTER);
-        
-        centerFolder.setSelectionBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
-        
-        CTabItem tabItem = new CTabItem(centerFolder, SWT.NONE);
-        tabItem.setFont(SWTResourceManager.getFont("微软雅黑", 8, SWT.NORMAL));
-        
-        centerFolder.setSelection(tabItem);
-        tabItem.setText(" 委 托 单 ");
-        //创建委托单表格
-        createEntrustTable(centerFolder);
-        
-        tabItem.setControl(entrustTable);
-        entrustTable.setHeaderVisible(true);
-        entrustTable.setLinesVisible(true);
-        
-        //初始化委托表格
-        if(orders != null && orders.size() >0){
-            for(Order order:orders){
-                TableItem item = new TableItem(entrustTable, SWT.NONE);
-                item.setData(order);
-                item.setText(0, order.getInstrumentid());
-                item.setText(1, order.getDirection().equals("0")? "买":"卖");
-                item.setText(2, order.getComboffsetflag().equals("0")? "开":"平");
-                item.setText(3, order.getVolumetotaloriginal().toString());
-                item.setText(4, order.getLimitprice().toString());
-                item.setText(5, order.getVolumetraded()==null?"0":order.getVolumetraded().toString());
-                item.setText(6, order.getStatusmsg());
-                item.setText(7, StringUtils.isEmpty(order.getInserttime())?"":order.getInserttime());
-            }
-            //根据时间冒泡排序
-            for(int i=0 ; i < orders.size()-1 ;i++){
-                for(int j = 0 ; j < orders.size()-1-i ; j++){
-                    TableItem item = entrustTable.getItem(j);
-                    TableItem item1 = entrustTable.getItem(j+1);
-                    
-                    String time = item.getText(7);
-                    String time1 = item1.getText(7);
-                    
-                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-                    try {
-                        Date d = sdf.parse(time);
-                        Date d1 = sdf.parse(time1);
-                        if(d1.after(d)){
-                            Order order = (Order) item.getData();
-                            item.setText(1, item1.getText(1));
-                            item.setText(2, item1.getText(2));
-                            item.setText(3, item1.getText(3));
-                            item.setText(4, item1.getText(4));
-                            item.setText(5, item1.getText(5));
-                            item.setText(6, item1.getText(6));
-                            item.setText(7, item1.getText(7));
-                            item.setData(item1.getData());
-                            
-                            item1.setData(order);
-                            item1.setText(0, order.getInstrumentid());
-                            item1.setText(1, order.getDirection().equals("0")? "买":"卖");
-                            item1.setText(2, order.getComboffsetflag().equals("0")? "开":"平");
-                            item1.setText(3, order.getVolumetotaloriginal().toString());
-                            item1.setText(4, order.getLimitprice().toString());
-                            item1.setText(5, order.getVolumetraded()==null?"0":order.getVolumetraded().toString());
-                            item1.setText(6, order.getStatusmsg());
-                            item1.setText(7, StringUtils.isEmpty(order.getInserttime())?"":order.getInserttime());
-                        }
-                        
-                    } catch (ParseException e1) {
-                        logger.error("解析时间失败",e1);
-                    }
-                    
-                }
-            }
-        }
-        
-        CTabItem tabItem_1 = new CTabItem(centerFolder, SWT.NONE);
-        tabItem_1.setFont(SWTResourceManager.getFont("微软雅黑", 8, SWT.NORMAL));
-        tabItem_1.setText(" 成 交 单 ");
-        //创建成交单表格
-        createDealTable(centerFolder);
-        
-        tabItem_1.setControl(dealTable);
-        dealTable.setHeaderVisible(true);
-        dealTable.setLinesVisible(true);
-        
-        //初始化成交表格
-        if(trades != null && trades.size() >0){
-            for(Trade trade : trades){
-                
-                TableItem item = new TableItem(dealTable, SWT.NONE);
-                item.setData(trade);
-                item.setText(0, trade.getInstrumentid());
-                item.setText(1, trade.getDirection().equals("0")? "买":"卖");
-                item.setText(2, trade.getOffsetflag().equals("0")? "开":"平");
-                item.setText(3, trade.getVolume().toString());
-                item.setText(4, trade.getPrice().toString());
-                item.setText(5, StringUtils.isEmpty(trade.getTradetime())?"":trade.getTradetime());
-            }
-            
-          //根据时间冒泡排序
-            for(int i=0 ; i < trades.size()-1 ;i++){
-                for(int j = 0 ; j < trades.size()-1-i ; j++){
-                    TableItem item = dealTable.getItem(j);
-                    TableItem item1 = dealTable.getItem(j+1);
-                    
-                    String time = item.getText(5);
-                    String time1 = item1.getText(5);
-                    
-                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-                    try {
-                        Date d = sdf.parse(time);
-                        Date d1 = sdf.parse(time1);
-                        if(d1.after(d)){
-                            Trade trade = (Trade) item.getData();
-                            item.setText(1, item1.getText(1));
-                            item.setText(2, item1.getText(2));
-                            item.setText(3, item1.getText(3));
-                            item.setText(4, item1.getText(4));
-                            item.setText(5, item1.getText(5));
-                            item.setData(item1.getData());
-                            
-                            item1.setData(trade);
-                            item1.setText(0, trade.getInstrumentid());
-                            item1.setText(1, trade.getDirection().equals("0")? "买":"卖");
-                            item1.setText(2, trade.getOffsetflag().equals("0")? "开":"平");
-                            item1.setText(3, trade.getVolume().toString());
-                            item1.setText(4, trade.getPrice().toString());
-                            item1.setText(5, StringUtils.isEmpty(trade.getTradetime())?"":trade.getTradetime());
-                        }
-                        
-                    } catch (ParseException e1) {
-                        logger.error("解析时间失败",e1);
-                    }
-                }
-            }
-        }
-        
-        Composite composite = new Composite(shell, SWT.NONE);
+    }
+    
+    private void createComposite(){
+//    	Composite composite = new Composite(compositeN, SWT.NONE);
         composite.setLayoutData(BorderLayout.WEST);
         composite.setLayout(null);
         
@@ -763,140 +777,184 @@ public class TraderView {
         label_4.setFont(SWTResourceManager.getFont("微软雅黑", 7, SWT.NORMAL));
         label_4.setText("总开平：");
         label_4.setBounds(111, 6, 36, 17);
-        
-        CTabFolder southFolder = new CTabFolder(shell, SWT.BORDER);
-        southFolder.setLayoutData(BorderLayout.SOUTH);
-        southFolder.setSelectionBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
-        
-        CTabItem positionTabItem = new CTabItem(southFolder, SWT.NONE);
-        positionTabItem.setFont(SWTResourceManager.getFont("微软雅黑", 8, SWT.NORMAL));
-        southFolder.setSelection(positionTabItem);
-        positionTabItem.setText("  持  仓  ");
-        
-        createPositionTable(southFolder);
-        positionTabItem.setControl(positionTable);
-        positionTable.setHeaderVisible(true);
-        positionTable.setLinesVisible(true);
-        
-        if(positions !=null && positions.size() >0){
-            for(InvestorPosition position :positions){
-                TableItem tableItem= new TableItem(positionTable, SWT.NONE);
-                tableItem.setData(position);
-                tableItem.setText(0, position.getInstrumentid());
-                String s = position.getPosidirection().equals("0")?"买":"卖";
-                tableItem.setText(1, s);//买卖数量
-                tableItem.setText(2, position.getPosition().toString());//数量
-                tableItem.setText(3, position.getOpenamount().toString());//持仓均价
-            }
-        }
-        
-        //持仓大小初始化
-        int r = 2 - (StringUtils.isEmpty(positions) ? 0:positions.size());
-        if(r>0){
-            for(int i = 0; i<r; i++){
-                TableItem tableItem= new TableItem(positionTable, SWT.NONE);
-                tableItem.setText("");
-            }
-        }
-        
     }
     
-    /**
-     * 快捷下单注册快捷键
-     */
-    public void regeditQuickOrder(Listener listener){
+    private void createCenterFolder(){
+//    	CTabFolder centerFolder = new CTabFolder(centerFolderN, SWT.BORDER);
+        centerFolder.setLayoutData(BorderLayout.CENTER);
         
-        if(StringUtils.isEmpty(mode.getText())){
-            return;
-        }
+        centerFolder.setSelectionBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
         
-        logger.debug("启动快捷键");
-        shell.getDisplay().addFilter(SWT.KeyDown, listener);
-    }
-    
-    
-    
-    
-    public void createMarketTableViewer(Composite parent){
+        CTabItem tabItem = new CTabItem(centerFolder, SWT.NONE);
+        tabItem.setFont(SWTResourceManager.getFont("微软雅黑", 8, SWT.NORMAL));
         
-        marketTable = new Table(parent, SWT.BORDER | SWT.FULL_SELECTION);
-        TableCursor tableCursor = new TableCursor(marketTable, SWT.NONE);
-        //选中事件
-        tableCursor.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                TableItem row = tableCursor.getRow();
-                if(row != null){
-                    //所在行
-                    combo.setText(row.getText());
-                    //所在列
-                    int column = tableCursor.getColumn();
+        centerFolder.setSelection(tabItem);
+        tabItem.setText(" 委 托 单 ");
+        //创建委托单表格
+        createEntrustTable(centerFolder);
+        
+        tabItem.setControl(entrustTable);
+        entrustTable.setHeaderVisible(true);
+        entrustTable.setLinesVisible(true);
+        
+        //初始化委托表格
+        if(orders != null && orders.size() >0){
+            for(Order order:orders){
+                TableItem item = new TableItem(entrustTable, SWT.NONE);
+                item.setData(order);
+                item.setText(0, order.getInstrumentid());
+                item.setText(1, order.getDirection().equals("0")? "买":"卖");
+                item.setText(2, order.getComboffsetflag().equals("0")? "开":"平");
+                item.setText(3, order.getVolumetotaloriginal().toString());
+                item.setText(4, order.getLimitprice().toString());
+                item.setText(5, order.getVolumetraded()==null?"0":order.getVolumetraded().toString());
+                item.setText(6, order.getStatusmsg());
+                item.setText(7, StringUtils.isEmpty(order.getInserttime())?"":order.getInserttime());
+            }
+            //根据时间冒泡排序
+            for(int i=0 ; i < orders.size()-1 ;i++){
+                for(int j = 0 ; j < orders.size()-1-i ; j++){
+                    TableItem item = entrustTable.getItem(j);
+                    TableItem item1 = entrustTable.getItem(j+1);
                     
-                    if(column == 3){
-                        sellButton.setSelection(true);
-                        buyButton.setSelection(false);
-                    }else if(column == 4) {
-                        buyButton.setSelection(true);
-                        sellButton.setSelection(false);
+                    String time = item.getText(7);
+                    String time1 = item1.getText(7);
+                    
+                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                    try {
+                        Date d = sdf.parse(time);
+                        Date d1 = sdf.parse(time1);
+                        if(d1.after(d)){
+                            Order order = (Order) item.getData();
+                            item.setText(1, item1.getText(1));
+                            item.setText(2, item1.getText(2));
+                            item.setText(3, item1.getText(3));
+                            item.setText(4, item1.getText(4));
+                            item.setText(5, item1.getText(5));
+                            item.setText(6, item1.getText(6));
+                            item.setText(7, item1.getText(7));
+                            item.setData(item1.getData());
+                            
+                            item1.setData(order);
+                            item1.setText(0, order.getInstrumentid());
+                            item1.setText(1, order.getDirection().equals("0")? "买":"卖");
+                            item1.setText(2, order.getComboffsetflag().equals("0")? "开":"平");
+                            item1.setText(3, order.getVolumetotaloriginal().toString());
+                            item1.setText(4, order.getLimitprice().toString());
+                            item1.setText(5, order.getVolumetraded()==null?"0":order.getVolumetraded().toString());
+                            item1.setText(6, order.getStatusmsg());
+                            item1.setText(7, StringUtils.isEmpty(order.getInserttime())?"":order.getInserttime());
+                        }
+                        
+                    } catch (ParseException e1) {
+                        logger.error("解析时间失败",e1);
                     }
-                    
-                    priceText.setText(row.getText(1));
                     
                 }
             }
-        });
+        }
         
+        CTabItem tabItem_1 = new CTabItem(centerFolder, SWT.NONE);
+        tabItem_1.setFont(SWTResourceManager.getFont("微软雅黑", 8, SWT.NORMAL));
+        tabItem_1.setText(" 成 交 单 ");
+        //创建成交单表格
+        createDealTable(centerFolder);
         
-        marketTable.setHeaderVisible(true);//设置表头
-        marketTable.setLinesVisible(true);//显示表格线
-        TableLayout tLayout = new TableLayout();//专用于表格的布局
-        marketTable.setLayout(tLayout);
-
-
-        /* 第三步:建立TableViewer中的列
-           */
-        tLayout.addColumnData(new ColumnWeightData(30));//这个是设置ID列的列宽为10像素
-        new TableColumn(marketTable, SWT.NONE).setText("合约");
+        tabItem_1.setControl(dealTable);
+        dealTable.setHeaderVisible(true);
+        dealTable.setLinesVisible(true);
         
-        tLayout.addColumnData(new ColumnWeightData(30));//这个是设置ID列的列宽为40像素
-        new TableColumn(marketTable, SWT.NONE).setText("最新价");
-          
-        tLayout.addColumnData(new ColumnWeightData(30));
-        new TableColumn(marketTable, SWT.NONE).setText("买量");
+        //初始化成交表格
+        if(trades != null && trades.size() >0){
+            for(Trade trade : trades){
+                
+                TableItem item = new TableItem(dealTable, SWT.NONE);
+                item.setData(trade);
+                item.setText(0, trade.getInstrumentid());
+                item.setText(1, trade.getDirection().equals("0")? "买":"卖");
+                item.setText(2, trade.getOffsetflag().equals("0")? "开":"平");
+                item.setText(3, trade.getVolume().toString());
+                item.setText(4, trade.getPrice().toString());
+                item.setText(5, StringUtils.isEmpty(trade.getTradetime())?"":trade.getTradetime());
+            }
+            
+          //根据时间冒泡排序
+            for(int i=0 ; i < trades.size()-1 ;i++){
+                for(int j = 0 ; j < trades.size()-1-i ; j++){
+                    TableItem item = dealTable.getItem(j);
+                    TableItem item1 = dealTable.getItem(j+1);
+                    
+                    String time = item.getText(5);
+                    String time1 = item1.getText(5);
+                    
+                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                    try {
+                        Date d = sdf.parse(time);
+                        Date d1 = sdf.parse(time1);
+                        if(d1.after(d)){
+                            Trade trade = (Trade) item.getData();
+                            item.setText(1, item1.getText(1));
+                            item.setText(2, item1.getText(2));
+                            item.setText(3, item1.getText(3));
+                            item.setText(4, item1.getText(4));
+                            item.setText(5, item1.getText(5));
+                            item.setData(item1.getData());
+                            
+                            item1.setData(trade);
+                            item1.setText(0, trade.getInstrumentid());
+                            item1.setText(1, trade.getDirection().equals("0")? "买":"卖");
+                            item1.setText(2, trade.getOffsetflag().equals("0")? "开":"平");
+                            item1.setText(3, trade.getVolume().toString());
+                            item1.setText(4, trade.getPrice().toString());
+                            item1.setText(5, StringUtils.isEmpty(trade.getTradetime())?"":trade.getTradetime());
+                        }
+                        
+                    } catch (ParseException e1) {
+                        logger.error("解析时间失败",e1);
+                    }
+                }
+            }
+        }
         
-        tLayout.addColumnData(new ColumnWeightData(35));//这个是设置ID列的列宽为10像素
-        new TableColumn(marketTable, SWT.NONE).setText("买价");
-        
-        tLayout.addColumnData(new ColumnWeightData(35));//这个是设置ID列的列宽为70像素
-        new TableColumn(marketTable, SWT.NONE).setText("卖价");
-
-        tLayout.addColumnData(new ColumnWeightData(30));
-        new TableColumn(marketTable, SWT.NONE).setText("卖量");
-        
-        tLayout.addColumnData(new ColumnWeightData(30));//这个是设置ID列的列宽为10像素
-        new TableColumn(marketTable, SWT.NONE).setText("涨跌");
-        
-        tLayout.addColumnData(new ColumnWeightData(30));
-        new TableColumn(marketTable, SWT.NONE).setText("涨跌幅");
-        
-        tLayout.addColumnData(new ColumnWeightData(35));
-        new TableColumn(marketTable, SWT.NONE).setText("涨停价");
-        
-        tLayout.addColumnData(new ColumnWeightData(35));
-        new TableColumn(marketTable, SWT.NONE).setText("跌停价");
-        
-        tLayout.addColumnData(new ColumnWeightData(35));
-        new TableColumn(marketTable, SWT.NONE).setText("最高价");
-        
-        tLayout.addColumnData(new ColumnWeightData(35));
-        new TableColumn(marketTable, SWT.NONE).setText("最低价");
-        
-        tLayout.addColumnData(new ColumnWeightData(40));
-        new TableColumn(marketTable, SWT.NONE).setText("成交量");
-        
-        tLayout.addColumnData(new ColumnWeightData(40));
-        new TableColumn(marketTable, SWT.NONE).setText("持仓量");
-        
+    	
+    }
+    
+    
+    private void createSouthFolder(){
+//    	 CTabFolder southFolder = new CTabFolder(southFolderN, SWT.BORDER);
+         southFolder.setLayoutData(BorderLayout.SOUTH);
+         southFolder.setSelectionBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
+         
+         CTabItem positionTabItem = new CTabItem(southFolder, SWT.NONE);
+         positionTabItem.setFont(SWTResourceManager.getFont("微软雅黑", 8, SWT.NORMAL));
+         southFolder.setSelection(positionTabItem);
+         positionTabItem.setText("  持  仓  ");
+         
+         createPositionTable(southFolder);
+         positionTabItem.setControl(positionTable);
+         positionTable.setHeaderVisible(true);
+         positionTable.setLinesVisible(true);
+         
+         if(positions !=null && positions.size() >0){
+             for(InvestorPosition position :positions){
+                 TableItem tableItem= new TableItem(positionTable, SWT.NONE);
+                 tableItem.setData(position);
+                 tableItem.setText(0, position.getInstrumentid());
+                 String s = position.getPosidirection().equals("0")?"买":"卖";
+                 tableItem.setText(1, s);//买卖数量
+                 tableItem.setText(2, position.getPosition().toString());//数量
+                 tableItem.setText(3, position.getOpenamount().toString());//持仓均价
+             }
+         }
+         
+         //持仓大小初始化
+         int r = 2 - (StringUtils.isEmpty(positions) ? 0:positions.size());
+         if(r>0){
+             for(int i = 0; i<r; i++){
+                 TableItem tableItem= new TableItem(positionTable, SWT.NONE);
+                 tableItem.setText("");
+             }
+         }
     }
     
     public void createEntrustTable(Composite parent){
