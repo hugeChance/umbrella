@@ -246,6 +246,7 @@ public class MainForm {
 		expdItem1.setText("帐号设置"); // 帐号设置
 
 		userTree = new Tree(expandBar, SWT.NONE);
+		userTree.setFont(SWTResourceManager.getFont("Microsoft YaHei UI", 10, SWT.NORMAL));
 		expdItem1.setControl(userTree);
 		
 		userTree.addMouseListener(new MouseAdapter() {

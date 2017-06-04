@@ -84,7 +84,7 @@ public class ContractTradeRuleEditDialog extends Dialog {
 	private void createContents() {
 		shell = new Shell(getParent(), getStyle());
 		shell.setSize(296, 300);
-		shell.setText("添加账户");
+		shell.setText("更新合约交易规则");
 		shell.setLayout(null);
 		
 		Label contractLab = new Label(shell, SWT.NONE);
