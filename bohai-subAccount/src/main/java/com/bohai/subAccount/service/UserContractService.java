@@ -18,9 +18,10 @@ public interface UserContractService {
 	/**
 	 * 保存用户合约关系
 	 * @param contract
+	 * @return 
 	 * @throws FutureException
 	 */
-	public void saveUserContract(UserContract contract) throws FutureException;
+	public Integer saveUserContract(UserContract contract) throws FutureException;
 	
 	/**
 	 * 根据用户名查询用户合约信息

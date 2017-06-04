@@ -11,45 +11,54 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.springframework.util.StringUtils;
 
 import com.bohai.subAccount.entity.MainAccount;
+import com.bohai.subAccount.entity.TradeRule;
 import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.service.MainAccountService;
+import com.bohai.subAccount.service.TradeRuleService;
 import com.bohai.subAccount.utils.SpringContextUtil;
 import org.eclipse.swt.widgets.Combo;
 
-public class AccountAddDialog extends Dialog {
+public class ContractTradeRuleEditDialog extends Dialog {
 
 	protected Object result;
 	protected Shell shell;
-	private Text accountNo;
-	private Text passwd;
+	private Text cancelCount;
+	private Text wtCount;
 	//期货公司代码
-	private Text brokerId;
+	private Text contractNo;
 	
-	private Combo combo;
+	private Text openCount;
 	
 	private AdminViewMain mainView;
 	private MainForm mainForm;
+	
+	private TableItem tableItem;
 
 	/**
 	 * Create the dialog.
 	 * @param parent
 	 * @param style
 	 */
-	public AccountAddDialog(Shell parent, int style, AdminViewMain mainView) {
+	public ContractTradeRuleEditDialog(Shell parent, int style, AdminViewMain mainView) {
 		super(parent, style);
-		setText("添加主账户");
+		setText("添加合约交易限制");
 		this.mainView = mainView;
 	}
 	
-	public AccountAddDialog(Shell parent, int style, MainForm mainForm) {
+	/**
+	 * @wbp.parser.constructor
+	 */
+	public ContractTradeRuleEditDialog(Shell parent, int style, MainForm mainForm, TableItem tableItem) {
         super(parent, style);
-        setText("添加主账户");
+        setText("添加合约交易限制");
         this.mainForm = mainForm;
+        this.tableItem = tableItem;
     }
 
 	/**
@@ -78,41 +87,92 @@ public class AccountAddDialog extends Dialog {
 		shell.setText("添加账户");
 		shell.setLayout(null);
 		
-		Label label_2 = new Label(shell, SWT.NONE);
-		label_2.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		label_2.setAlignment(SWT.RIGHT);
-		label_2.setBounds(10, 33, 125, 23);
-		label_2.setText("期货公司代码：");
+		Label contractLab = new Label(shell, SWT.NONE);
+		contractLab.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
+		contractLab.setAlignment(SWT.RIGHT);
+		contractLab.setBounds(10, 33, 125, 23);
+		contractLab.setText("合约代码：");
 		
-		brokerId = new Text(shell, SWT.BORDER);
-		brokerId.setBounds(160, 29, 106, 27);
+		contractNo = new Text(shell, SWT.BORDER);
+		contractNo.setBounds(160, 29, 106, 27);
 		
 		Label label = new Label(shell, SWT.NONE);
 		label.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		label.setAlignment(SWT.RIGHT);
 		label.setBounds(10, 74, 125, 23);
-		label.setText("投资者代码：");
+		label.setText("撤单数：");
 		
-		accountNo = new Text(shell, SWT.BORDER);
-		accountNo.setBounds(160, 75, 106, 23);
+		cancelCount = new Text(shell, SWT.BORDER);
+		cancelCount.setBounds(160, 75, 106, 23);
 		
 		Label label_1 = new Label(shell, SWT.NONE);
 		label_1.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		label_1.setAlignment(SWT.RIGHT);
 		label_1.setBounds(10, 117, 125, 23);
-		label_1.setText("密码：");
+		label_1.setText("委托数：");
 		
-		passwd = new Text(shell, SWT.BORDER|SWT.PASSWORD);
-		passwd.setBounds(160, 114, 106, 23);
+		wtCount = new Text(shell, SWT.BORDER);
+		wtCount.setBounds(160, 114, 106, 23);
+		
+		openCount = new Text(shell, SWT.BORDER);
+        openCount.setBounds(160, 162, 106, 23);
+        
+        Label accountType = new Label(shell, SWT.NONE);
+        accountType.setAlignment(SWT.RIGHT);
+        accountType.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
+        accountType.setBounds(39, 162, 96, 23);
+        accountType.setText("开仓数：");
 		
 		Button button = new Button(shell, SWT.NONE);
 		button.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		button.setBounds(39, 207, 64, 27);
-		button.setText("添加");
+		button.setText("更新");
+		
+		TradeRule rule = (TradeRule) tableItem.getData();
+		
+		
+		contractNo.setText(StringUtils.isEmpty(rule.getContract())?"":rule.getContract());
+		cancelCount.setText(StringUtils.isEmpty(rule.getCancelCount())?"":rule.getCancelCount().toString());
+		wtCount.setText(StringUtils.isEmpty(rule.getEntrustCount())?"":rule.getEntrustCount().toString());
+		openCount.setText(StringUtils.isEmpty(rule.getOpenCount())?"":rule.getOpenCount().toString());
+		
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				MainAccountService mainAccountService = (MainAccountService) SpringContextUtil.getBean("mainAccountService");
+			    
+			    TradeRule tradeRule = new TradeRule();
+			    
+			    tradeRule.setId(rule.getId());
+			    
+			    tradeRule.setContract(contractNo.getText());
+			    
+			    tradeRule.setCancelCount(Integer.parseInt(cancelCount.getText()));
+			    //委托数
+			    tradeRule.setEntrustCount(Integer.parseInt(wtCount.getText()));
+			    //开仓数
+			    tradeRule.setOpenCount(Integer.parseInt(openCount.getText()));
+			    
+			    TradeRuleService tradeRuleService = (TradeRuleService) SpringContextUtil.getBean("tradeRuleService");
+			    
+			    try {
+                    tradeRuleService.saveOrUpdateTradeRule(tradeRule);
+                    MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                    box.setMessage("更新成功");
+                    box.setText("提示");
+                    box.open();
+                    if(mainForm != null){
+                        mainForm.refreshContractTradeRule();
+                    }
+                    shell.dispose();
+                } catch (FutureException e1) {
+                    MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                    box.setMessage(e1.getMessage());
+                    box.setText("错误");
+                    box.open();
+                }
+			    
+			    
+				/*MainAccountService mainAccountService = (MainAccountService) SpringContextUtil.getBean("mainAccountService");
 				
 				MainAccount mainAccount = new MainAccount();
 				mainAccount.setAccountNo(accountNo.getText());
@@ -149,7 +209,9 @@ public class AccountAddDialog extends Dialog {
 					box.setMessage(e1.getMessage());
 					box.setText("错误");
 					box.open();
-				}
+				}*/
+			    
+			    
 			}
 		});
 		
@@ -164,16 +226,6 @@ public class AccountAddDialog extends Dialog {
 		});
 		cancel.setText("取消");
 		
-		combo = new Combo(shell, SWT.NONE|SWT.READ_ONLY);
-		combo.setBounds(160, 162, 106, 23);
-		String[] s = {"账户主","账户备"};
-		combo.setItems(s);
-		
-		Label accountType = new Label(shell, SWT.NONE);
-		accountType.setAlignment(SWT.RIGHT);
-		accountType.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		accountType.setBounds(39, 162, 96, 23);
-		accountType.setText("账户类型：");
 		
 	}
 }

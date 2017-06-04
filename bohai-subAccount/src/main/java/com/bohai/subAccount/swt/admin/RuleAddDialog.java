@@ -235,6 +235,22 @@ public class RuleAddDialog extends Dialog {
 					return;
 				}
 				
+                if(StringUtils.isEmpty(unit.getText())){
+                    MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                    box.setMessage("合约单位必输");
+                    box.setText("错误");
+                    box.open();
+                    return;
+                }
+                
+                if(StringUtils.isEmpty(margin.getText())){
+                    MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                    box.setMessage("保证金必输");
+                    box.setText("错误");
+                    box.open();
+                    return;
+                }
+				
 				userContract.setOpenCharge(StringUtils.isEmpty(openCharge.getText())?new BigDecimal("0"):new BigDecimal(openCharge.getText()));
 				userContract.setOpenChargeRate(StringUtils.isEmpty(openChargeRate.getText())?new BigDecimal("0"):new BigDecimal(openChargeRate.getText()));
 				userContract.setCloseCurrCharge(StringUtils.isEmpty(closeCurrCharge.getText())?new BigDecimal("0"):new BigDecimal(closeCurrCharge.getText()));
@@ -243,8 +259,9 @@ public class RuleAddDialog extends Dialog {
 				userContract.setContractUnit(StringUtils.isEmpty(unit.getText())?null:Integer.parseInt(unit.getText()));
 				userContract.setTickSize(new BigDecimal(tickSize.getText()));
 				UserContractService userContractService = (UserContractService) SpringContextUtil.getBean("userContractService");
+				Integer userContractId = 0;
 				try {
-					userContractService.saveUserContract(userContract);
+				    userContractId = userContractService.saveUserContract(userContract);
 					
 				} catch (FutureException e1) {
 					MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
@@ -254,7 +271,9 @@ public class RuleAddDialog extends Dialog {
 					return;
 				}
 				
-				TradeRule tradeRule = new TradeRule();
+				/*TradeRule tradeRule = new TradeRule();
+				//合约ID
+				tradeRule.setContractId(userContractId.toString());
 				tradeRule.setContract(contract.getText());
 				
 				if(treeItem.getParent() == null){
@@ -283,8 +302,8 @@ public class RuleAddDialog extends Dialog {
 					box.open();
 					return;
 				}
-				logger.debug("保存交易规则成功，刷新主页面表格");
-				mainForm.refreshTradeRule(treeItem);
+				logger.debug("保存交易规则成功，刷新主页面表格");*/
+				mainForm.refreshContract(treeItem);
 				shell.close();
 			}
 		});

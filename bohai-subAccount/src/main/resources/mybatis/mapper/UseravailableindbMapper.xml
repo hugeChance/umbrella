@@ -94,4 +94,10 @@
       </if>
     </trim>
   </insert>
+  
+  <select id="selectByUserName" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select * from T_USERAVAILABLEINDB
+    where USERNAME = #{username,jdbcType=VARCHAR}
+  </select>
+  
 </mapper>

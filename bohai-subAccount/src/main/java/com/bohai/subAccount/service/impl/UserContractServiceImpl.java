@@ -38,24 +38,26 @@ public class UserContractServiceImpl implements UserContractService {
 	}
 
 	@Override
-	public void saveUserContract(UserContract contract) throws FutureException {
+	public Integer saveUserContract(UserContract contract) throws FutureException {
 		
 		logger.info("保存用户合约关系入参："+JSON.toJSONString(contract));
+		
+		Integer i = 0;
 		
 		//查询用户合约是否已经绑定
 		Integer count = this.userContractMapper.countByContractNo(contract);
 		if(count > 0){
 			logger.warn("合约已分配");
-			throw new FutureException("", "合约已属于其他用户");
+			throw new FutureException("", "合约已添加");
 		}
 		
 		try {
-			this.userContractMapper.insert(contract);
+			i = this.userContractMapper.insert(contract);
 		} catch (Exception e) {
 			logger.error("保存用户合约 关系失败",e);
 			throw new FutureException("", "保存用户合约 关系失败");
 		}
-		
+		return i;
 	}
 
 	@Override

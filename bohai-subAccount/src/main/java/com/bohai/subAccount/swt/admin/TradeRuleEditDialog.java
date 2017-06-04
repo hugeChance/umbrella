@@ -290,7 +290,7 @@ public class TradeRuleEditDialog extends Dialog {
 					box.open();
 				}
 				logger.debug("更新交易规则成功，刷新主页面表格");
-				mainForm.refreshTradeRule(treeItem);
+				mainForm.refreshContract(treeItem);
 				shell.close();
 			}
 		});

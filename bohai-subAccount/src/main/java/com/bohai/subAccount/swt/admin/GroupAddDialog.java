@@ -46,6 +46,8 @@ public class GroupAddDialog extends Dialog {
 	private AdminViewMain adminView;
 	
 	private MainAccount mainAccount;
+	
+	private MainForm mainForm;
 
 	/**
 	 * Create the dialog.
@@ -58,6 +60,13 @@ public class GroupAddDialog extends Dialog {
 		this.mainAccount = mainAccount;
 		this.adminView = adminView;
 	}
+	
+   public GroupAddDialog(Shell parent, int style, MainAccount mainAccount, MainForm mainForm) {
+        super(parent, style);
+        setText("创建用户组");
+        this.mainAccount = mainAccount;
+        this.mainForm = mainForm;
+    }
 
 	/**
 	 * Open the dialog.
@@ -148,7 +157,12 @@ public class GroupAddDialog extends Dialog {
 					box.setMessage("创建成功！");
 					box.setText("提示");
 					box.open();
-					adminView.refreshUserTree();
+					if(adminView != null){
+					    adminView.refreshUserTree();
+					}
+					if(mainForm != null){
+					    mainForm.refreshUserTree(mainForm.userTree);
+					}
 					shell.dispose();
 				} catch (FutureException e1) {
 					MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);

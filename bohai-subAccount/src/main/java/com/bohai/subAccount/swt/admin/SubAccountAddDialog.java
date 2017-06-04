@@ -38,6 +38,7 @@ public class SubAccountAddDialog extends Dialog {
 	
 	private GroupInfo groupInfo; 
 	private AdminViewMain adminView;
+	private MainForm mainForm;
 
 	/**
 	 * Create the dialog.
@@ -50,6 +51,13 @@ public class SubAccountAddDialog extends Dialog {
 		this.groupInfo = groupInfo;
 		this.adminView = adminView;
 	}
+	
+	   public SubAccountAddDialog(Shell parent, int style, GroupInfo groupInfo, MainForm mainForm) {
+	        super(parent, style);
+	        setText("添加新用户");
+	        this.groupInfo = groupInfo;
+	        this.mainForm = mainForm;
+	    }
 
 	/**
 	 * Open the dialog.
@@ -175,7 +183,14 @@ public class SubAccountAddDialog extends Dialog {
 					box.setMessage("添加成功");
 					box.setText("提示");
 					box.open();
-					adminView.refreshUserTree();
+					if (adminView != null) {
+					    adminView.refreshUserTree();
+                    }
+					if(mainForm != null){
+					    mainForm.refreshUserTree(mainForm.userTree);
+					    mainForm.refreshUserTree(mainForm.instrumentUserTree);
+					    mainForm.refreshUserTree(mainForm.riskUserTree);
+					}
 					shell.dispose();
 				} catch (FutureException e1) {
 					MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL|SWT.YES);

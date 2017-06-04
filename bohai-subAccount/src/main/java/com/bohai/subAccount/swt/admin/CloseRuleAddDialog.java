@@ -88,7 +88,7 @@ public class CloseRuleAddDialog extends Dialog {
 	 */
 	private void createContents() {
 		shell = new Shell(getParent(), getStyle());
-		shell.setSize(304, 320);
+		shell.setSize(304, 290);
 		shell.setText(getText());
 		
 		Label userNameLabel = new Label(shell, SWT.NONE);
@@ -145,7 +145,7 @@ public class CloseRuleAddDialog extends Dialog {
 		Label label_3 = new Label(shell, SWT.NONE);
 		label_3.setAlignment(SWT.RIGHT);
 		label_3.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		label_3.setText("最小变动单位：");
+		label_3.setText("每跳变动单位：");
 		label_3.setBounds(10, 99, 126, 23);
 		
 		tickSize = new Text(shell, SWT.BORDER);
@@ -162,18 +162,18 @@ public class CloseRuleAddDialog extends Dialog {
 		label_4.setText("跳数：");
 		label_4.setBounds(24, 145, 112, 23);
 		
-		Label label_5 = new Label(shell, SWT.NONE);
+		/*Label label_5 = new Label(shell, SWT.NONE);
 		label_5.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		label_5.setAlignment(SWT.RIGHT);
 		label_5.setText("强平比例：");
 		label_5.setBounds(24, 187, 112, 23);
 		
 		forceCloseRate = new Text(shell, SWT.BORDER);
-		forceCloseRate.setBounds(166, 184, 90, 27);
+		forceCloseRate.setBounds(166, 184, 90, 27);*/
 		
 		Button button = new Button(shell, SWT.NONE);
 		button.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		button.setBounds(38, 236, 80, 27);
+		button.setBounds(38, 207, 80, 27);
 		button.setText("添加");
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -189,14 +189,22 @@ public class CloseRuleAddDialog extends Dialog {
 			    
 			    if(StringUtils.isEmpty(tickSize.getText())){
 			        MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
-			        box.setMessage("每跳变动单位");
+			        box.setMessage("每跳变动单位不能为空");
 			        box.setText(CommonConstant.MESSAGE_BOX_ERROR);
 			        box.open();
 			        return;
 			    }
 			    
+	             if(StringUtils.isEmpty(hop.getText())){
+	                    MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+	                    box.setMessage("强平跳数不能为空");
+	                    box.setText(CommonConstant.MESSAGE_BOX_ERROR);
+	                    box.open();
+	                    return;
+	                }
+			    
 				CloseRule closeRule = new CloseRule();
-				closeRule.setForceCloseRate(StringUtils.isEmpty(forceCloseRate.getText())? null : new BigDecimal(forceCloseRate.getText()));
+				//closeRule.setForceCloseRate(StringUtils.isEmpty(forceCloseRate.getText())? null : new BigDecimal(forceCloseRate.getText()));
 				closeRule.setContractNo(contractText.getText());
 				closeRule.setTickSize(StringUtils.isEmpty(tickSize.getText()) ? null : new BigDecimal(tickSize.getText()));
 				closeRule.setHop(StringUtils.isEmpty(hop.getText()) ? null : Integer.parseInt(hop.getText()));
@@ -232,7 +240,7 @@ public class CloseRuleAddDialog extends Dialog {
 		
 		Button cancel = new Button(shell, SWT.NONE);
 		cancel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		cancel.setBounds(176, 236, 80, 27);
+		cancel.setBounds(176, 207, 80, 27);
 		cancel.setText("取消");
 		
 		

@@ -22,4 +22,10 @@ public interface UseravailableindbMapper {
     int insertSelective(Useravailableindb record);
     
     List<Useravailableindb> selectAll();
+    
+    /**
+     * 查询客户资金情况
+     * @return
+     */
+    Useravailableindb selectByUserName(String userName);
 }

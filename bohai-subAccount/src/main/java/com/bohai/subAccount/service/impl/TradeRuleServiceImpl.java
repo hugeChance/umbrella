@@ -114,7 +114,7 @@ public class TradeRuleServiceImpl implements TradeRuleService {
 	public void removeUserTradeRule(String tradeRuleId, String userContractId) throws FutureException {
 
 		if(!StringUtils.isEmpty(tradeRuleId)){
-			this.removeTradeRule(tradeRuleId);
+			//this.removeTradeRule(tradeRuleId);
 		}
 		
 		logger.info("删除用户合约关系，ID:"+userContractId);

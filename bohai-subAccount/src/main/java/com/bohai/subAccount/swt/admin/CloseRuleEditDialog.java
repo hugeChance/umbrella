@@ -88,7 +88,7 @@ public class CloseRuleEditDialog extends Dialog {
 	 */
 	private void createContents() {
 		shell = new Shell(getParent(), getStyle());
-		shell.setSize(304, 299);
+		shell.setSize(304, 271);
 		shell.setText(getText());
 		
 		Label label = new Label(shell, SWT.NONE);
@@ -140,14 +140,14 @@ public class CloseRuleEditDialog extends Dialog {
 		label_4.setText("跳数：");
 		label_4.setBounds(24, 133, 112, 23);
 		
-		Label label_5 = new Label(shell, SWT.NONE);
+		/*Label label_5 = new Label(shell, SWT.NONE);
 		label_5.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		label_5.setAlignment(SWT.RIGHT);
 		label_5.setText("强平比例：");
 		label_5.setBounds(24, 175, 112, 23);
 		
 		forceCloseRate = new Text(shell, SWT.BORDER);
-		forceCloseRate.setBounds(166, 172, 90, 27);
+		forceCloseRate.setBounds(166, 172, 90, 27);*/
 		
 		CloseRule rule = (CloseRule) tableItem.getData();
 		//合约编号
@@ -157,19 +157,19 @@ public class CloseRuleEditDialog extends Dialog {
 		//条数
 		hop.setText(StringUtils.isEmpty(rule.getHop())?"":rule.getHop().toString());
 		//强平比例
-		forceCloseRate.setText(StringUtils.isEmpty(rule.getForceCloseRate())?"":rule.getForceCloseRate().toString());
+		//forceCloseRate.setText(StringUtils.isEmpty(rule.getForceCloseRate())?"":rule.getForceCloseRate().toString());
 		//用户名
 		userNameLab.setText(rule.getUserName());
 		
 		Button button = new Button(shell, SWT.NONE);
 		button.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		button.setBounds(38, 224, 80, 27);
+		button.setBounds(38, 189, 80, 27);
 		button.setText("更新");
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				//CloseRule closeRule = new CloseRule();
-				rule.setForceCloseRate(StringUtils.isEmpty(forceCloseRate.getText())? null : new BigDecimal(forceCloseRate.getText()));
+				//rule.setForceCloseRate(StringUtils.isEmpty(forceCloseRate.getText())? null : new BigDecimal(forceCloseRate.getText()));
 				rule.setContractNo(contractText.getText());
 				rule.setTickSize(StringUtils.isEmpty(tickSize.getText()) ? null : new BigDecimal(tickSize.getText()));
 				rule.setHop(StringUtils.isEmpty(hop.getText()) ? null : Integer.parseInt(hop.getText()));
@@ -203,7 +203,7 @@ public class CloseRuleEditDialog extends Dialog {
 		
 		Button cancel = new Button(shell, SWT.NONE);
 		cancel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		cancel.setBounds(176, 224, 80, 27);
+		cancel.setBounds(176, 189, 80, 27);
 		cancel.setText("取消");
 		cancel.addSelectionListener(new SelectionAdapter() {
 			@Override

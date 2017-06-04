@@ -40,6 +40,7 @@ public class SubAccountEditDialog extends Dialog {
 	private GroupInfo groupInfo; 
 	private AdminViewMain adminView;
 	private UserInfo userInfo;
+	private MainForm mainForm;
 
 	/**
 	 * Create the dialog.
@@ -53,6 +54,14 @@ public class SubAccountEditDialog extends Dialog {
 		this.adminView = adminView;
 		this.userInfo = userInfo;
 	}
+	
+   public SubAccountEditDialog(Shell parent, int style, UserInfo userInfo,GroupInfo groupInfo, MainForm mainForm) {
+        super(parent, style);
+        setText("修改用户");
+        this.groupInfo = groupInfo;
+        this.mainForm = mainForm;
+        this.userInfo = userInfo;
+    }
 
 	/**
 	 * Open the dialog.
@@ -182,7 +191,12 @@ public class SubAccountEditDialog extends Dialog {
 					box.setMessage("更新成功");
 					box.setText("提示");
 					box.open();
-					adminView.refreshUserTree();
+					if(adminView != null){
+					    adminView.refreshUserTree();
+					}
+					if(mainForm != null){
+					    mainForm.refreshSubaccount(mainForm.userTree.getSelection()[0]);
+					}
 					shell.dispose();
 				} catch (FutureException e1) {
 					MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL|SWT.YES);

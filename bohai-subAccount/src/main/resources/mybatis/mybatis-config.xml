@@ -93,6 +93,7 @@
         <mapper resource="mybatis/mapper/SubTradingaccountMapper.xml"/>
         <mapper resource="mybatis/mapper/TradeMapper.xml"/>
         <mapper resource="mybatis/mapper/UserFrozenaccountMapper.xml"/>
+        <mapper resource="mybatis/mapper/UseravailableindbMapper.xml"/>
 
     </mappers>
 

@@ -3,8 +3,6 @@ package com.bohai.subAccount.swt.admin;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ControlEvent;
@@ -45,7 +43,9 @@ import com.bohai.subAccount.entity.CloseRule;
 import com.bohai.subAccount.entity.GroupInfo;
 import com.bohai.subAccount.entity.GroupRule;
 import com.bohai.subAccount.entity.MainAccount;
+import com.bohai.subAccount.entity.TradeRule;
 import com.bohai.subAccount.entity.UserInfo;
+import com.bohai.subAccount.entity.Useravailableindb;
 import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.service.CloseRuleService;
 import com.bohai.subAccount.service.FutureMarketService;
@@ -57,11 +57,6 @@ import com.bohai.subAccount.service.TradeRuleService;
 import com.bohai.subAccount.service.TradeService;
 import com.bohai.subAccount.service.UserContractService;
 import com.bohai.subAccount.service.UserInfoService;
-import com.bohai.subAccount.swt.admin.AdminViewMain.CloseRuleAddSelection;
-import com.bohai.subAccount.swt.admin.AdminViewMain.CloseRuleRemoveSelection;
-import com.bohai.subAccount.swt.admin.AdminViewMain.GroupRuleAddSelection;
-import com.bohai.subAccount.swt.admin.AdminViewMain.RuleAddSelection;
-import com.bohai.subAccount.swt.admin.AdminViewMain.RuleRemoveSelection;
 import com.bohai.subAccount.utils.DateFormatterUtil;
 import com.bohai.subAccount.utils.SpringContextUtil;
 import com.bohai.subAccount.vo.UserContractTradeRule;
@@ -72,19 +67,20 @@ public class MainForm {
 	
 	TabItem tabItem_4;
 
-	private Table table;
+	private Table subaccountTable;
 	private Table instrumentTable;
 	private Table riskGroupRuleTable;
 	private Table riskInstrumentTable;
 	private Table mainAccountTable;
+	private Table tradeRuleTable;
 
 	private TabFolder tabFolder;
 	private ExpandBar expandBar;
 	private ToolBar toolBar;
 	
-	private  Tree userTree;
-	private  Tree instrumentUserTree;
-	private  Tree riskUserTree;
+	public  Tree userTree;
+	public  Tree instrumentUserTree;
+	public  Tree riskUserTree;
 
 	private Shell shell;
 	
@@ -251,8 +247,57 @@ public class MainForm {
 
 		userTree = new Tree(expandBar, SWT.NONE);
 		expdItem1.setControl(userTree);
+		
+		userTree.addMouseListener(new MouseAdapter() {
+            //左侧导航树鼠标点击事件
+            @Override
+            public void mouseDown(MouseEvent e) {
+                TreeItem selected=userTree.getItem(new Point(e.x,e.y));  //取节点控件
+                Menu rightClickMenu = new Menu(userTree);
+                //鼠标右键菜单
+                userTree.setMenu(rightClickMenu);
+                
+                if(e.button == 1 && selected == null){//左键空白
+                    return;
+                }else if (e.button == 1 && selected != null) {//左键树节点
+                    //logger.debug("鼠标左键点击用户组树节点："+selected.getText());
+                    
+                    //refreshTradeRule(selected);
+                }else if(selected == null && e.button == 3){//右键空白
+                    
+                    MenuItem addGroupMenuItem = new MenuItem(rightClickMenu, SWT.NONE);
+                    addGroupMenuItem.setText("添加用户组");
+                    addGroupMenuItem.addSelectionListener(new GroupAddSelection());
+                    
+                }else if(selected.getParentItem() == null && e.button == 3){//右键用户组
+                    
+                    MenuItem addSubAccountMenuItem = new MenuItem(rightClickMenu, SWT.NONE);
+                    addSubAccountMenuItem.setText("添加子账户");
+                    addSubAccountMenuItem.addSelectionListener(new SubAccountAddSelection(selected));
+                    
+                    MenuItem editGroupMenuItem = new MenuItem(rightClickMenu, SWT.NONE);
+                    editGroupMenuItem.setText("修改用户组");
+                    
+                    MenuItem removeGroupMenuItem = new MenuItem(rightClickMenu, SWT.NONE);
+                    removeGroupMenuItem.setText("删除用户组");
+                    removeGroupMenuItem.addSelectionListener(new GroupRemoveSelection(selected));
+                    
+                    
+                }else if(selected.getParentItem() != null && e.button == 3){//右键用户
+                    
+                    MenuItem editGroupMenuItem = new MenuItem(rightClickMenu, SWT.NONE);
+                    editGroupMenuItem.setText("修改子账户");
+                    editGroupMenuItem.addSelectionListener(new SubAccountEditSelection(selected));
+                    
+                    MenuItem removeUserMenuItem = new MenuItem(rightClickMenu, SWT.NONE);
+                    removeUserMenuItem.setText("删除子账户");
+                    removeUserMenuItem.addSelectionListener(new SubAccountRemoveSelection(selected));
+                }
+            }
+        });
 
-		createSubMenu(userTree);
+
+		//createSubMenu(userTree);
 
 		Listener treeSelection = new Listener() {
 			public void handleEvent(Event e) {
@@ -279,12 +324,25 @@ public class MainForm {
 						}
 					}
 //					tabFolder.setSelection(0);
-					if (ctab != table) {
+					if (ctab != subaccountTable) {
 						tabItem_4.setText("子账号明细");
-						tabItem_4.setControl(table);
+						tabItem_4.setControl(subaccountTable);
 					}
+					refreshSubaccount(selection[0]);
 
 				}
+				/*tabFolder.setSelection(4);
+				if(selection[0].getData() instanceof GroupInfo){
+				    tabItem_4.setText("主账号明细");
+                    tabItem_4.setControl(mainAccountTable);
+                    refreshMainAccount();
+                    return;
+				}else if (selection[0].getData() instanceof UserInfo) {
+				    tabItem_4.setText("子账号明细");
+                    tabItem_4.setControl(subaccountTable);
+                    refreshSubaccount(selection[0]);
+                }*/
+				
 			}
 		};
 
@@ -314,10 +372,10 @@ public class MainForm {
 
 		instrumentUserTree = new Tree(expandBar, SWT.NONE);
 		expdItem2.setControl(instrumentUserTree);
-		createSubMenu(instrumentUserTree);
+		//createSubMenu(instrumentUserTree);
 
 		Listener tree1Selection = new Listener() {
-			public void handleEvent(Event e) {
+			/*public void handleEvent(Event e) {
 				String string = "";
 				TreeItem[] selection = instrumentUserTree.getSelection();
 				Table ctab = (Table)tabItem_4.getControl();
@@ -327,11 +385,42 @@ public class MainForm {
 					if (ctab != instrumentTable) {
 						tabItem_4.setText("合约明细");
 						tabItem_4.setControl(instrumentTable);
-						refreshTradeRule(instrumentUserTree.getSelection()[0]);
 					}
+					refreshContract(instrumentUserTree.getSelection()[0]);
 					//tabFolder.setSelection(1); // 合约明细
 				}
-			}
+			}*/
+		    
+		    public void handleEvent(Event e) {
+                String string = "";
+                TreeItem[] selection = instrumentUserTree.getSelection();
+                Table ctab = (Table)tabItem_4.getControl();
+                for (int i = 0; i < selection.length; i++) {
+                    
+                    string += selection[i] + " ";
+                    System.out.println("Selection={" + string + "}");
+                    for (TreeItem item : userTree.getItems()) {
+
+                        if (item.getText().equals(selection[i].getText())) {
+                            
+                            if (ctab != tradeRuleTable) {
+                                tabItem_4.setText("合约交易规则");
+                                tabItem_4.setControl(tradeRuleTable);
+                                refreshContractTradeRule();;
+                            }
+                            
+                            return;
+                        }
+                    }
+
+                    if (ctab != instrumentTable) {
+                        tabItem_4.setText("合约明细");
+                        tabItem_4.setControl(instrumentTable);
+                    }
+                    refreshContract(instrumentUserTree.getSelection()[0]);
+                    //tabFolder.setSelection(1); // 合约明细
+                }
+            }
 		};
 
 		instrumentUserTree.addListener(SWT.Selection, tree1Selection);
@@ -348,7 +437,7 @@ public class MainForm {
 		riskUserTree = new Tree(expandBar, SWT.NONE);
 		expdItem3.setControl(riskUserTree);
 
-		createSubMenu(riskUserTree);
+		//createSubMenu(riskUserTree);
 
 		Listener tree2Selection = new Listener() {
 			public void handleEvent(Event e) {
@@ -373,8 +462,8 @@ public class MainForm {
 					if (ctab != riskInstrumentTable) {
 						tabItem_4.setText("风控合约规则明细");
 						tabItem_4.setControl(riskInstrumentTable);
-						refreshRiskClose(selection[0]);
 					}
+					refreshRiskClose(selection[0]);
 					//tabFolder.setSelection(3); // 风控明细
 				}
 			}
@@ -395,9 +484,9 @@ public class MainForm {
 	}
 
 	private void createSubMenu(Tree tree) {
-
+	    
 		Menu menu = new Menu(tree);
-
+		
 		MenuItem menuItemAdd = new MenuItem(menu, SWT.PUSH);
 		menuItemAdd.setText("添加");
 		menuItemAdd.addSelectionListener(new SelectionAdapter() {
@@ -433,36 +522,19 @@ public class MainForm {
 	}
 
 	private void createTabItem() {
-		//TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
-		//tabItem.setText("\u5B50\u8D26\u53F7\u660E\u7EC6");
-
-		table = new Table(tabFolder, SWT.BORDER | SWT.FULL_SELECTION);
-		//tabItem.setControl(table);
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
-
-		TableColumn tblclmnNewColumn = new TableColumn(table, SWT.NONE);
-		tblclmnNewColumn.setWidth(100);
-		tblclmnNewColumn.setText("\u52A8\u6001\u6743\u76CA");
-
-		TableColumn tblclmnNewColumn_1 = new TableColumn(table, SWT.NONE);
-		tblclmnNewColumn_1.setWidth(100);
-		tblclmnNewColumn_1.setText("\u53EF\u7528\u8D44\u91D1");
-
-		TableColumn tblclmnNewColumn_2 = new TableColumn(table, SWT.NONE);
-		tblclmnNewColumn_2.setWidth(100);
-		tblclmnNewColumn_2.setText("\u6301\u4ED3\u76C8\u4E8F");
-
-		TableColumn tblclmnNewColumn_3 = new TableColumn(table, SWT.NONE);
-		tblclmnNewColumn_3.setWidth(100);
-		tblclmnNewColumn_3.setText("\u5E73\u4ED3\u76C8\u4E8F");
-
-		//TabItem tabItem_1 = new TabItem(tabFolder, SWT.NONE);
-		//tabItem_1.setText("\u5408\u7EA6\u660E\u7EC6");
-
+		
+		
+		//创建主账号表
+		createMainAccount(tabFolder);
+		
+		//创建子账户表
+		createSubaccountTable(tabFolder);
 
 		//创建合约属性表
 		createRuleTable(tabFolder);
+		
+		//创建合约交易规则表
+		createContractTradeRuleTable(tabFolder);
 		
 		//创建风控组规则表格
 		createUserRuleTable(tabFolder);
@@ -470,43 +542,6 @@ public class MainForm {
 		//创建风控规则表格
 		createCloseRuleTable(tabFolder);
 		
-
-		tabItem_4 = new TabItem(tabFolder, SWT.NONE);
-		tabItem_4.setText("\u4E3B\u8D26\u53F7\u660E\u7EC6");
-
-		mainAccountTable = new Table(tabFolder, SWT.BORDER | SWT.FULL_SELECTION);
-		tabItem_4.setControl(mainAccountTable);
-		mainAccountTable.setHeaderVisible(true);
-		mainAccountTable.setLinesVisible(true);
-
-		TableColumn tableColumn_7 = new TableColumn(mainAccountTable, SWT.NONE);
-		tableColumn_7.setWidth(100);
-		tableColumn_7.setText("期货公司代码");
-
-		TableColumn tableColumn_8 = new TableColumn(mainAccountTable, SWT.NONE);
-		tableColumn_8.setWidth(100);
-		tableColumn_8.setText("投资者代码");
-
-		TableColumn tableColumn_9 = new TableColumn(mainAccountTable, SWT.NONE);
-		tableColumn_9.setWidth(100);
-		tableColumn_9.setText("密码");
-
-		TableColumn tableColumn_10 = new TableColumn(mainAccountTable, SWT.NONE);
-		tableColumn_10.setWidth(100);
-		tableColumn_10.setText("账户类型");
-		
-		//加载主账户信息
-        refreshMainAccount();
-		
-		TableItem item = null;
-
-		
-		for (int row = 0; row < 2; row++) {
-			item = new TableItem(table, SWT.NONE);
-			for (int col = 0; col < table.getColumnCount(); col++) {
-				item.setText(col, "item" + (row + 1) + "-" + (col + 1));
-			}
-		}
 	}
 
 	private void createMenu() {
@@ -692,11 +727,42 @@ public class MainForm {
         
     }
     
+    public void refreshSubaccount(TreeItem treeItem){
+        
+        UserInfo userInfo = (UserInfo) treeItem.getData();
+        //清空子账户表
+        subaccountTable.removeAll();
+        
+        Useravailableindb useravailableindb = useravailableindbMapper.selectByUserName(userInfo.getUserName());
+        
+        TableItem item = new TableItem(subaccountTable, SWT.NULL);
+        if(useravailableindb != null){
+            //动态权益
+            item.setText(0, useravailableindb.getAvailable().add(useravailableindb.getMargin()).toString());
+            //可用资金
+            item.setText(1, useravailableindb.getAvailable().toString());
+            //持仓盈亏
+            item.setText(2, useravailableindb.getPositionwin().toString());
+            //平仓盈亏
+            item.setText(3, useravailableindb.getClosewin().toString());
+        }else {
+            //动态权益
+            item.setText(0, userInfo.getCapital().toString());
+            //可用资金
+            item.setText(1, userInfo.getCapital().toString());
+            //持仓盈亏
+            item.setText(2, "0");
+            //平仓盈亏
+            item.setText(3, "0");
+        }
+        
+    }
+    
     /**
      * 刷新交易组规则
      * @param treeItem
      */
-    public void refreshTradeRule(TreeItem treeItem){
+    public void refreshContract(TreeItem treeItem){
         //查询所有用户组交易规则
         if(treeItem == null){
             
@@ -758,6 +824,38 @@ public class MainForm {
                 item.setText(3, StringUtils.isEmpty(closeRule.getForceCloseRate())?"":closeRule.getForceCloseRate().toString());
             }*/
         }
+    }
+    
+    /**
+     * 查询合约交易规则
+     */
+    public void refreshContractTradeRule(){
+        
+        tradeRuleTable.removeAll();
+        
+        List<TradeRule> rules = null;
+        
+        try {
+            rules = this.tradeRuleService.getTradeRulesByAll();
+            
+            if(rules != null){
+                
+                for(TradeRule rule :rules){
+                    TableItem item= new TableItem(tradeRuleTable, SWT.NONE);
+                    item.setData(rule);
+                    item.setText(0, rule.getContract());//合约
+                    item.setText(1, StringUtils.isEmpty(rule.getCancelCount())?"":rule.getCancelCount().toString());//撤单数
+                    item.setText(2, StringUtils.isEmpty(rule.getEntrustCount())?"":rule.getEntrustCount().toString());//委托数
+                    item.setText(3, StringUtils.isEmpty(rule.getOpenCount())?"":rule.getOpenCount().toString());//开仓数
+                }
+            }
+        } catch (FutureException e) {
+            MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+            box.setMessage(e.getMessage());
+            box.setText("警告");
+            box.open();
+        }
+        
     }
     
     /**
@@ -912,6 +1010,104 @@ public class MainForm {
         refreshGroupRuleTable();
     }
     
+    public void createMainAccount(Composite parent){
+        
+        tabItem_4 = new TabItem(tabFolder, SWT.NONE);
+        tabItem_4.setText("账号设置");
+
+        mainAccountTable = new Table(parent, SWT.BORDER | SWT.FULL_SELECTION);
+        mainAccountTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseDown(MouseEvent e) {
+                
+                //选中的数据项
+                TableItem selected = mainAccountTable.getItem(new Point(e.x, e.y));
+                
+                //创建菜单
+                Menu menu = new  Menu(mainAccountTable);
+                mainAccountTable.setMenu(menu);
+                
+                if(selected != null && e.button == 3){//鼠标右键数据项
+                    logger.debug("鼠标右键数据项："+selected.getText());
+                    
+                    MenuItem removeItem = new MenuItem(menu, SWT.NONE);
+                    removeItem.setText("删除");
+                    removeItem.addSelectionListener(new MainAccountRemoveSelection(selected));
+                    
+                    MenuItem addItem = new MenuItem(menu, SWT.NONE);
+                    addItem.setText("添加主账号");
+                    addItem.addSelectionListener(new MainAccountAddSelection());
+                }else if (selected == null && e.button == 3) {//鼠标右键空白
+
+                    logger.debug("鼠标右键规则表空白区域");
+                    
+                    MenuItem addItem = new MenuItem(menu, SWT.NONE);
+                    addItem.setText("添加主账号");
+                    addItem.addSelectionListener(new MainAccountAddSelection());
+                    
+                }
+            }
+            
+            @Override
+            public void mouseDoubleClick(MouseEvent e) {
+                //鼠标双击事件
+                TableItem item = mainAccountTable.getItem(new Point(e.x, e.y));
+                if(e.button ==1 && item != null){
+                    MainAccount mainAccount = (MainAccount) item.getData();
+                    AccountEditDialog editDialog = new AccountEditDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, mainAccount, MainForm.this);
+                    editDialog.open();
+                }
+            }
+        });
+        tabItem_4.setControl(mainAccountTable);
+        mainAccountTable.setHeaderVisible(true);
+        mainAccountTable.setLinesVisible(true);
+
+        TableColumn tableColumn_7 = new TableColumn(mainAccountTable, SWT.NONE);
+        tableColumn_7.setWidth(100);
+        tableColumn_7.setText("期货公司代码");
+
+        TableColumn tableColumn_8 = new TableColumn(mainAccountTable, SWT.NONE);
+        tableColumn_8.setWidth(100);
+        tableColumn_8.setText("投资者代码");
+
+        TableColumn tableColumn_9 = new TableColumn(mainAccountTable, SWT.NONE);
+        tableColumn_9.setWidth(100);
+        tableColumn_9.setText("密码");
+
+        TableColumn tableColumn_10 = new TableColumn(mainAccountTable, SWT.NONE);
+        tableColumn_10.setWidth(100);
+        tableColumn_10.setText("账户类型");
+        
+        //加载主账户信息
+        refreshMainAccount();
+    }
+    
+    public void createSubaccountTable(Composite parent){
+        subaccountTable = new Table(parent, SWT.BORDER | SWT.FULL_SELECTION);
+        //tabItem.setControl(table);
+        subaccountTable.setHeaderVisible(true);
+        subaccountTable.setLinesVisible(true);
+
+        TableColumn tblclmnNewColumn = new TableColumn(subaccountTable, SWT.NONE);
+        tblclmnNewColumn.setWidth(100);
+        tblclmnNewColumn.setText("动态权益");
+
+        TableColumn tblclmnNewColumn_1 = new TableColumn(subaccountTable, SWT.NONE);
+        tblclmnNewColumn_1.setWidth(100);
+        tblclmnNewColumn_1.setText("可用资金");
+
+        TableColumn tblclmnNewColumn_2 = new TableColumn(subaccountTable, SWT.NONE);
+        tblclmnNewColumn_2.setWidth(100);
+        tblclmnNewColumn_2.setText("持仓盈亏");
+
+        TableColumn tblclmnNewColumn_3 = new TableColumn(subaccountTable, SWT.NONE);
+        tblclmnNewColumn_3.setWidth(100);
+        tblclmnNewColumn_3.setText("平仓盈亏");
+        
+        
+    }
+    
     
     //合约属性表格
     public void createRuleTable(Composite parent){
@@ -1008,6 +1204,78 @@ public class MainForm {
         
     }
     
+    /**
+     * 创建合约交易规则表
+     * @param parent
+     */
+    public void createContractTradeRuleTable(Composite parent){
+        
+        tradeRuleTable = new Table(parent, SWT.BORDER | SWT.FULL_SELECTION);
+        tradeRuleTable.addMouseListener(new MouseAdapter() {
+            //双击数据项事件
+            @Override
+            public void mouseDoubleClick(MouseEvent e) {
+                TableItem selected = tradeRuleTable.getItem(new Point(e.x, e.y));
+                if(e.button ==1 && selected != null){//左键双击数据项
+                    ContractTradeRuleEditDialog dialog = new ContractTradeRuleEditDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL ,MainForm.this ,selected);
+                    dialog.open();
+                }
+            }
+            
+            //单击数据项事件
+            @Override
+            public void mouseDown(MouseEvent e) {
+                TableItem selected = tradeRuleTable.getItem(new Point(e.x, e.y));
+                
+                //创建菜单
+                Menu menu = new  Menu(tradeRuleTable);
+                tradeRuleTable.setMenu(menu);
+                
+                
+                if(selected != null && e.button == 3){//鼠标右键数据项
+                    logger.debug("鼠标右键数据项："+selected.getText());
+                    
+                    MenuItem removeItem = new MenuItem(menu, SWT.NONE);
+                    removeItem.setText("删除");
+                    removeItem.addSelectionListener(new TradeRuleRemoveSelection(selected));
+                    
+                    MenuItem addItem = new MenuItem(menu, SWT.NONE);
+                    addItem.setText("添加合约交易规则");
+                    addItem.addSelectionListener(new TradeRuleAddSelection());
+                }else if (selected == null && e.button == 3) {//鼠标右键空白
+
+                    logger.debug("鼠标右键规则表空白区域");
+                    
+                    MenuItem addItem = new MenuItem(menu, SWT.NONE);
+                    addItem.setText("添加合约交易规则");
+                    addItem.addSelectionListener(new TradeRuleAddSelection());
+                    
+                }
+            }
+        });
+        
+        tradeRuleTable.setHeaderVisible(true);
+        tradeRuleTable.setLinesVisible(true);
+        
+        TableColumn tableColumn0 = new TableColumn(tradeRuleTable, SWT.NONE);
+        tableColumn0.setText("合约");
+        tableColumn0.setWidth(100);
+        
+        TableColumn tableColumn1 = new TableColumn(tradeRuleTable, SWT.NONE);
+        tableColumn1.setText("撤单数");
+        tableColumn1.setWidth(100);
+          
+        TableColumn tableColumn2 = new TableColumn(tradeRuleTable, SWT.NONE);
+        tableColumn2.setText("委托数");
+        tableColumn2.setWidth(100);
+        
+        TableColumn tableColumn3 = new TableColumn(tradeRuleTable, SWT.NONE);
+        tableColumn3.setText("开仓数");
+        tableColumn3.setWidth(100);
+        
+        refreshContractTradeRule();
+    }
+    
     //添加风控平仓规则表格
     public void createCloseRuleTable(Composite parent){
         
@@ -1096,8 +1364,40 @@ public class MainForm {
                 box.setMessage("删除成功");
                 box.setText("提示");
                 box.open();
-                refreshTradeRule(instrumentUserTree.getSelection()[0]);
+                refreshContract(instrumentUserTree.getSelection()[0]);
             } catch (FutureException e1) {
+                MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                box.setMessage(e1.getMessage());
+                box.setText("错误");
+                box.open();
+            } 
+        }
+    }
+    
+    /**
+     * 删除交易规则信息
+     * @author caojia
+     *
+     */
+    public class TradeRuleRemoveSelection extends SelectionAdapter {
+        
+        private TableItem item;
+        
+        public TradeRuleRemoveSelection(TableItem item) {
+            this.item = item;
+        }
+        
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+            //UserContractTradeRule rule = (UserContractTradeRule) item.getData();
+            //logger.debug("删除ID为："+rule.getTradeRuleId()+"的交易规则,合约编号："+rule.getContractNo());
+            try {
+                MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                box.setMessage("删除成功");
+                box.setText("提示");
+                box.open();
+                refreshContract(instrumentUserTree.getSelection()[0]);
+            } catch (Exception e1) {
                 MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                 box.setMessage(e1.getMessage());
                 box.setText("错误");
@@ -1126,6 +1426,24 @@ public class MainForm {
             ruleAddDialog.open();
         }
     }
+    
+    
+    public class TradeRuleAddSelection extends SelectionAdapter {
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+            if(instrumentUserTree.getItemCount()<1){
+                MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                box.setMessage("请先添加用户组！");
+                box.setText("警告");
+                box.open();
+                return ;
+            }
+            TreeItem item = instrumentUserTree.getSelection().length <1 ? instrumentUserTree.getTopItem() : instrumentUserTree.getSelection()[0];
+            ContractTradeRuleAddDialog dialog = new ContractTradeRuleAddDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, MainForm.this);
+            dialog.open();
+        }
+    }
+    
     
     /**
      * 添加风控平仓规则
@@ -1196,7 +1514,7 @@ public class MainForm {
                 box.open();
                 //TODO
                 //refreshTradeRule(tree.getSelection()==null?null:tree.getSelection()[0]);
-                refreshTradeRule(riskUserTree.getSelection()[0]);
+                refreshRiskClose(riskUserTree.getSelection()[0]);
             } catch (FutureException e1) {
                 MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                 box.setMessage(e1.getMessage());
@@ -1207,5 +1525,208 @@ public class MainForm {
         }
     }
     
+    /**
+     * 添加主账号
+     * @author BHQH-CXYWB
+     *
+     */
+    public class MainAccountAddSelection extends SelectionAdapter{
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+            
+            AccountAddDialog accountAddDialog = new AccountAddDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, MainForm.this);
+            accountAddDialog.open();
+        }
+    }
+    
+    /**
+     * 删除主账户事件
+     * @author BHQH-CXYWB
+     *
+     */
+    public class MainAccountRemoveSelection extends SelectionAdapter {
+        
+        private TableItem item;
+        
+        public MainAccountRemoveSelection(TableItem item) {
+            this.item = item;
+        }
+        
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+            MainAccount account = (MainAccount) this.item.getData();
+            try {
+                mainAccountService.removeMainAccount(account.getId());
+                MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                box.setMessage("删除成功");
+                box.setText(CommonConstant.MESSAGE_BOX_NOTICE);
+                box.open();
+                refreshMainAccount();
+            } catch (FutureException e1) {
+                MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                box.setMessage(e1.getMessage());
+                box.setText(CommonConstant.MESSAGE_BOX_ERROR);
+                box.open();
+            }
+        }
+    }
+    
 
+    /**
+     * 添加用户组事件
+     * @author caojia
+     *
+     */
+    public class GroupAddSelection extends SelectionAdapter {
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+            if(mainAccountTable.getItemCount()<1){
+                logger.warn("请先添加主账户");
+                MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                box.setMessage("请先添加主账户");
+                box.setText("警告");
+                box.open();
+                return;
+            }
+            MainAccount mainAccount = (MainAccount) mainAccountTable.getItem(0).getData();
+            try {
+                List<GroupInfo> list = groupInfoService.getGroups();
+                
+                if(list !=null && list.size()>0){
+                    logger.warn("最多只能创建一个用户组");
+                    MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                    box.setMessage("最多只能创建一个用户组");
+                    box.setText("警告");
+                    box.open();
+                    return;
+                }
+            } catch (FutureException e1) {
+                return;
+            }
+            GroupAddDialog groupAddDialog = new GroupAddDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, mainAccount,MainForm.this);
+            groupAddDialog.open();
+        }
+    }
+    
+    /**
+     * 添加子账户事件
+     * @author caojia
+     *
+     */
+    public class SubAccountAddSelection extends SelectionAdapter {
+        
+        private TreeItem treeItem;
+        
+        public SubAccountAddSelection(TreeItem treeItem) {
+            this.treeItem = treeItem;
+        }
+        
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+            GroupInfo groupInfo = (GroupInfo) treeItem.getData();
+            SubAccountAddDialog subAccountAddDialog = new SubAccountAddDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, groupInfo, MainForm.this);
+            subAccountAddDialog.open();
+        }
+    }
+    
+    /**
+     * 修改子账户事件
+     * @author caojia
+     */
+    public class SubAccountEditSelection extends SelectionAdapter {
+        
+        private TreeItem treeItem;
+        
+        public SubAccountEditSelection(TreeItem treeItem) {
+            this.treeItem = treeItem;
+        }
+        
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+            UserInfo userInfo = (UserInfo) treeItem.getData();
+            GroupInfo groupInfo = (GroupInfo) treeItem.getParentItem().getData();
+            SubAccountEditDialog subAccountEditDialog = new SubAccountEditDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL,
+                    userInfo, groupInfo, MainForm.this);
+            subAccountEditDialog.open();
+            
+        }
+        
+    }
+        
+        
+        
+    
+    /**
+     * 删除子账户事件
+     * @author caojia
+     */
+    public class SubAccountRemoveSelection extends SelectionAdapter {
+        
+        private TreeItem treeItem;
+        
+        public SubAccountRemoveSelection(TreeItem treeItem){
+            this.treeItem = treeItem;
+        }
+        
+        @Override
+        public void widgetSelected(SelectionEvent e){
+            UserInfo userInfo = (UserInfo) treeItem.getData();
+            try {
+                MessageBox box1 = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.OK|SWT.CANCEL);
+                box1.setMessage("删除子账户会将用户下所有合约规则删除，确定要删除子账户"+userInfo.getUserName()+"吗？");
+                box1.setText("提示");
+                if(box1.open() == SWT.CANCEL){
+                    return;
+                }
+                
+                userInfoService.deleteUser(userInfo);
+                MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                box.setMessage("删除成功！");
+                box.setText("提示");
+                box.open();
+                //刷新用户组树
+                refreshUserTree(userTree);
+                refreshUserTree(instrumentUserTree);
+                refreshUserTree(riskUserTree);
+            } catch (FutureException e1) {
+                MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                box.setMessage(e1.getMessage());
+                box.setText("警告");
+                box.open();
+            }
+        }
+        
+    }
+    
+    /**
+     * 删除用户组
+     * @author BHQH-CXYWB
+     *
+     */
+    public class GroupRemoveSelection extends SelectionAdapter {
+        
+        private TreeItem treeItem;
+        
+        public GroupRemoveSelection(TreeItem treeItem) {
+            this.treeItem = treeItem;
+        }
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+            GroupInfo groupInfo = (GroupInfo) treeItem.getData();
+            try {
+                groupInfoService.daleteGroupInfo(groupInfo.getId());
+                MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                box.setMessage("删除成功！");
+                box.setText("提示");
+                box.open();
+                //刷新用户组树
+                refreshUserTree(userTree);
+            } catch (FutureException e1) {
+                MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                box.setMessage(e1.getMessage());
+                box.setText("警告");
+                box.open();
+            }
+        }
+    }
 }
