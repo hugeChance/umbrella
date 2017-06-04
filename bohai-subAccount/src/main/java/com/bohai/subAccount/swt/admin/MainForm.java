@@ -84,6 +84,7 @@ public class MainForm {
 	
 	private  Tree userTree;
 	private  Tree instrumentUserTree;
+	private  Tree riskUserTree;
 
 	private Shell shell;
 	
@@ -309,7 +310,7 @@ public class MainForm {
 
 		ExpandItem expdItem2 = new ExpandItem(expandBar, SWT.NONE);
 		expdItem2.setExpanded(true);
-		expdItem2.setText("\u5408\u7EA6\u8BBE\u7F6E"); // 合约设置
+		expdItem2.setText("合约设置"); // 合约设置
 
 		instrumentUserTree = new Tree(expandBar, SWT.NONE);
 		expdItem2.setControl(instrumentUserTree);
@@ -341,22 +342,23 @@ public class MainForm {
 		
 
 		ExpandItem expdItem3 = new ExpandItem(expandBar, SWT.NONE);
-		expdItem3.setText("\u98CE\u63A7\u8BBE\u7F6E"); // 风控设置
+		expdItem3.setHeight(150);
+		expdItem3.setText("风控设置"); // 风控设置
 
-		final Tree tree_2 = new Tree(expandBar, SWT.NONE);
-		expdItem3.setControl(tree_2);
+		riskUserTree = new Tree(expandBar, SWT.NONE);
+		expdItem3.setControl(riskUserTree);
 
-		createSubMenu(tree_2);
+		createSubMenu(riskUserTree);
 
 		Listener tree2Selection = new Listener() {
 			public void handleEvent(Event e) {
 				String string = "";
-				TreeItem[] selection = tree_2.getSelection();
+				TreeItem[] selection = riskUserTree.getSelection();
 				Table ctab = (Table)tabItem_4.getControl();
 				for (int i = 0; i < selection.length; i++) {
 					string += selection[i] + " ";
 					System.out.println("Selection={" + string + "}");
-					for (TreeItem item : tree_2.getItems()) {
+					for (TreeItem item : riskUserTree.getItems()) {
 						if (item.getText().equals(selection[i].getText())) {
 							if (ctab != riskGroupRuleTable) {
 								tabItem_4.setText("风控组规则明细");
@@ -371,21 +373,24 @@ public class MainForm {
 					if (ctab != riskInstrumentTable) {
 						tabItem_4.setText("风控合约规则明细");
 						tabItem_4.setControl(riskInstrumentTable);
+						refreshRiskClose(selection[0]);
 					}
 					//tabFolder.setSelection(3); // 风控明细
 				}
 			}
 		};
 
-		tree_2.addListener(SWT.Selection, tree2Selection);
+		riskUserTree.addListener(SWT.Selection, tree2Selection);
+		refreshUserTree(riskUserTree);
+		
 
-		TreeItem treeItem4 = new TreeItem(tree_2, SWT.NONE);
+		/*TreeItem treeItem4 = new TreeItem(tree_2, SWT.NONE);
 		treeItem4.setText("风控组");
 
 		TreeItem treeSubItem4_1 = new TreeItem(treeItem4, SWT.NONE);
 		treeSubItem4_1.setText("风控明细");
-		treeItem4.setExpanded(true);
-		expdItem3.setHeight(150);
+		treeItem4.setExpanded(true);*/
+		
 
 	}
 
@@ -790,12 +795,14 @@ public class MainForm {
     /**
      * 查询风控平仓规则
      */
-    public void refreshRiskClose(){
+    public void refreshRiskClose(TreeItem treeItem){
+        
+        UserInfo userInfo = (UserInfo) treeItem.getData();
         
       //查询该用户所有平仓规则
         List<CloseRule> closeRules = null;
         try {
-            closeRules = closeRuleService.getAllCloseRule();
+            closeRules = closeRuleService.getCloseRuleByUserNo(userInfo.getUserNo());
         } catch (FutureException e) {
             MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
             box.setMessage(e.getMessage());
@@ -1058,7 +1065,7 @@ public class MainForm {
         
         /*tLayout.addColumnData(new ColumnWeightData(30));
         new TableColumn(riskInstrumentTable, SWT.NONE).setText("强平比例");*/
-        refreshRiskClose();
+        //refreshRiskClose();
     }
     
     /**
@@ -1126,14 +1133,14 @@ public class MainForm {
         @Override
         public void widgetSelected(SelectionEvent e) {
             
-            if(userTree.getItemCount()<1){
+            if(riskUserTree.getItemCount()<1){
                 MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                 box.setMessage("请先添加用户组！");
                 box.setText(CommonConstant.MESSAGE_BOX_WARN);
                 box.open();
                 return ;
             }
-            CloseRuleAddDialog closeRuleAddDialog = new CloseRuleAddDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, MainForm.this);
+            CloseRuleAddDialog closeRuleAddDialog = new CloseRuleAddDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, MainForm.this,riskUserTree.getSelection()[0]);
             closeRuleAddDialog.open();
         }
     }
@@ -1186,6 +1193,7 @@ public class MainForm {
                 box.open();
                 //TODO
                 //refreshTradeRule(tree.getSelection()==null?null:tree.getSelection()[0]);
+                refreshTradeRule(riskUserTree.getSelection()[0]);
             } catch (FutureException e1) {
                 MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                 box.setMessage(e1.getMessage());

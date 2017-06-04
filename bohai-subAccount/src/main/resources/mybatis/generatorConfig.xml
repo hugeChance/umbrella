@@ -9,7 +9,7 @@
 
   <context id="OracleTables" targetRuntime="MyBatis3">
     <jdbcConnection driverClass="oracle.jdbc.driver.OracleDriver"
-        connectionURL="jdbc:oracle:thin:@192.168.1.101:1521:XE"
+        connectionURL="jdbc:oracle:thin:@192.168.1.105:1521:XE"
         userId="SUBACCOUNT"
         password="SUBACCOUNT">
     </jdbcConnection>
@@ -170,17 +170,34 @@
     </table> -->
     
     <!-- T_BUYSELL_DETAIL -->
-    <table schema="" tableName="T_BUYSELL_DETAIL" domainObjectName="BuysellDetail" 
+    <!-- <table schema="" tableName="T_BUYSELL_DETAIL" domainObjectName="BuysellDetail" 
        enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
        enableUpdateByExample="false" selectByExampleQueryId="false">
-    </table>
+    </table> -->
     
     <!-- T_CLOSE_DETAIL -->
-    <table schema="" tableName="T_CLOSE_DETAIL" domainObjectName="CloseDetail" 
+    <!-- <table schema="" tableName="T_CLOSE_DETAIL" domainObjectName="CloseDetail" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table> -->
+    
+    <!-- T_BUY_DETAIL -->
+    <table schema="" tableName="T_BUY_DETAIL" domainObjectName="BuyDetail" 
        enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
        enableUpdateByExample="false" selectByExampleQueryId="false">
     </table>
     
+    <!-- T_POSITIONS_DETAIL -->
+    <table schema="" tableName="T_POSITIONS_DETAIL" domainObjectName="PositionsDetail" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>
+    
+    <!-- T_SELL_DETAIL -->
+    <table schema="" tableName="T_SELL_DETAIL" domainObjectName="SellDetail" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>
     
   </context>
 </generatorConfiguration>

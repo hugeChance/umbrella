@@ -35,6 +35,8 @@ public class CloseRuleEditDialog extends Dialog {
 	private Text hop;
 	private Text forceCloseRate;
 	
+	private Label userNameLab;
+	
 	private AdminViewMain main;
 	private TreeItem treeItem;
 	private TableItem tableItem;
@@ -54,6 +56,9 @@ public class CloseRuleEditDialog extends Dialog {
 		this.tableItem = tableItem;
 	}
 	
+	/**
+	 * @wbp.parser.constructor
+	 */
 	public CloseRuleEditDialog(Shell parent, int style, MainForm mainForm, TableItem tableItem) {
         super(parent, style);
         setText("更新平仓规则");
@@ -90,19 +95,19 @@ public class CloseRuleEditDialog extends Dialog {
 		label.setAlignment(SWT.RIGHT);
 		label.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		label.setBounds(24, 10, 112, 23);
-		label.setText("用户组：");
+		label.setText("用户名：");
 		
-		Label label_1 = new Label(shell, SWT.NONE);
-		label_1.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		label_1.setBounds(166, 10, 73, 23);
-		//获取用户组
-		if(treeItem != null){
+		userNameLab = new Label(shell, SWT.NONE);
+		userNameLab.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
+		userNameLab.setBounds(166, 10, 73, 23);
+		//获取用户名
+		/*if(treeItem != null){
 			if(treeItem.getParentItem() == null){
 				label_1.setText(((GroupInfo)treeItem.getData()).getGroupName());
 			}else {
 				label_1.setText(((GroupInfo)treeItem.getParentItem().getData()).getGroupName());
 			}
-		}
+		}*/
 		
 		Label label_2 = new Label(shell, SWT.NONE);
 		label_2.setAlignment(SWT.RIGHT);
@@ -153,7 +158,8 @@ public class CloseRuleEditDialog extends Dialog {
 		hop.setText(StringUtils.isEmpty(rule.getHop())?"":rule.getHop().toString());
 		//强平比例
 		forceCloseRate.setText(StringUtils.isEmpty(rule.getForceCloseRate())?"":rule.getForceCloseRate().toString());
-		
+		//用户名
+		userNameLab.setText(rule.getUserName());
 		
 		Button button = new Button(shell, SWT.NONE);
 		button.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
@@ -189,7 +195,7 @@ public class CloseRuleEditDialog extends Dialog {
 				    main.refreshTradeRule(treeItem);
                 }
 				if (mainForm != null) {
-                    mainForm.refreshRiskClose();
+                    mainForm.refreshRiskClose(treeItem);
                 }
 				shell.close();
 			}
