@@ -96,5 +96,21 @@ public class UserContractServiceImpl implements UserContractService {
 		return unit;
 	}
 
+    @Override
+    public UserContract queryUserContractByUserNameAndContract(String userName, String contractNo)
+            throws FutureException {
+
+        UserContract contract = null;
+        
+        try {
+            contract = this.userContractMapper.selectByUserNameAndContract(userName, contractNo);
+        } catch (Exception e) {
+            logger.error("查询用户合约失败",e);
+            throw new FutureException("", "查询用户合约失败");
+        }
+        
+        return contract;
+    }
+
 
 }

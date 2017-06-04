@@ -20,10 +20,14 @@ import org.springframework.util.StringUtils;
 import com.bohai.subAccount.constant.CommonConstant;
 import com.bohai.subAccount.entity.CloseRule;
 import com.bohai.subAccount.entity.GroupInfo;
+import com.bohai.subAccount.entity.UserContract;
 import com.bohai.subAccount.entity.UserInfo;
 import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.service.CloseRuleService;
+import com.bohai.subAccount.service.UserContractService;
 import com.bohai.subAccount.utils.SpringContextUtil;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 
 public class CloseRuleAddDialog extends Dialog {
 
@@ -84,36 +88,18 @@ public class CloseRuleAddDialog extends Dialog {
 	 */
 	private void createContents() {
 		shell = new Shell(getParent(), getStyle());
-		shell.setSize(304, 345);
+		shell.setSize(304, 320);
 		shell.setText(getText());
-		
-		Label label = new Label(shell, SWT.NONE);
-		label.setAlignment(SWT.RIGHT);
-		label.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		label.setBounds(24, 10, 112, 23);
-		label.setText("用户组：");
-		
-		Label label_1 = new Label(shell, SWT.NONE);
-		label_1.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		label_1.setBounds(166, 10, 90, 23);
-		//获取用户组
-		if(treeItem != null){
-			if(treeItem.getParentItem() == null){
-				label_1.setText(((GroupInfo)treeItem.getData()).getGroupName());
-			}else {
-				label_1.setText(((GroupInfo)treeItem.getParentItem().getData()).getGroupName());
-			}
-		}
 		
 		Label userNameLabel = new Label(shell, SWT.NONE);
         userNameLabel.setText("用户名：");
         userNameLabel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
         userNameLabel.setAlignment(SWT.RIGHT);
-        userNameLabel.setBounds(24, 45, 112, 23);
+        userNameLabel.setBounds(24, 20, 112, 23);
         
         userNameLab = new Label(shell, SWT.NONE);
         userNameLab.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-        userNameLab.setBounds(166, 45, 90, 23);
+        userNameLab.setBounds(166, 20, 90, 23);
         //获取用户名
         if(treeItem != null){
             userNameLab.setText(((UserInfo)treeItem.getData()).getUserName());
@@ -123,44 +109,71 @@ public class CloseRuleAddDialog extends Dialog {
 		label_2.setAlignment(SWT.RIGHT);
 		label_2.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		label_2.setText("合约：");
-		label_2.setBounds(24, 85, 112, 23);
+		label_2.setBounds(24, 60, 112, 23);
 		
 		contractText = new Text(shell, SWT.BORDER);
+		contractText.addFocusListener(new FocusAdapter() {
+		    @Override
+		    public void focusLost(FocusEvent e) {
+		        
+		        String contractNo = contractText.getText();
+		        if(!StringUtils.isEmpty(contractNo)){
+		            UserContractService contractService = (UserContractService) SpringContextUtil.getBean("userContractService");
+		            try {
+                        UserContract userContract = contractService.queryUserContractByUserNameAndContract(userNameLab.getText(), contractNo);
+                        if(userContract == null){
+                            MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                            box.setMessage("请先添加合约信息");
+                            box.setText(CommonConstant.MESSAGE_BOX_ERROR);
+                            box.open();
+                            return;
+                        }
+                        tickSize.setText(userContract.getTickSize().toString());
+                        
+                    } catch (FutureException e1) {
+                        MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                        box.setMessage(e1.getMessage());
+                        box.setText(CommonConstant.MESSAGE_BOX_ERROR);
+                        box.open();
+                    }
+		        }
+		    }
+		});
 		contractText.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		contractText.setBounds(166, 82, 90, 27);
+		contractText.setBounds(166, 57, 90, 27);
 		
 		Label label_3 = new Label(shell, SWT.NONE);
 		label_3.setAlignment(SWT.RIGHT);
 		label_3.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		label_3.setText("最小变动单位：");
-		label_3.setBounds(10, 124, 126, 23);
+		label_3.setBounds(10, 99, 126, 23);
 		
 		tickSize = new Text(shell, SWT.BORDER);
 		tickSize.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		tickSize.setBounds(166, 121, 90, 27);
+		tickSize.setBounds(166, 96, 90, 27);
 		tickSize.setEnabled(false);
 		
 		hop = new Text(shell, SWT.BORDER);
-		hop.setBounds(166, 167, 90, 26);
+		hop.setBounds(166, 142, 90, 26);
 		
 		Label label_4 = new Label(shell, SWT.NONE);
 		label_4.setAlignment(SWT.RIGHT);
 		label_4.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		label_4.setText("跳数：");
-		label_4.setBounds(24, 170, 112, 23);
+		label_4.setBounds(24, 145, 112, 23);
 		
 		Label label_5 = new Label(shell, SWT.NONE);
 		label_5.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		label_5.setAlignment(SWT.RIGHT);
 		label_5.setText("强平比例：");
-		label_5.setBounds(24, 212, 112, 23);
+		label_5.setBounds(24, 187, 112, 23);
 		
 		forceCloseRate = new Text(shell, SWT.BORDER);
-		forceCloseRate.setBounds(166, 209, 90, 27);
+		forceCloseRate.setBounds(166, 184, 90, 27);
 		
 		Button button = new Button(shell, SWT.NONE);
 		button.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		button.setBounds(38, 261, 80, 27);
+		button.setBounds(38, 236, 80, 27);
 		button.setText("添加");
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -174,13 +187,20 @@ public class CloseRuleAddDialog extends Dialog {
                     return;
 			    }
 			    
+			    if(StringUtils.isEmpty(tickSize.getText())){
+			        MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+			        box.setMessage("每跳变动单位");
+			        box.setText(CommonConstant.MESSAGE_BOX_ERROR);
+			        box.open();
+			        return;
+			    }
+			    
 				CloseRule closeRule = new CloseRule();
 				closeRule.setForceCloseRate(StringUtils.isEmpty(forceCloseRate.getText())? null : new BigDecimal(forceCloseRate.getText()));
 				closeRule.setContractNo(contractText.getText());
 				closeRule.setTickSize(StringUtils.isEmpty(tickSize.getText()) ? null : new BigDecimal(tickSize.getText()));
 				closeRule.setHop(StringUtils.isEmpty(hop.getText()) ? null : Integer.parseInt(hop.getText()));
 				closeRule.setUserName(userNameLab.getText());
-				
 				
 				CloseRuleService closeRuleService = (CloseRuleService) SpringContextUtil.getBean("closeRuleService");
 				try {
@@ -212,7 +232,7 @@ public class CloseRuleAddDialog extends Dialog {
 		
 		Button cancel = new Button(shell, SWT.NONE);
 		cancel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		cancel.setBounds(176, 261, 80, 27);
+		cancel.setBounds(176, 236, 80, 27);
 		cancel.setText("取消");
 		
 		

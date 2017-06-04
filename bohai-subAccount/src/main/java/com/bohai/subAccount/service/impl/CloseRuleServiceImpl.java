@@ -116,4 +116,32 @@ public class CloseRuleServiceImpl implements CloseRuleService {
 		}
 	}
 
+    @Override
+    public List<CloseRule> getCloseRuleByUserName(String userName) throws FutureException {
+        logger.debug("根据用户名查询平仓规则："+userName);
+        
+        List<CloseRule> list = null;
+        
+        try {
+            list = this.closeRuleMapper.getCloseRuleByUserName(userName);
+        } catch (Exception e) {
+            logger.error("查询平仓规则失败");
+            throw new FutureException("", "查询平仓规则失败");
+        }
+        
+        return list;
+    }
+
+    @Override
+    public void removeCloseRuleByContractNoAndUserNo(String contractNo, String userNo) throws FutureException {
+        logger.debug("根据合约编号和用户编号删除平仓规则入参,contractNo:"+contractNo+"     userNo:"+userNo);
+        
+        try {
+            this.closeRuleMapper.deleteByContractNoAndUserNo(contractNo, userNo);
+        } catch (Exception e) {
+            logger.error("删除平仓规则失败",e);
+            throw new FutureException("", "删除平仓规则失败");
+        }
+    }
+
 }

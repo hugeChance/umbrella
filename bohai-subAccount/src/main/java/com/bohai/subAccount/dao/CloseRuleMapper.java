@@ -59,8 +59,13 @@ public interface CloseRuleMapper {
     
     List<CloseRule> getCloseRuleByUserNo(String userNo);
     
+    List<CloseRule> getCloseRuleByUserName(String userName);
+    
     int deleteByContractNo(String contractNo);
     
     @Delete("delete from T_CLOSE_RULE t where exists (select 1 from t_user_contract t1 where t1.user_no = #{0} and t.contract_no = t1.contract_no)")
     int deleteByUserNo(String userNo);
+    
+    @Delete("delete from T_CLOSE_RULE t where t.contract_no = #{0} and exists(select 1 from t_user_contract t1 where t.contract_no = t1.contract_no and t1.user_no = #{1})")
+    int deleteByContractNoAndUserNo(String contract, String userNo);
 }

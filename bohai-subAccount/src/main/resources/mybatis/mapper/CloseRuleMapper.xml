@@ -51,10 +51,17 @@
   <!-- 根据用户名查询平仓规则 -->
   <select id="getCloseRuleByUserNo" resultMap="BaseResultMap" parameterType="java.lang.String">
     select 
-    t.ID, t.HOP, t.FORCE_CLOSE_RATE, t.CREATE_TIME, t.UPDATE_TIME, t1.TICK_SIZE, t.CONTRACT_NO
-    from T_CLOSE_RULE t,T_USER_CONTRACT t1
-    where t.contract_no = t1.contract_no
-    and t1.user_no = #{userNo,jdbcType=VARCHAR}
+    t.ID, t.HOP, t.FORCE_CLOSE_RATE, t.CREATE_TIME, t.UPDATE_TIME, t.TICK_SIZE, t.CONTRACT_NO
+    from T_CLOSE_RULE t
+    where t.user_name = #{userNo,jdbcType=VARCHAR}
+  </select>
+  
+    <!-- 根据用户名查询平仓规则 -->
+  <select id="getCloseRuleByUserName" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select 
+    t.ID, t.HOP, t.FORCE_CLOSE_RATE, t.CREATE_TIME, t.UPDATE_TIME, t.TICK_SIZE, t.CONTRACT_NO,t.USER_NAME
+    from T_CLOSE_RULE t
+    where t.user_name = #{userName,jdbcType=VARCHAR}
   </select>
   
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >

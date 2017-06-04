@@ -45,5 +45,14 @@ public interface UserContractService {
 	 */
 	public Integer getContractUnitByContractNo(String contractNo) throws FutureException;
 	
+	/**
+	 * 根据合约和用户名查询合约信息
+	 * @param userName
+	 * @param contractNo
+	 * @return
+	 * @throws FutureException
+	 */
+	public UserContract queryUserContractByUserNameAndContract(String userName,String contractNo) throws FutureException;
+	
 	
 }

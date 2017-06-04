@@ -69,4 +69,6 @@ public interface UserContractMapper {
     
     @Select("select CONTRACT_UNIT from t_user_contract where CONTRACT_NO = #{0}")
     Integer getContractUnitByContractNo(String contractNo);
+    
+    UserContract selectByUserNameAndContract(String userName, String contractNo);
 }

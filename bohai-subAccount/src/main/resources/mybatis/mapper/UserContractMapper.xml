@@ -240,4 +240,14 @@
     from T_USER_CONTRACT t,T_USER_INFO t1
     where t.USER_NO = t1.USER_NO
   </select>
+  
+  
+    <select id="selectByUserNameAndContract" parameterType="java.lang.String" resultMap="BaseResultMap">
+	    select t.*,t1.USER_NAME 
+	    from T_USER_CONTRACT t,T_USER_INFO t1
+	    where t.USER_NO = t1.USER_NO
+	    and t1.USER_NAME = #{0}
+	    and t.CONTRACT_NO = #{1}
+	  </select>
+  
 </mapper>

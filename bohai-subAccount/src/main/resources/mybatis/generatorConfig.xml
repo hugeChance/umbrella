@@ -188,10 +188,10 @@
     </table>
     
     <!-- T_POSITIONS_DETAIL -->
-    <table schema="" tableName="T_POSITIONS_DETAIL" domainObjectName="PositionsDetail" 
+    <!-- <table schema="" tableName="T_POSITIONS_DETAIL" domainObjectName="PositionsDetail" 
        enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
        enableUpdateByExample="false" selectByExampleQueryId="false">
-    </table>
+    </table> -->
     
     <!-- T_SELL_DETAIL -->
     <table schema="" tableName="T_SELL_DETAIL" domainObjectName="SellDetail" 

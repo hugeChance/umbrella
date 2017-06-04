@@ -802,7 +802,8 @@ public class MainForm {
       //查询该用户所有平仓规则
         List<CloseRule> closeRules = null;
         try {
-            closeRules = closeRuleService.getCloseRuleByUserNo(userInfo.getUserNo());
+            //closeRules = closeRuleService.getCloseRuleByUserNo(userInfo.getUserNo());
+            closeRules = closeRuleService.getCloseRuleByUserName(userInfo.getUserName());
         } catch (FutureException e) {
             MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
             box.setMessage(e.getMessage());
@@ -1088,7 +1089,9 @@ public class MainForm {
             try {
                 tradeRuleService.removeUserTradeRule(rule.getTradeRuleId(),rule.getId());
                 //删除合约对应的平仓规则
-                closeRuleService.removeCloseRuleByContractNo(rule.getContractNo());
+                String userNo = rule.getUserNo();
+                //closeRuleService.removeCloseRuleByContractNo(rule.getContractNo());
+                closeRuleService.removeCloseRuleByContractNoAndUserNo(rule.getContractNo(), userNo);
                 MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                 box.setMessage("删除成功");
                 box.setText("提示");

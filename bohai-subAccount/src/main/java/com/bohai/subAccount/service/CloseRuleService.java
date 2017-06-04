@@ -29,6 +29,14 @@ public interface CloseRuleService {
 	 */
 	public List<CloseRule> getCloseRuleByUserNo(String userNo) throws FutureException;
 	
+	   /**
+     * 根据用户名查询平仓规则
+     * @param userNo
+     * @return
+     * @throws FutureException
+     */
+    public List<CloseRule> getCloseRuleByUserName(String userName) throws FutureException;
+	
 	/**
 	 * 更新平仓规则
 	 * @param closeRule
@@ -49,5 +57,12 @@ public interface CloseRuleService {
 	 * @throws FutureException
 	 */
 	public void removeCloseRuleByContractNo(String contractNo) throws FutureException;
+	
+	   /**
+     * 根据合约和用户名删除平仓规则
+     * @param contractNo
+     * @throws FutureException
+     */
+    public void removeCloseRuleByContractNoAndUserNo(String contractNo, String userNo) throws FutureException;
 	
 }
