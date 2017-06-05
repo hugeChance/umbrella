@@ -1,6 +1,7 @@
 package com.bohai.subAccount.dao;
 
 import com.bohai.subAccount.entity.BuyDetail;
+import com.bohai.subAccount.entity.PositionsDetail;
 
 public interface BuyDetailMapper {
     /**
@@ -18,4 +19,6 @@ public interface BuyDetailMapper {
      * @mbggenerated Sun Jun 04 13:56:33 CST 2017
      */
     int insertSelective(BuyDetail record);
+    
+    void updateBuyDetail(BuyDetail buyDetail);
 }

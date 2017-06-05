@@ -1,5 +1,7 @@
 package com.bohai.subAccount.dao;
 
+import java.util.List;
+
 import com.bohai.subAccount.entity.PositionsDetail;
 
 public interface PositionsDetailMapper {
@@ -17,5 +19,9 @@ public interface PositionsDetailMapper {
      *
      * @mbggenerated Sun Jun 04 12:42:18 CST 2017
      */
-    int insertSelective(PositionsDetail record);
+    List<PositionsDetail> findPositionsDetail(String Subuserid,String Direction, String Instrumentid);
+    
+    void updatePositionsDetail(PositionsDetail positionsDetail);
+    
+    
 }

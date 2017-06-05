@@ -289,4 +289,11 @@
       </if>
     </trim>
   </insert>
+  
+  <select id="getUserByDate" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select * from T_SELL_DETAIL
+    where TRADEDATE = #{strdate,jdbcType=VARCHAR} 
+    order by COMBOKEY asc
+  </select>
+  
 </mapper>

@@ -1,5 +1,8 @@
 package com.bohai.subAccount.dao;
 
+import java.util.List;
+
+import com.bohai.subAccount.entity.InvestorPosition;
 import com.bohai.subAccount.entity.SellDetail;
 
 public interface SellDetailMapper {
@@ -18,4 +21,6 @@ public interface SellDetailMapper {
      * @mbggenerated Sun Jun 04 13:56:33 CST 2017
      */
     int insertSelective(SellDetail record);
+    
+    List<SellDetail> getUserByDate(String strdate);
 }

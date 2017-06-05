@@ -1,19 +1,18 @@
 package com.bohai.subAccount.swt.coreapp;
 
+import static org.hraink.futures.ctp.thostftdcuserapidatatype.ThostFtdcUserApiDataTypeLibrary.THOST_FTDC_AF_Delete;
 import static org.hraink.futures.ctp.thostftdcuserapidatatype.ThostFtdcUserApiDataTypeLibrary.THOST_FTDC_CC_Immediately;
 import static org.hraink.futures.ctp.thostftdcuserapidatatype.ThostFtdcUserApiDataTypeLibrary.THOST_FTDC_FCC_NotForceClose;
 import static org.hraink.futures.ctp.thostftdcuserapidatatype.ThostFtdcUserApiDataTypeLibrary.THOST_FTDC_OPT_AnyPrice;
 import static org.hraink.futures.ctp.thostftdcuserapidatatype.ThostFtdcUserApiDataTypeLibrary.THOST_FTDC_TC_GFD;
 import static org.hraink.futures.ctp.thostftdcuserapidatatype.ThostFtdcUserApiDataTypeLibrary.THOST_FTDC_VC_AV;
-import static org.hraink.futures.ctp.thostftdcuserapidatatype.ThostFtdcUserApiDataTypeLibrary.THOST_FTDC_AF_Delete;
 
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,8 +20,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
@@ -50,10 +52,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.bohai.subAccount.constant.ErrorConstant;
 import com.bohai.subAccount.dao.UseravailableindbMapper;
+import com.bohai.subAccount.entity.BuyDetail;
 import com.bohai.subAccount.entity.InputOrder;
 import com.bohai.subAccount.entity.InvestorPosition;
 import com.bohai.subAccount.entity.MainAccount;
 import com.bohai.subAccount.entity.Order;
+import com.bohai.subAccount.entity.PositionsDetail;
+import com.bohai.subAccount.entity.SellDetail;
 import com.bohai.subAccount.entity.SubTradingaccount;
 import com.bohai.subAccount.entity.Trade;
 import com.bohai.subAccount.entity.TradeRule;
@@ -63,10 +68,13 @@ import com.bohai.subAccount.entity.UserInfo;
 import com.bohai.subAccount.entity.UserLogin;
 import com.bohai.subAccount.entity.Useravailableindb;
 import com.bohai.subAccount.exception.FutureException;
+import com.bohai.subAccount.service.BuyDetailService;
 import com.bohai.subAccount.service.InputOrderService;
 import com.bohai.subAccount.service.InvestorPositionService;
 import com.bohai.subAccount.service.MainAccountService;
 import com.bohai.subAccount.service.OrderService;
+import com.bohai.subAccount.service.PositionsDetailService;
+import com.bohai.subAccount.service.SellDetailService;
 import com.bohai.subAccount.service.SubTradingaccountService;
 import com.bohai.subAccount.service.TradeRuleService;
 import com.bohai.subAccount.service.TradeService;
@@ -80,8 +88,6 @@ import com.bohai.subAccount.utils.SpringContextUtil;
 import com.bohai.subAccount.vo.UserAvailableMemorySave;
 import com.bohai.subAccount.vo.UserFlgMemorySave;
 import com.bohai.subAccount.vo.UserTradeRuleMemorySave;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.DisposeEvent;
 
 public class CoreappView {
     
@@ -129,8 +135,9 @@ public class CoreappView {
     private UserFrozenaccountService userFrozenaccountService;
     private UseravailableindbMapper useravailableindbMapper;
     
-    
-    
+    private BuyDetailService buyDetailService;
+    private SellDetailService sellDetailService;
+    private PositionsDetailService positionsDetailService;
     
     
     private Socket CTPsocket;
@@ -528,7 +535,11 @@ public class CoreappView {
         
           useravailableindbMapper = (UseravailableindbMapper) SpringContextUtil.getBean("useravailableindbMapper");
         
-        
+          buyDetailService = (BuyDetailService)SpringContextUtil.getBean("buyDetailService");
+          
+          sellDetailService = (SellDetailService)SpringContextUtil.getBean("sellDetailService");
+          
+          positionsDetailService = (PositionsDetailService)SpringContextUtil.getBean("positionsDetailService");
 //        groupInfoService = (GroupInfoService) SpringContextUtil.getBean("groupInfoService");
 //        mainAccountService = (MainAccountService) SpringContextUtil.getBean("mainAccountService");
 //        userInfoService = (UserInfoService) SpringContextUtil.getBean("userInfoService");
@@ -703,11 +714,44 @@ public class CoreappView {
         trade.setSubuserid(subAccount);
         trade.setFrontid(new BigDecimal(frontID));
         trade.setSessionid(new BigDecimal(sessionID));
+        if(pTrade.getOffsetFlag() == '0'){
+        	BuyDetail buyDetail = new BuyDetail();
+            String tmpStrCombokey = "";
+            
+            try {
+    			BeanUtils.copyProperties(buyDetail, trade);
+    			tmpStrCombokey = trade.getTradedate()+trade.getExchangeid()+trade.getOrdersysid();
+    			buyDetail.setCombokey(tmpStrCombokey);
+    			buyDetail.setSellvolume(Short.valueOf("0"));
+    			
+    		} catch (Exception e1) {
+    			// TODO Auto-generated catch block
+    			logger.error("BeanUtils.copyProperties(buyDetail, trade); error",e1);
+    			
+    		}
+        }
+        
+        if(pTrade.getOffsetFlag() == '1'){
+        	SellDetail sellDetail = new SellDetail();
+            String tmpStrCombokey = "";
+            
+            try {
+    			BeanUtils.copyProperties(sellDetail, trade);
+    			tmpStrCombokey = trade.getTradedate()+trade.getExchangeid()+trade.getOrdersysid();
+    			sellDetail.setCombokey(tmpStrCombokey);
+    			
+    		} catch (Exception e1) {
+    			// TODO Auto-generated catch block
+    			logger.error("BeanUtils.copyProperties(sellDetail, trade); error",e1);
+    			
+    		}
+        }
+        
         
         try {
             tradeService.saveTrade(trade);
         } catch (FutureException e) {
-
+        	logger.error("tradeService.saveTrade(trade); error",e);
             e.printStackTrace();
         }
         // update T_ORDER  set ORDERSTATUS = '1' ,STATUSMSG = "已成交" where FRONTID = FRONTID and SESSIONID = SESSIONID and ORDERREF = pTrade.getOrderRef() and ORDERSTATUS is null
@@ -730,6 +774,7 @@ public class CoreappView {
         } catch (FutureException e) {
             // 
             e.printStackTrace();
+            
         }
         logger.info("成交step3");
         if(userFrozenaccount != null){
@@ -1140,6 +1185,7 @@ public class CoreappView {
             // 
             e.printStackTrace();
         }
+        
         logger.info("onRtnOrder确定子账号：" + subAccount);
                 
         if (StringUtils.isEmpty(subAccount)){
@@ -1895,7 +1941,69 @@ public class CoreappView {
             useravailableindbMapper.insert(useravailableindb);
         }
         
-        logger.info("mapAvailableMemorySave导出完成");
+        logger.info("mapAvailableMemorySave导出完成！");
+        
+        //逐笔对冲清算开始
+        logger.info("逐笔对冲清算开始！");
+        
+        Date currentTime = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        String dateString = formatter.format(currentTime);
+        int retInt =0;
+        //取得结算日平仓数据
+        try {
+        	List<SellDetail> listSellDetail  = sellDetailService.getSellDetail(dateString);
+        	for (SellDetail sellDetail : listSellDetail) {
+        		retInt = 0;
+        		//根据平仓数据 先查找历史持仓表中有无，再查找今日开仓表
+        		//子用户 
+//        		sellDetail.getSubuserid();
+        		//COMBOKEY
+//        		sellDetail.getCombokey();
+        		//方向 
+//        		sellDetail.getDirection();
+        		//合约 
+//        		sellDetail.getInstrumentid();
+        		//平仓数量
+//        		sellDetail.getVolume();
+        		
+        		try {
+					retInt = positionsDetailService.doFindPositionsDetail(sellDetail.getSubuserid(), sellDetail.getCombokey(), sellDetail.getDirection(), sellDetail.getInstrumentid(), sellDetail.getVolume());
+					
+				} catch (Exception e) {
+					
+					logger.error("positionsDetailService.doFindPositionsDetail;",e);
+					e.printStackTrace();
+				}
+        		
+        		
+        		if (retInt == 0) {
+        			// 先平了隔夜仓。
+        		} else {
+        			// 平今仓
+        			try {
+						buyDetailService.doFindPositionsDetail(sellDetail.getSubuserid(), sellDetail.getCombokey(), sellDetail.getDirection(), sellDetail.getInstrumentid(), retInt);
+					} catch (Exception e) {
+						logger.error("buyDetailService.doFindPositionsDetail;",e);
+						e.printStackTrace();
+					}
+        		}
+        		
+    		}
+        	
+        	
+        	
+		} catch (FutureException e) {
+			// TODO Auto-generated catch block
+			logger.error("sellDetailService.getSellDetail(dateString);",e);
+			e.printStackTrace();
+		}
+        
+        
+        
+        
+        
+        logger.info("逐笔对冲清算完成！");
     }
     
     public void subLogin(String subAccount,String password){
