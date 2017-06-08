@@ -28,4 +28,8 @@ public interface BuyDetailService {
 	
 	
 	public void updateBuyDetail(String Combokey,String SellCombokey,int Volume);
+
+	void updateBuySell(BuyDetail buyDetail);
+
+	
 }

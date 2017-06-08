@@ -23,5 +23,8 @@ public interface PositionsDetailMapper {
     
     void updatePositionsDetail(PositionsDetail positionsDetail);
     
+    void deleteAll();
+    
+    void insertTodayPositions();
     
 }

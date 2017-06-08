@@ -1,5 +1,7 @@
 package com.bohai.subAccount.dao;
 
+import java.util.List;
+
 import com.bohai.subAccount.entity.BuyDetail;
 import com.bohai.subAccount.entity.PositionsDetail;
 
@@ -21,4 +23,8 @@ public interface BuyDetailMapper {
     int insertSelective(BuyDetail record);
     
     void updateBuyDetail(BuyDetail buyDetail);
+    
+    List<BuyDetail> findBuyDetail(String Subuserid,String Instrumentid,String Direction);
+    
+    void updateBuySell(BuyDetail buyDetail);
 }

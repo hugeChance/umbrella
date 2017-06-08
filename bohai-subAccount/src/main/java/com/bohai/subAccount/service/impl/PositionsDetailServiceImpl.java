@@ -82,6 +82,18 @@ public class PositionsDetailServiceImpl implements PositionsDetailService {
 		positionsDetailMapper.updatePositionsDetail(positionsDetail);
 	}
 
+	@Override
+	public void deleteAll() {
+		positionsDetailMapper.deleteAll();
+		
+	}
+
+	@Override
+	public void insertTodayPositions() {
+		positionsDetailMapper.insertTodayPositions();
+		
+	}
+
 	
 
 	

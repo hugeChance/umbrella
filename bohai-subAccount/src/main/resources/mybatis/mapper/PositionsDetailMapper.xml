@@ -87,4 +87,15 @@
     and COMBOKEY = #{combokey,jdbcType=VARCHAR} 
     
   </update>
+  
+  <delete id="deleteAll">
+  	delete from T_POSITIONS_DETAIL;
+  
+  </delete>
+  
+  <insert id="insertTodayPositions">
+  	insert into T_POSITIONS_DETAIL(SUBUSERID,COMBOKEY,INSTRUMENTID,DIRECTION,VOLUME) select SUBUSERID,COMBOKEY,INSTRUMENTID,DIRECTION,VOLUME - SELLVOLUME from T_BUY_DETAIL where 
+	T_BUY_DETAIL.VOLUME != T_BUY_DETAIL.SELLVOLUME
+  
+  </insert>
 </mapper>

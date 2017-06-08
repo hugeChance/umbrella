@@ -16,5 +16,7 @@ public interface PositionsDetailService {
 	
 	public void updateVolumn(String subuserid,String Combokey,int volume);
 	
+	public void deleteAll();
 	
+	public void insertTodayPositions();
 }

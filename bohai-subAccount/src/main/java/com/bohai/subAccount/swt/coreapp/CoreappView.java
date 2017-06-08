@@ -1943,6 +1943,7 @@ public class CoreappView {
         
         logger.info("mapAvailableMemorySave导出完成！");
         
+        
         //逐笔对冲清算开始
         logger.info("逐笔对冲清算开始！");
         
@@ -2000,10 +2001,15 @@ public class CoreappView {
 		}
         
         
-        
-        
-        
         logger.info("逐笔对冲清算完成！");
+        
+        logger.info("把今日持仓表重新计算一遍。开始！");
+        //先清空昨日持仓表
+        positionsDetailService.deleteAll();
+        
+        positionsDetailService.insertTodayPositions();
+        
+        logger.info("把今日持仓表重新计算一遍。完成！");
     }
     
     public void subLogin(String subAccount,String password){
