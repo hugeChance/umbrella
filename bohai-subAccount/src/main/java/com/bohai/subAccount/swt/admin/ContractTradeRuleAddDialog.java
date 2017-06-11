@@ -122,11 +122,50 @@ public class ContractTradeRuleAddDialog extends Dialog {
 			    
 			    tradeRule.setContract(contractNo.getText());
 			    
-			    tradeRule.setCancelCount(Integer.parseInt(cancelCount.getText()));
-			    //委托数
-			    tradeRule.setEntrustCount(Integer.parseInt(wtCount.getText()));
-			    //开仓数
-			    tradeRule.setOpenCount(Integer.parseInt(openCount.getText()));
+			    if(contractNo.getText() == null || contractNo.getText().trim().equals("")){
+			        MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                    box.setMessage("合约名称不能为空！");
+                    box.setText("错误");
+                    box.open();
+			    }
+			    
+			    if(cancelCount.getText()!= null){
+                    try {
+                        Integer cancel = Integer.parseInt(cancelCount.getText());
+                        tradeRule.setCancelCount(cancel);
+                    } catch (NumberFormatException e1) {
+                        MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                        box.setMessage("撤单数格式错误");
+                        box.setText("错误");
+                        box.open();
+                    }
+                }
+                if(wtCount.getText() != null){
+                    try {
+                        Integer wt = Integer.parseInt(wtCount.getText());
+                        
+                        //委托数
+                        tradeRule.setEntrustCount(wt);
+                    } catch (NumberFormatException e1) {
+                        MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                        box.setMessage("委托数格式错误");
+                        box.setText("错误");
+                        box.open();
+                    }
+                }
+                
+                if(openCount.getText() != null){
+                    try {
+                        Integer open = Integer.parseInt(openCount.getText());
+                        //开仓数
+                        tradeRule.setOpenCount(open);
+                    } catch (NumberFormatException e1) {
+                        MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                        box.setMessage("开仓数格式错误");
+                        box.setText("错误");
+                        box.open();
+                    }
+                }
 			    
 			    TradeRuleService tradeRuleService = (TradeRuleService) SpringContextUtil.getBean("tradeRuleService");
 			    

@@ -932,8 +932,8 @@ public class MainForm {
                 TableItem item = new TableItem(mainAccountTable, SWT.NULL);
                 item.setData(mainAccount);
                 item.setText(0,++i +"");
-                item.setText(1,mainAccount.getAccountNo());
-                item.setText(2,mainAccount.getBrokerId());
+                item.setText(1,mainAccount.getBrokerId());
+                item.setText(2,mainAccount.getAccountNo());
                 if(!StringUtils.isEmpty(mainAccount.getAccountType())){
                     item.setText(3,mainAccount.getAccountType().equals("1") ? "账户主" : "账户备");
                 }
