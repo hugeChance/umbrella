@@ -44,8 +44,11 @@
     -->
     select 
     t.ID, t.HOP, t.FORCE_CLOSE_RATE, t.CREATE_TIME, t.UPDATE_TIME, t1.TICK_SIZE, t.CONTRACT_NO,t.USER_NAME
-    from T_CLOSE_RULE t,T_USER_CONTRACT t1
+    from T_CLOSE_RULE t,T_USER_CONTRACT t1,t_user_info t2
     where t.contract_no = t1.contract_no
+    and t1.user_no = t2.user_no
+    and t.user_name = t2.user_name
+    order by t.user_name
   </select>
   
   <!-- 根据用户名查询平仓规则 -->
