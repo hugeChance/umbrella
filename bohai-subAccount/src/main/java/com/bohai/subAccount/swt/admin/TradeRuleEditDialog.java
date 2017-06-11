@@ -93,12 +93,11 @@ public class TradeRuleEditDialog extends Dialog {
 		groupLabel.setAlignment(SWT.RIGHT);
 		groupLabel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		groupLabel.setBounds(32, 31, 73, 23);
-		groupLabel.setText("用户组：");
+		groupLabel.setText("用户名：");
 		
 		Label groupName = new Label(shell, SWT.NONE);
 		groupName.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		groupName.setBounds(118, 31, 73, 23);
-		groupName.setText("用户组1");
 		
 		Label contractLabel = new Label(shell, SWT.NONE);
 		contractLabel.setAlignment(SWT.RIGHT);
@@ -214,7 +213,8 @@ public class TradeRuleEditDialog extends Dialog {
 		
 		if(selected != null){
 			UserContractTradeRule rule = (UserContractTradeRule) selected.getData();
-			groupName.setText(rule.getGroupName());//组名
+			
+			groupName.setText(rule.getUserName());//用户名
 			contract.setText(rule.getContractNo());//合约
 			cancelCount.setText(StringUtils.isEmpty(rule.getCancelCount())?"":rule.getCancelCount().toString());//撤单数
 			entrust.setText(StringUtils.isEmpty(rule.getEntrustCount())?"":rule.getEntrustCount().toString());//委托数
@@ -268,7 +268,7 @@ public class TradeRuleEditDialog extends Dialog {
 					box.open();
 				}
 				
-				TradeRule tradeRule = new TradeRule();
+				/*TradeRule tradeRule = new TradeRule();
 				tradeRule.setId(rule.getTradeRuleId());
 				tradeRule.setContract(rule.getContractNo());
 				tradeRule.setGroupId(rule.getGroupId());
@@ -289,8 +289,14 @@ public class TradeRuleEditDialog extends Dialog {
 					box.setText("警告");
 					box.open();
 				}
-				logger.debug("更新交易规则成功，刷新主页面表格");
-				mainForm.refreshContract(treeItem);
+				logger.debug("更新交易规则成功，刷新主页面表格");*/
+				if(treeItem != null){
+				    mainForm.refreshContract(treeItem);
+				}else {
+                    
+				    mainForm.refreshUserContract(rule.getUserNo());
+                }
+				
 				shell.close();
 			}
 		});

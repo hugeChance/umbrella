@@ -97,7 +97,11 @@
   
   <select id="selectByUserName" resultMap="BaseResultMap" parameterType="java.lang.String">
     select * from T_USERAVAILABLEINDB
-    where USERNAME = #{username,jdbcType=VARCHAR}
+    <where>
+        <if test="username != null and username != ''">
+            USERNAME = #{username,jdbcType=VARCHAR}
+        </if>
+    </where>
   </select>
   
 </mapper>

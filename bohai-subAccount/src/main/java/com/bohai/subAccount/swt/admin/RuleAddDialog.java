@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.MessageBox;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
@@ -51,6 +52,8 @@ public class RuleAddDialog extends Dialog {
 	private Text contract;
 	private Text tickSize;
 	private MainForm mainForm;
+	
+	private TableItem tableItem;
 
 	/**
 	 * Create the dialog.
@@ -59,11 +62,19 @@ public class RuleAddDialog extends Dialog {
 	 */
 	public RuleAddDialog(Shell parent, int style, MainForm mainForm, TreeItem treeItem) {
 		super(parent, style);
-		setText("添加组规则");
+		setText("添加合约");
 		//this.main = main;
 		this.treeItem = treeItem;
 		this.mainForm = mainForm;
 	}
+	
+   public RuleAddDialog(Shell parent, int style, MainForm mainForm, TableItem tableItem) {
+        super(parent, style);
+        setText("添加合约");
+        //this.main = main;
+        this.tableItem = tableItem;
+        this.mainForm = mainForm;
+    }
 
 	/**
 	 * Open the dialog.
@@ -94,7 +105,7 @@ public class RuleAddDialog extends Dialog {
 		groupLabel.setAlignment(SWT.RIGHT);
 		groupLabel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		groupLabel.setBounds(32, 31, 73, 23);
-		groupLabel.setText("用户组：");
+		groupLabel.setText("用户名：");
 		
 		Label groupName = new Label(shell, SWT.NONE);
 		groupName.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
@@ -106,6 +117,12 @@ public class RuleAddDialog extends Dialog {
 			}else {
 				groupName.setText(((GroupInfo)treeItem.getParentItem().getData()).getGroupName());
 			}
+		}
+		
+		if(tableItem != null){
+		    
+		    Map<String, Object> map = (Map<String, Object>) tableItem.getData();
+		    groupName.setText((String) map.get("USER_NAME"));
 		}
 		
 		Label contractLabel = new Label(shell, SWT.NONE);
@@ -221,10 +238,17 @@ public class RuleAddDialog extends Dialog {
 				UserContract userContract = new UserContract();
 				userContract.setContractNo(contract.getText());
 				
-				Object o = treeItem.getData();
-				if(o instanceof UserInfo){
-					UserInfo user = (UserInfo) o;
-					userContract.setUserNo( user.getUserNo());
+				if(treeItem != null){
+				    Object o = treeItem.getData();
+				    if(o instanceof UserInfo){
+				        UserInfo user = (UserInfo) o;
+				        userContract.setUserNo( user.getUserNo());
+				    }
+				}
+				
+				if(tableItem != null){
+				    Map<String, Object> map = (Map<String, Object>) tableItem.getData();
+				    userContract.setUserNo((String) map.get("USER_NO"));
 				}
 				
 				if(StringUtils.isEmpty(tickSize.getText())){
@@ -303,7 +327,13 @@ public class RuleAddDialog extends Dialog {
 					return;
 				}
 				logger.debug("保存交易规则成功，刷新主页面表格");*/
-				mainForm.refreshContract(treeItem);
+				if(treeItem != null){
+				    mainForm.refreshContract(treeItem);
+				}
+				if(tableItem != null){
+				    Map<String, Object> map = (Map<String, Object>) tableItem.getData();
+				    mainForm.refreshUserContract((String) map.get("USER_NO"));
+				}
 				shell.close();
 			}
 		});

@@ -195,7 +195,7 @@ public class CloseRuleEditDialog extends Dialog {
 				    main.refreshTradeRule(treeItem);
                 }
 				if (mainForm != null) {
-                    mainForm.refreshRiskClose(treeItem);
+                    mainForm.refreshRiskClose(tableItem.getText(1));
                 }
 				shell.close();
 			}
