@@ -120,16 +120,17 @@ public class ContractTradeRuleAddDialog extends Dialog {
 			    
 			    TradeRule tradeRule = new TradeRule();
 			    
-			    tradeRule.setContract(contractNo.getText());
 			    
 			    if(contractNo.getText() == null || contractNo.getText().trim().equals("")){
 			        MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                     box.setMessage("合约名称不能为空！");
                     box.setText("错误");
                     box.open();
+                    return;
 			    }
 			    
-			    if(cancelCount.getText()!= null){
+			    tradeRule.setContract(contractNo.getText());
+			    if(cancelCount.getText()!= null && !cancelCount.getText().equals("")){
                     try {
                         Integer cancel = Integer.parseInt(cancelCount.getText());
                         tradeRule.setCancelCount(cancel);
@@ -138,9 +139,10 @@ public class ContractTradeRuleAddDialog extends Dialog {
                         box.setMessage("撤单数格式错误");
                         box.setText("错误");
                         box.open();
+                        return;
                     }
                 }
-                if(wtCount.getText() != null){
+                if(wtCount.getText() != null && !wtCount.getText().equals("")){
                     try {
                         Integer wt = Integer.parseInt(wtCount.getText());
                         
@@ -151,10 +153,11 @@ public class ContractTradeRuleAddDialog extends Dialog {
                         box.setMessage("委托数格式错误");
                         box.setText("错误");
                         box.open();
+                        return;
                     }
                 }
                 
-                if(openCount.getText() != null){
+                if(openCount.getText() != null && !openCount.getText().equals("")){
                     try {
                         Integer open = Integer.parseInt(openCount.getText());
                         //开仓数
@@ -164,6 +167,7 @@ public class ContractTradeRuleAddDialog extends Dialog {
                         box.setMessage("开仓数格式错误");
                         box.setText("错误");
                         box.open();
+                        return;
                     }
                 }
 			    

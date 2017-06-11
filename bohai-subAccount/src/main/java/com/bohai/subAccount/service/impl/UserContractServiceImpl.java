@@ -55,7 +55,7 @@ public class UserContractServiceImpl implements UserContractService {
 			i = this.userContractMapper.insert(contract);
 		} catch (Exception e) {
 			logger.error("保存用户合约 关系失败",e);
-			throw new FutureException("", "保存用户合约 关系失败");
+			throw new FutureException("", "保存用户合约 关系失败:"+e.getMessage());
 		}
 		return i;
 	}

@@ -2,11 +2,13 @@ package com.bohai.subAccount.swt.admin;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
@@ -20,6 +22,7 @@ import org.springframework.util.StringUtils;
 import com.bohai.subAccount.entity.GroupInfo;
 import com.bohai.subAccount.entity.GroupRule;
 import com.bohai.subAccount.exception.FutureException;
+import com.bohai.subAccount.service.GroupInfoService;
 import com.bohai.subAccount.service.GroupRuleService;
 import com.bohai.subAccount.utils.SpringContextUtil;
 
@@ -36,7 +39,7 @@ public class GroupRuleAddDialog extends Dialog {
 	private Text forceCloseRate;
 	private Text forceCloseTime;
 	private Text openTime;
-	private Text groupNameText;
+	private Combo groupNameText;
 	//private Combo accountCombo;
 	
 	private AdminViewMain adminView;
@@ -57,10 +60,10 @@ public class GroupRuleAddDialog extends Dialog {
 		this.mainForm = mainForm;
 	}
 	
-   public GroupRuleAddDialog(Shell parent, int style, GroupInfo groupInfo, AdminViewMain adminView) {
+   public GroupRuleAddDialog(Shell parent, int style, AdminViewMain adminView) {
         super(parent, style);
         setText("添加用户组规则");
-        this.groupInfo = groupInfo;
+        //this.groupInfo = groupInfo;
         this.adminView = adminView;
     }
 
@@ -142,6 +145,8 @@ public class GroupRuleAddDialog extends Dialog {
 			public void widgetSelected(SelectionEvent e) {
 				GroupRuleService groupRuleService = (GroupRuleService) SpringContextUtil.getBean("groupRuleService");
 				GroupRule grouprule = new GroupRule();
+				
+				GroupInfo groupInfo = (GroupInfo) groupNameText.getData(groupNameText.getText());
 				grouprule.setGroupId(groupInfo.getId());
 				grouprule.setForceCloseRate(StringUtils.isEmpty(forceCloseRate.getText())?null:new BigDecimal(forceCloseRate.getText()));
 				grouprule.setOpenTime(StringUtils.isEmpty(openTime.getText())?null:openTime.getText());
@@ -187,13 +192,38 @@ public class GroupRuleAddDialog extends Dialog {
 		label.setBounds(51, 28, 80, 20);
 		label.setText("组名：");
 		
-		groupNameText = new Text(composite, SWT.BORDER);
-		groupNameText.setEnabled(false);
+		groupNameText = new Combo(composite, SWT.BORDER);
 		groupNameText.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		groupNameText.setBounds(169, 25, 119, 25);
+		GroupInfoService groupInfoService = (GroupInfoService) SpringContextUtil.getBean("groupInfoService");
 		
-		//组名
-		groupNameText.setText(groupInfo.getGroupName());
+		List<GroupInfo> list;
+        try {
+            list = groupInfoService.getGroups();
+            if(list == null || list.size() <1){
+                MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                box.setMessage("请先添加用户组");
+                box.setText("警告");
+                box.open();
+                shell.dispose();
+            }
+            int i = 0;
+            String[] groupName = new String[list.size()];
+            for (GroupInfo groupInfo2 : list) {
+                groupName[i++] = groupInfo2.getGroupName();
+                groupNameText.setData(groupInfo2.getGroupName(), groupInfo2);
+            }
+            groupNameText.setItems(groupName);
+        } catch (FutureException e1) {
+            MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+            box.setMessage(e1.getMessage());
+            box.setText("警告");
+            box.open();
+            shell.dispose();
+        }
+		
+		
+		
 		
 	}
 }

@@ -48,7 +48,7 @@ public class MainAccountServiceImpl implements MainAccountService{
 	public void updateMainAccount(MainAccount account) throws FutureException {
 		logger.info("更新主账户信息入参："+JSON.toJSONString(account));
 		
-		Integer count = this.mainAccountMapper.selectCount(account);
+		Integer count = this.mainAccountMapper.selectCountRemove(account);
         
         if(count >0){
             logger.warn("只能添加一个"+(account.getAccountType().equals("1") ?"主":"备")+"账户");

@@ -134,7 +134,7 @@ public class RuleAddDialog extends Dialog {
 		contract = new Text(shell, SWT.BORDER);
 		contract.setBounds(348, 32, 84, 23);
 		
-		Label cancelLabel = new Label(shell, SWT.NONE);
+		/*Label cancelLabel = new Label(shell, SWT.NONE);
 		cancelLabel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		cancelLabel.setAlignment(SWT.RIGHT);
 		cancelLabel.setBounds(32, 76, 73, 23);
@@ -162,7 +162,7 @@ public class RuleAddDialog extends Dialog {
 		
 		openCount = new Text(shell, SWT.BORDER);
 		openCount.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		openCount.setBounds(111, 123, 84, 23);
+		openCount.setBounds(111, 123, 84, 23);*/
 		
 		Label cutoff = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL);
 		cutoff.setBounds(0, 161, 515, 2);
@@ -251,6 +251,14 @@ public class RuleAddDialog extends Dialog {
 				    userContract.setUserNo((String) map.get("USER_NO"));
 				}
 				
+				if(contract.getText() == null && contract.getText().trim().equals("")){
+				    MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                    box.setMessage("合约编号不能为空");
+                    box.setText("错误");
+                    box.open();
+                    return;
+				}
+				
 				if(StringUtils.isEmpty(tickSize.getText())){
 					MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
 					box.setMessage("最小跳动单位必输");
@@ -275,13 +283,21 @@ public class RuleAddDialog extends Dialog {
                     return;
                 }
 				
-				userContract.setOpenCharge(StringUtils.isEmpty(openCharge.getText())?new BigDecimal("0"):new BigDecimal(openCharge.getText()));
-				userContract.setOpenChargeRate(StringUtils.isEmpty(openChargeRate.getText())?new BigDecimal("0"):new BigDecimal(openChargeRate.getText()));
-				userContract.setCloseCurrCharge(StringUtils.isEmpty(closeCurrCharge.getText())?new BigDecimal("0"):new BigDecimal(closeCurrCharge.getText()));
-				userContract.setCloseCurrChargeRate(StringUtils.isEmpty(closeCurrChargeRate.getText())?new BigDecimal("0"):new BigDecimal(closeCurrChargeRate.getText()));
-				userContract.setMargin(StringUtils.isEmpty(margin.getText())?null:new BigDecimal(margin.getText()));
-				userContract.setContractUnit(StringUtils.isEmpty(unit.getText())?null:Integer.parseInt(unit.getText()));
-				userContract.setTickSize(new BigDecimal(tickSize.getText()));
+				try {
+                    userContract.setOpenCharge(StringUtils.isEmpty(openCharge.getText())?new BigDecimal("0"):new BigDecimal(openCharge.getText()));
+                    userContract.setOpenChargeRate(StringUtils.isEmpty(openChargeRate.getText())?new BigDecimal("0"):new BigDecimal(openChargeRate.getText()));
+                    userContract.setCloseCurrCharge(StringUtils.isEmpty(closeCurrCharge.getText())?new BigDecimal("0"):new BigDecimal(closeCurrCharge.getText()));
+                    userContract.setCloseCurrChargeRate(StringUtils.isEmpty(closeCurrChargeRate.getText())?new BigDecimal("0"):new BigDecimal(closeCurrChargeRate.getText()));
+                    userContract.setMargin(StringUtils.isEmpty(margin.getText())?null:new BigDecimal(margin.getText()));
+                    userContract.setContractUnit(StringUtils.isEmpty(unit.getText())?null:Integer.parseInt(unit.getText()));
+                    userContract.setTickSize(new BigDecimal(tickSize.getText()));
+                } catch (NumberFormatException e2) {
+                    MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                    box.setMessage("数据格式出错"+e2.getMessage());
+                    box.setText("错误");
+                    box.open();
+                    return;
+                }
 				UserContractService userContractService = (UserContractService) SpringContextUtil.getBean("userContractService");
 				Integer userContractId = 0;
 				try {
