@@ -55,10 +55,9 @@ public class SubAccountEditDialog extends Dialog {
 		this.userInfo = userInfo;
 	}
 	
-   public SubAccountEditDialog(Shell parent, int style, UserInfo userInfo,GroupInfo groupInfo, MainForm mainForm) {
+   public SubAccountEditDialog(Shell parent, int style, UserInfo userInfo, MainForm mainForm) {
         super(parent, style);
         setText("修改用户");
-        this.groupInfo = groupInfo;
         this.mainForm = mainForm;
         this.userInfo = userInfo;
     }
@@ -132,7 +131,7 @@ public class SubAccountEditDialog extends Dialog {
 		groupCombo.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		groupCombo.setEnabled(false);
 		groupCombo.setBounds(140, 157, 113, 23);
-		groupCombo.setText(groupInfo.getGroupName());
+		groupCombo.setText(userInfo.getGroupName());
 		
 		/*Label instrumentIdLabel = new Label(composite, SWT.NONE);
 		instrumentIdLabel.setAlignment(SWT.RIGHT);
@@ -182,7 +181,7 @@ public class SubAccountEditDialog extends Dialog {
 				userInfo.setUserName(username.getText());
 				userInfo.setUserPwd(passwd.getText());
 				//userInfo.setContract(instrumentId.getText());
-				userInfo.setGroupId(groupInfo.getId());
+				userInfo.setGroupId(userInfo.getGroupId());
 				userInfo.setCapital(new BigDecimal(limit.getText()));
 				userInfo.setUpdateTime(new Date());
 				try {
@@ -195,7 +194,7 @@ public class SubAccountEditDialog extends Dialog {
 					    adminView.refreshUserTree();
 					}
 					if(mainForm != null){
-					    mainForm.refreshSubaccount(mainForm.userTree.getSelection()[0]);
+					    mainForm.refreshSubaccountByGroupId(userInfo.getGroupId());
 					}
 					shell.dispose();
 				} catch (FutureException e1) {

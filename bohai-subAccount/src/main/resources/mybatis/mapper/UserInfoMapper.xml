@@ -12,6 +12,7 @@
     <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
     <result column="USER_PWD" property="userPwd" jdbcType="VARCHAR" />
     <result column="GROUP_ID" property="groupId" jdbcType="VARCHAR" />
+    <result column="GROUP_NAME" property="groupName" jdbcType="VARCHAR" />
     <result column="CONTRACT" property="contract" jdbcType="VARCHAR" />
     <result column="CAPITAL" property="capital" jdbcType="DECIMAL" />
     <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
@@ -196,13 +197,15 @@
   </update>
   
   <select id="selectUserInfoByGroupId" resultType="java.util.Map" parameterType="com.bohai.subAccount.entity.UserInfo">
-    select t.USER_NAME,t.USER_PWD,nvl(t.CAPITAL,0) as CAPITAL,nvl(t1.AVAILABLE,0) as AVAILABLE,nvl(t1.CLOSEWIN,0) as CLOSEWIN,
+    select t.USER_NO ,t.ID,t.GROUP_ID ,g.GROUP_NAME,t.USER_NAME,t.USER_PWD,t.CAPITAL,nvl(t.CAPITAL,0) as CAPITAL,nvl(t1.AVAILABLE,0) as AVAILABLE,nvl(t1.CLOSEWIN,0) as CLOSEWIN,
     nvl(t1.POSITIONWIN,0) as POSITIONWIN,nvl(t1.COMMISSION,0) as COMMISSION,nvl(t1.FROZENAVAILABLE,0) as FROZENAVAILABLE,
     nvl(t1.MARGIN,0) as MARGIN,nvl(t1.INOUTMONEY,0) as INOUTMONEY,nvl(t1.AVAILABLE,0)+nvl(t1.MARGIN,0) as RIGHTS
-    from t_user_info t left join T_USERAVAILABLEINDB t1 on t.user_name = t1.USERNAME 
+    from t_user_info t left join T_USERAVAILABLEINDB t1 on t.user_name = t1.USERNAME  ,t_group_info g  
+    
     <where>
+    t.group_id = g.id
         <if test="groupId != null and groupId != ''">
-            GROUP_ID = #{groupId,jdbcType=VARCHAR}
+            and GROUP_ID = #{groupId,jdbcType=VARCHAR}
         </if>
     </where>
   </select>

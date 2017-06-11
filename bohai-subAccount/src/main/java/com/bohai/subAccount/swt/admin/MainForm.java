@@ -303,11 +303,11 @@ public class MainForm {
                     
                     MenuItem editGroupMenuItem = new MenuItem(rightClickMenu, SWT.NONE);
                     editGroupMenuItem.setText("修改子账户");
-                    editGroupMenuItem.addSelectionListener(new SubAccountEditSelection(selected));
+                    //editGroupMenuItem.addSelectionListener(new SubAccountEditSelection(selected));
                     
                     MenuItem removeUserMenuItem = new MenuItem(rightClickMenu, SWT.NONE);
                     removeUserMenuItem.setText("删除子账户");
-                    removeUserMenuItem.addSelectionListener(new SubAccountRemoveSelection(selected));
+                    //removeUserMenuItem.addSelectionListener(new SubAccountRemoveSelection(selected));
                 }
             }
         });
@@ -956,6 +956,16 @@ public class MainForm {
             for (Map<String, Object> map : list) {
                 TableItem item = new TableItem(subaccountTable, SWT.NULL);
                 
+                UserInfo userInfo = new UserInfo();
+                userInfo.setUserName((String) map.get("USER_NAME"));
+                userInfo.setUserNo((String) map.get("USER_NO"));
+                userInfo.setId((String) map.get("ID"));
+                userInfo.setGroupId((String) map.get("GROUP_ID"));
+                userInfo.setGroupName((String) map.get("GROUP_NAME"));
+                userInfo.setUserPwd((String) map.get("USER_PWD"));
+                userInfo.setCapital((BigDecimal) map.get("CAPITAL"));
+                item.setData(userInfo);
+                
                 item.setText(0, ++i +"");
                 //用户名
                 item.setText(1, (String) map.get("USER_NAME"));
@@ -964,7 +974,7 @@ public class MainForm {
                 //初始资金
                 BigDecimal capital = (BigDecimal) map.get("CAPITAL");
                 if(capital != null){
-                    item.setText(4, capital.toString());
+                    item.setText(3, capital.toString());
                 }
                 //动态权益
                 item.setText(4, ((BigDecimal)map.get("RIGHTS")).toString());
@@ -1504,6 +1514,11 @@ public class MainForm {
         //tabItem.setControl(table);
         subaccountTable.setHeaderVisible(true);
         subaccountTable.setLinesVisible(true);
+        
+        TableColumn col0 = new TableColumn(subaccountTable, SWT.NONE);
+        col0.setWidth(100);
+        col0.setText("序号");
+        
         TableColumn col = new TableColumn(subaccountTable, SWT.NONE);
         col.setWidth(100);
         col.setText("用户名");
@@ -1553,11 +1568,11 @@ public class MainForm {
                     
                     MenuItem editGroupMenuItem = new MenuItem(menu, SWT.NONE);
                     editGroupMenuItem.setText("修改子账户");
-                    //editGroupMenuItem.addSelectionListener(new SubAccountEditSelection(selected));
+                    editGroupMenuItem.addSelectionListener(new SubAccountEditSelection(selected));
                     
                     MenuItem removeUserMenuItem = new MenuItem(menu, SWT.NONE);
                     removeUserMenuItem.setText("删除子账户");
-                    //removeUserMenuItem.addSelectionListener(new SubAccountRemoveSelection(selected));
+                    removeUserMenuItem.addSelectionListener(new SubAccountRemoveSelection(selected));
                 }else if (selected == null && e.button == 3) {//鼠标右键空白
 
                     logger.debug("鼠标右键规则表空白区域");
@@ -2318,18 +2333,18 @@ public class MainForm {
      */
     public class SubAccountEditSelection extends SelectionAdapter {
         
-        private TreeItem treeItem;
+        private TableItem tableItem;
         
-        public SubAccountEditSelection(TreeItem treeItem) {
-            this.treeItem = treeItem;
+        public SubAccountEditSelection(TableItem tableItem) {
+            this.tableItem = tableItem;
         }
         
         @Override
         public void widgetSelected(SelectionEvent e) {
-            UserInfo userInfo = (UserInfo) treeItem.getData();
-            GroupInfo groupInfo = (GroupInfo) treeItem.getParentItem().getData();
+            UserInfo userInfo = (UserInfo) tableItem.getData();
+            
             SubAccountEditDialog subAccountEditDialog = new SubAccountEditDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL,
-                    userInfo, groupInfo, MainForm.this);
+                    userInfo, MainForm.this);
             subAccountEditDialog.open();
             
         }
@@ -2345,15 +2360,15 @@ public class MainForm {
      */
     public class SubAccountRemoveSelection extends SelectionAdapter {
         
-        private TreeItem treeItem;
+        private TableItem tableItem;
         
-        public SubAccountRemoveSelection(TreeItem treeItem){
-            this.treeItem = treeItem;
+        public SubAccountRemoveSelection(TableItem tableItem){
+            this.tableItem = tableItem;
         }
         
         @Override
         public void widgetSelected(SelectionEvent e){
-            UserInfo userInfo = (UserInfo) treeItem.getData();
+            UserInfo userInfo = (UserInfo) tableItem.getData();
             try {
                 MessageBox box1 = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.OK|SWT.CANCEL);
                 box1.setMessage("删除子账户会将用户下所有合约规则删除，确定要删除子账户"+userInfo.getUserName()+"吗？");
@@ -2368,9 +2383,9 @@ public class MainForm {
                 box.setText("提示");
                 box.open();
                 //刷新用户组树
-                refreshUserTree(userTree,"1");
-                refreshUserTree(instrumentUserTree);
-                refreshUserTree(riskUserTree);
+                refreshSubaccountByGroupId(userInfo.getGroupId());
+                //refreshUserTree(instrumentUserTree);
+                //refreshUserTree(riskUserTree);
             } catch (FutureException e1) {
                 MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                 box.setMessage(e1.getMessage());
