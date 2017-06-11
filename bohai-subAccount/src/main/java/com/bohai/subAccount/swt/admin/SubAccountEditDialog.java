@@ -170,6 +170,11 @@ public class SubAccountEditDialog extends Dialog {
 		limit.setText(StringUtils.isEmpty(userInfo.getCapital())?"":userInfo.getCapital().toString());
 		
 		//配资比例
+		text = new Text(composite, SWT.BORDER);
+        text.setText("");
+        text.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
+        text.setBounds(140, 246, 113, 23);
+
 		if(!StringUtils.isEmpty(capRate)){
 		    text.setText(capRate);
 		}
@@ -250,11 +255,6 @@ public class SubAccountEditDialog extends Dialog {
 		lblPeizi.setAlignment(SWT.RIGHT);
 		lblPeizi.setBounds(46, 246, 80, 23);
 		
-		text = new Text(composite, SWT.BORDER);
-		text.setText("");
-		text.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		text.setBounds(140, 246, 113, 23);
-
 	}
 
 }

@@ -40,6 +40,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.StringUtils;
 
 import com.bohai.subAccount.constant.CommonConstant;
+import com.bohai.subAccount.dao.CapitalRateMapper;
 import com.bohai.subAccount.dao.UserInfoMapper;
 import com.bohai.subAccount.dao.UseravailableindbMapper;
 import com.bohai.subAccount.entity.CloseRule;
@@ -430,7 +431,6 @@ public class MainForm {
 		expdItem1.setHeight(150);
 
 		ExpandItem expdItem2 = new ExpandItem(expandBar, SWT.NONE);
-		expdItem2.setExpanded(true);
 		expdItem2.setText("合约设置"); // 合约设置
 
 		instrumentUserTree = new Tree(expandBar, SWT.NONE);
@@ -2099,11 +2099,11 @@ public class MainForm {
         
         @Override
         public void widgetSelected(SelectionEvent e) {
-            UserContractTradeRule rule = (UserContractTradeRule) item.getData();
-            logger.debug("删除ID为："+rule.getTradeRuleId()+"的交易规则,合约编号："+rule.getContractNo());
+            TradeRule rule = (TradeRule) item.getData();
+            logger.debug("删除ID为："+rule.getId()+"的交易规则,合约编号："+rule.getContractId());
             
             try {
-                tradeRuleService.removeTradeRule(rule.getTradeRuleId());
+                tradeRuleService.removeTradeRule(rule.getId());
                 MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                 box.setMessage("删除成功");
                 box.setText("提示");
@@ -2397,6 +2397,9 @@ public class MainForm {
                 }
                 
                 userInfoService.deleteUser(userInfo);
+                CapitalRateMapper capitalRateMapper = (CapitalRateMapper) SpringContextUtil.getBean("capitalRateMapper");
+                capitalRateMapper.deleteByPrimaryKey(userInfo.getUserName());
+                
                 MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                 box.setMessage("删除成功！");
                 box.setText("提示");

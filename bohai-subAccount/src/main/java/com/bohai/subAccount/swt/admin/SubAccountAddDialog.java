@@ -185,6 +185,16 @@ public class SubAccountAddDialog extends Dialog {
 				userInfo.setUpdateTime(new Date());
 				try {
 					userInfoService.saveUser(userInfo);
+					
+					CapitalRate capitalRate = new CapitalRate();
+	                capitalRate.setUserName(username.getText());
+	                capitalRate.setUserCapital(new BigDecimal(limit.getText()));
+	                capitalRate.setUserCapitalRate(new BigDecimal(text.getText()));
+	                //配资资金
+	                capitalRate.setHostCapital1(new BigDecimal(limit.getText()).multiply(new BigDecimal(text.getText())));
+	                CapitalRateMapper capitalRateMapper = (CapitalRateMapper) SpringContextUtil.getBean("capitalRateMapper");
+	                capitalRateMapper.insert(capitalRate);
+	                
 					MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL|SWT.YES);
 					box.setMessage("添加成功");
 					box.setText("提示");
@@ -203,16 +213,13 @@ public class SubAccountAddDialog extends Dialog {
 					box.setMessage(e1.getMessage());
 					box.setText("警告");
 					box.open();
-				}
+				} catch (Exception e2) {
+				    MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL|SWT.YES);
+                    box.setMessage(e2.getMessage());
+                    box.setText("警告");
+                    box.open();
+                }
 				
-				CapitalRate capitalRate = new CapitalRate();
-				capitalRate.setUserName(username.getText());
-				capitalRate.setUserCapital(new BigDecimal(limit.getText()));
-				capitalRate.setUserCapitalRate(new BigDecimal(text.getText()));
-				//配资资金
-				capitalRate.setHostCapital1(new BigDecimal(limit.getText()).multiply(new BigDecimal(text.getText())));
-				CapitalRateMapper capitalRateMapper = (CapitalRateMapper) SpringContextUtil.getBean("capitalRateMapper");
-				capitalRateMapper.insert(capitalRate);
 			}
 		});
 		

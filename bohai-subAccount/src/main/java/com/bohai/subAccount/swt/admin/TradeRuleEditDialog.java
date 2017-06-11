@@ -57,7 +57,7 @@ public class TradeRuleEditDialog extends Dialog {
 	 */
 	public TradeRuleEditDialog(Shell parent, int style, TableItem selected, MainForm mainForm, TreeItem treeItem) {
 		super(parent, style);
-		setText("修改组规则");
+		setText("修改用户合约");
 		this.selected = selected;
 		//this.main = main;
 		this.treeItem = treeItem;
@@ -109,7 +109,7 @@ public class TradeRuleEditDialog extends Dialog {
 		contract.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		contract.setBounds(348, 31, 95, 23);
 		
-		Label cancelLabel = new Label(shell, SWT.NONE);
+		/*Label cancelLabel = new Label(shell, SWT.NONE);
 		cancelLabel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		cancelLabel.setAlignment(SWT.RIGHT);
 		cancelLabel.setBounds(32, 76, 73, 23);
@@ -137,7 +137,7 @@ public class TradeRuleEditDialog extends Dialog {
 		
 		openCount = new Text(shell, SWT.BORDER);
 		openCount.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		openCount.setBounds(111, 123, 84, 23);
+		openCount.setBounds(111, 123, 84, 23);*/
 		
 		Label cutoff = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL);
 		cutoff.setBounds(0, 161, 515, 2);
