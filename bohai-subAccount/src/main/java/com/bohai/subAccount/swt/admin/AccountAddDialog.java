@@ -46,6 +46,9 @@ public class AccountAddDialog extends Dialog {
 		this.mainView = mainView;
 	}
 	
+	/**
+	 * @wbp.parser.constructor
+	 */
 	public AccountAddDialog(Shell parent, int style, MainForm mainForm) {
         super(parent, style);
         setText("添加主账户");

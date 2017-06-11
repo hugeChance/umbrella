@@ -34,6 +34,7 @@ import com.bohai.subAccount.entity.Order;
 import com.bohai.subAccount.entity.Trade;
 import com.bohai.subAccount.entity.UserContract;
 import com.bohai.subAccount.swt.admin.AdminViewMain;
+import com.bohai.subAccount.swt.admin.MainForm;
 import com.bohai.subAccount.swt.risk.RiskManageView;
 import com.bohai.subAccount.swt.trader.TraderView;
 import com.bohai.subAccount.utils.ApplicationConfig;
@@ -197,10 +198,12 @@ public class loginMain {
                     	UserConfig.setProperty(userName, pass);
                     	
                     	
-                        AdminViewMain main = new AdminViewMain();
-                        main.loadSpringContext();
+                        /*AdminViewMain main = new AdminViewMain();
+                        main.loadSpringContext();*/
+                    	MainForm window = new MainForm();
+                        window.loadSpringContext();
                         shlSubaccount.dispose();
-                        main.open();
+                        window.open();
                     }else {
                         MessageBox box = new MessageBox(shlSubaccount, SWT.APPLICATION_MODAL | SWT.YES);
                         box.setMessage("用户名或密码错误");

@@ -242,6 +242,7 @@ public class SubAccountAddDialog extends Dialog {
 		label.setText("配资比例：");
 		
 		text = new Text(composite, SWT.BORDER);
+		text.setFont(SWTResourceManager.getFont("Microsoft YaHei UI", 12, SWT.NORMAL));
 		text.setBounds(140, 238, 113, 23);
 
 	}
