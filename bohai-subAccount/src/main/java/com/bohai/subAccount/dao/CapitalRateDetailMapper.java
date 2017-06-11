@@ -1,5 +1,7 @@
 package com.bohai.subAccount.dao;
 
+import java.util.List;
+
 import com.bohai.subAccount.entity.CapitalRateDetail;
 
 public interface CapitalRateDetailMapper {
@@ -50,4 +52,6 @@ public interface CapitalRateDetailMapper {
      * @mbggenerated Sun Jun 11 19:00:26 CST 2017
      */
     int updateByPrimaryKey(CapitalRateDetail record);
+    
+    List<CapitalRateDetail> getUserByUserName(String userName);
 }
