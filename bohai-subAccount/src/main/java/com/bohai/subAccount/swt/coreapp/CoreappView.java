@@ -2005,9 +2005,17 @@ public class CoreappView {
         
         logger.info("把今日持仓表重新计算一遍。开始！");
         //先清空昨日持仓表
-        positionsDetailService.deleteAll();
+        try {
+			positionsDetailService.deleteAll();
+		} catch (FutureException e) {
+			logger.error("positionsDetailService.deleteAll()" + e);
+		}
         
-        positionsDetailService.insertTodayPositions();
+        try {
+			positionsDetailService.insertTodayPositions();
+		} catch (FutureException e) {
+			logger.error("positionsDetailService.insertTodayPositions()" + e);
+		}
         
         logger.info("把今日持仓表重新计算一遍。完成！");
     }
