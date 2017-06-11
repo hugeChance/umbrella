@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.springframework.util.StringUtils;
@@ -40,22 +41,26 @@ public class GroupRuleEditDialog extends Dialog {
 	//private Combo accountCombo;
 	
 	//private AdminViewMain adminView;
-	private GroupRule groupRule;
+	//private GroupRule groupRule;
 	private GroupInfo groupInfo;
 	
 	private MainForm mainForm;
+	
+	private TableItem selected;
+	
+	private GroupRule groupRule;
 
 	/**
 	 * Create the dialog.
 	 * @param parent
 	 * @param style
 	 */
-	public GroupRuleEditDialog(Shell parent, int style, GroupInfo groupInfo, MainForm mainForm, GroupRule groupRule) {
+	public GroupRuleEditDialog(Shell parent, int style, GroupInfo groupInfo, MainForm mainForm, TableItem selected) {
 		super(parent, style);
 		setText("修改用户组规则");
 		this.groupInfo = groupInfo;
 		//this.adminView = adminView;
-		this.groupRule = groupRule;
+		this.selected = selected;
 		this.mainForm = mainForm;
 	}
 
@@ -127,6 +132,7 @@ public class GroupRuleEditDialog extends Dialog {
 		openTime = new Text(composite, SWT.BORDER);
 		openTime.setBounds(169, 118, 118, 26);
 		
+		groupRule = (GroupRule) selected.getData();
 		
 		Button create = new Button(composite, SWT.NONE);
 		create.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
@@ -136,13 +142,16 @@ public class GroupRuleEditDialog extends Dialog {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				GroupRuleService groupRuleService = (GroupRuleService) SpringContextUtil.getBean("groupRuleService");
+				
+				
 				if(groupInfo != null){
 					groupRule.setGroupId(groupInfo.getId());
 				}
+				
 				groupRule.setForceCloseRate(StringUtils.isEmpty(forceCloseRate.getText())?null:new BigDecimal(forceCloseRate.getText()));
 				groupRule.setOpenTime(StringUtils.isEmpty(openTime.getText())?null:openTime.getText());
 				groupRule.setCloseTime(StringUtils.isEmpty(forceCloseTime.getText())?null:forceCloseTime.getText());
-				groupInfo.setUpdatetime(new Date());
+				groupRule.setUpdateTime(new Date());
 				try {
 					groupRuleService.updateGroupRule(groupRule);
 					
@@ -185,7 +194,9 @@ public class GroupRuleEditDialog extends Dialog {
 		if(groupInfo != null){
 			//组名
 			groupNameText.setText(StringUtils.isEmpty(groupInfo.getGroupName())?"":groupInfo.getGroupName());
-		}
+		}else {
+		    groupNameText.setText(selected.getText(1));
+        }
 		//强平比例
 		forceCloseRate.setText(StringUtils.isEmpty(groupRule.getForceCloseRate())?"":groupRule.getForceCloseRate().toString());
 		//开仓时间

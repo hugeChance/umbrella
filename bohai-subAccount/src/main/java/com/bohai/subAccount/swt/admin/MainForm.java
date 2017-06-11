@@ -157,7 +157,7 @@ public class MainForm {
 
 		shell.setSize(800, 600);
 		shell.setMinimumSize(800, 600);
-		shell.setText("SWT Application");
+		shell.setText("赫城资管");
 
 		Rectangle bounds = Display.getDefault().getPrimaryMonitor().getBounds();
 		Rectangle rect = shell.getBounds();
@@ -264,7 +264,6 @@ public class MainForm {
 		expdItem1.setText("帐号设置"); // 帐号设置
 
 		userTree = new Tree(expandBar, SWT.NONE);
-		userTree.setFont(SWTResourceManager.getFont("Microsoft YaHei UI", 10, SWT.NORMAL));
 		expdItem1.setControl(userTree);
 		
 		userTree.addMouseListener(new MouseAdapter() {
@@ -837,10 +836,8 @@ public class MainForm {
             
             TreeItem mainAccountTreeItem = new TreeItem(tree, SWT.NONE);
             mainAccountTreeItem.setText("主账号");
-            mainAccountTreeItem.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
             
             TreeItem groupTopTreeItem = new TreeItem(tree, SWT.NONE);
-            groupTopTreeItem.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
             groupTopTreeItem.setText("用户组");
           //查询用户组
             List<GroupInfo> groupInfos = null;
@@ -854,7 +851,6 @@ public class MainForm {
                 
                 for (GroupInfo groupInfo : groupInfos) {
                     TreeItem groupTreeItem = new TreeItem(groupTopTreeItem, SWT.NONE);
-                    groupTreeItem.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
                     groupTreeItem.setText(groupInfo.getGroupName());
                     groupTreeItem.setData(groupInfo);
                     //查询组用户
@@ -890,7 +886,6 @@ public class MainForm {
                 
                 for (GroupInfo groupInfo : groupInfos) {
                     TreeItem groupTreeItem = new TreeItem(tree, SWT.NONE);
-                    groupTreeItem.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
                     groupTreeItem.setText(groupInfo.getGroupName());
                     groupTreeItem.setData(groupInfo);
                     //查询组用户
@@ -899,7 +894,6 @@ public class MainForm {
                         if(userInfos != null){
                             for (UserInfo userInfo : userInfos) {
                                 TreeItem userTreeItem = new TreeItem(groupTreeItem, SWT.NONE);
-                                userTreeItem.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
                                 userTreeItem.setText(userInfo.getUserName());
                                 userTreeItem.setData(userInfo);
                                 userTreeItem.setExpanded(true);
@@ -1409,7 +1403,7 @@ public class MainForm {
                     groupInfo = (GroupInfo) tree.getTopItem().getData();
                 }*/
                 GroupRule groupRule = (GroupRule) selected.getData();
-                GroupRuleEditDialog editDialog = new GroupRuleEditDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, groupInfo, MainForm.this, groupRule);
+                GroupRuleEditDialog editDialog = new GroupRuleEditDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, groupInfo, MainForm.this, selected);
                 editDialog.open();
             }
         });
