@@ -27,4 +27,6 @@ public interface PositionsDetailMapper {
     
     void insertTodayPositions();
     
+    List<PositionsDetail> getPositionsForUser (String subuserid, String dataString);
+    
 }

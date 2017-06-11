@@ -47,6 +47,22 @@ public class SellDetailServiceImpl implements SellDetailService {
 		
 	}
 
+	@Override
+	public List<SellDetail> getSellDetailForUser(String subUserId, String strdate) throws FutureException {
+		logger.info("getSellDetailForUser getSellDetailForUser入參：strdate = "+strdate + ",subUserId = " + subUserId);
+		
+		List<SellDetail> list = null;
+		
+		try {
+			list = sellDetailMapper.getSellDetailForUser(subUserId,strdate);
+		} catch (Exception e) {
+			logger.error("查询getSellDetail失败",e);
+			throw new FutureException("","查询getSellDetail失败");
+		}
+		
+		return list;
+	}
+
 	
 
 

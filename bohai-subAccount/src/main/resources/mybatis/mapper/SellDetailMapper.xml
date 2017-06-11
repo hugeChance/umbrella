@@ -296,4 +296,11 @@
     order by COMBOKEY asc
   </select>
   
+  <select id="getUserByDate" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select * from T_SELL_DETAIL
+    where TRADEDATE = #{1,jdbcType=VARCHAR} 
+    and SUBUSERID = #{0,jdbcType=VARCHAR} 
+    order by COMBOKEY asc
+  </select>
+  
 </mapper>

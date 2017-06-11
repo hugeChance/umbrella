@@ -14,9 +14,11 @@ public interface PositionsDetailService {
 	 */
 	public int doFindPositionsDetail(String  Subuserid,String Combokey,String Direction,String Instrumentid,int Volume) throws FutureException;
 	
-	public void updateVolumn(String subuserid,String Combokey,int volume);
+	public void updateVolumn(String subuserid,String Combokey,int volume) throws FutureException;
 	
-	public void deleteAll();
+	public void deleteAll() throws FutureException;
 	
-	public void insertTodayPositions();
+	public void insertTodayPositions() throws FutureException;
+	
+	public List<PositionsDetail> getPositionsForUser(String subuserid,String dataString) throws FutureException;
 }

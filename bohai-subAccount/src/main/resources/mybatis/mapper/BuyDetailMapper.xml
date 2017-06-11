@@ -339,4 +339,10 @@
     and SELLVOLUME != VOLUME
     order by COMBOKEY asc 
   </select>
+  
+  <select id="getBuyDetailForComboKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select * from T_BUY_DETAIL
+    where instr(SELLCOMBOKEY,#{0,jdbcType=VARCHAR}) &gt; 0 
+    order by COMBOKEY asc 
+  </select>
 </mapper>

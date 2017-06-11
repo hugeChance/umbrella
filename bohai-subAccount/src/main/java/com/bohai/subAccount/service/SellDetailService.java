@@ -21,6 +21,11 @@ public interface SellDetailService {
 	 */
 	public List<SellDetail> getSellDetail(String strdate) throws FutureException;
 	
-	
+	/**
+	 * 按子账号取得平仓记录
+	 * @param userInfo
+	 * @throws FutureException
+	 */
+	public List<SellDetail> getSellDetailForUser(String subUserId,String strdate) throws FutureException;
 	
 }

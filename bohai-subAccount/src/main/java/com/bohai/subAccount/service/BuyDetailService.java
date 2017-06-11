@@ -1,5 +1,7 @@
 package com.bohai.subAccount.service;
 
+import java.util.List;
+
 import com.bohai.subAccount.entity.BuyDetail;
 import com.bohai.subAccount.exception.FutureException;
 
@@ -27,9 +29,11 @@ public interface BuyDetailService {
 	public void doFindPositionsDetail(String  Subuserid,String Combokey,String Direction,String Instrumentid,int Volume) throws FutureException;
 	
 	
-	public void updateBuyDetail(String Combokey,String SellCombokey,int Volume);
+	public void updateBuyDetail(String Combokey,String SellCombokey,int Volume)throws FutureException;
 
-	void updateBuySell(BuyDetail buyDetail);
+	void updateBuySell(BuyDetail buyDetail)throws FutureException;
+	
+	List<BuyDetail> getBuyDetailForComboKey(String comboKey) throws FutureException;
 
 	
 }

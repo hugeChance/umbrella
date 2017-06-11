@@ -27,4 +27,6 @@ public interface BuyDetailMapper {
     List<BuyDetail> findBuyDetail(String Subuserid,String Instrumentid,String Direction);
     
     void updateBuySell(BuyDetail buyDetail);
+    
+    List<BuyDetail> getBuyDetailForComboKey(String comboKey);
 }

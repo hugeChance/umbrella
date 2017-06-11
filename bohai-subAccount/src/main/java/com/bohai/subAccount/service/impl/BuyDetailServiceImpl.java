@@ -6,10 +6,12 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.bohai.subAccount.dao.BuyDetailMapper;
 import com.bohai.subAccount.dao.PositionsDetailMapper;
 import com.bohai.subAccount.entity.BuyDetail;
 import com.bohai.subAccount.entity.PositionsDetail;
+import com.bohai.subAccount.entity.SellDetail;
 import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.service.BuyDetailService;
 
@@ -25,25 +27,33 @@ public class BuyDetailServiceImpl implements BuyDetailService {
 
 	@Override
 	public void saveBuyDetail(BuyDetail buyDetail) throws FutureException {
+		logger.info("saveBuyDetail saveBuyDetail入參：buyDetail = " + JSON.toJSONString(buyDetail));
+		
+		
 		buyDetailMapper.insert(buyDetail);
 		
 	}
 
 	@Override
 	public void updateBuyDetail(BuyDetail buyDetail) throws FutureException {
+		logger.info("updateBuyDetail updateBuyDetail入參：buyDetail = " + JSON.toJSONString(buyDetail));
+		
+		
 		//用户 ，平仓合约，平仓方向,平仓数量，平仓价格
 		buyDetailMapper.updateBuyDetail(buyDetail);
 
 	}
 	@Override
 	public void updateBuySell(BuyDetail buyDetail){
+		logger.info("updateBuySell updateBuySell入參：buyDetail = " + JSON.toJSONString(buyDetail));
+		
 		buyDetailMapper.updateBuySell(buyDetail);
 	}
 
 	@Override
 	public void doFindPositionsDetail(String Subuserid, String Combokey, String Direction, String Instrumentid,
 			int Volume) throws FutureException {
-		
+		logger.info("doFindPositionsDetail doFindPositionsDetail入參：Subuserid = "+Subuserid + ",Combokey = " + Combokey + ",Direction = " + Direction + ",Instrumentid = " + Instrumentid + ",Volume = " + Volume);
 		List<BuyDetail> listBuyDetail = null;
 		//买开，卖平。卖开，买平。
 		if(Direction.equals("0")){
@@ -81,6 +91,7 @@ public class BuyDetailServiceImpl implements BuyDetailService {
 
 	@Override
 	public void updateBuyDetail(String Combokey, String SellCombokey, int Volume) {
+		logger.info("updateBuyDetail updateBuyDetail入參：Combokey = "+Combokey + ",SellCombokey = " + SellCombokey + ",Volume = " + Volume);
 		BuyDetail buyDetail = new BuyDetail();
 		buyDetail.setCombokey(Combokey);
 		buyDetail.setSellcombokey(SellCombokey);
@@ -89,6 +100,22 @@ public class BuyDetailServiceImpl implements BuyDetailService {
 		
 		buyDetailMapper.updateBuyDetail(buyDetail);
 		
+	}
+
+	@Override
+	public List<BuyDetail> getBuyDetailForComboKey(String comboKey) throws FutureException{
+		logger.info("getBuyDetailForComboKey getBuyDetailForComboKey入參：comboKey = "+comboKey );
+		
+		List<BuyDetail> list = null;
+		
+		try {
+			list = buyDetailMapper.getBuyDetailForComboKey(comboKey);
+		} catch (Exception e) {
+			logger.error("查询getBuyDetailForComboKey失败",e);
+			throw new FutureException("","查询getBuyDetailForComboKey失败");
+		}
+		
+		return list;
 	}
 
 

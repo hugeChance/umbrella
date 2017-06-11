@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,17 +46,21 @@ import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.bohai.subAccount.constant.CommonConstant;
 import com.bohai.subAccount.dao.UseravailableindbMapper;
+import com.bohai.subAccount.entity.BuyDetail;
 import com.bohai.subAccount.entity.CloseRule;
 import com.bohai.subAccount.entity.FutureMarket;
 import com.bohai.subAccount.entity.GroupInfo;
 import com.bohai.subAccount.entity.GroupRule;
 import com.bohai.subAccount.entity.InvestorPosition;
 import com.bohai.subAccount.entity.MainAccount;
+import com.bohai.subAccount.entity.PositionsDetail;
+import com.bohai.subAccount.entity.SellDetail;
 import com.bohai.subAccount.entity.Trade;
 import com.bohai.subAccount.entity.UserContract;
 import com.bohai.subAccount.entity.UserInfo;
 import com.bohai.subAccount.entity.Useravailableindb;
 import com.bohai.subAccount.exception.FutureException;
+import com.bohai.subAccount.service.BuyDetailService;
 import com.bohai.subAccount.service.ClearService;
 import com.bohai.subAccount.service.CloseRuleService;
 import com.bohai.subAccount.service.FutureMarketService;
@@ -63,6 +68,8 @@ import com.bohai.subAccount.service.GroupInfoService;
 import com.bohai.subAccount.service.GroupRuleService;
 import com.bohai.subAccount.service.InvestorPositionService;
 import com.bohai.subAccount.service.MainAccountService;
+import com.bohai.subAccount.service.PositionsDetailService;
+import com.bohai.subAccount.service.SellDetailService;
 import com.bohai.subAccount.service.TradeRuleService;
 import com.bohai.subAccount.service.TradeService;
 import com.bohai.subAccount.service.UserContractService;
@@ -76,6 +83,8 @@ import com.bohai.subAccount.vo.SettlemenetPart2Body;
 import com.bohai.subAccount.vo.SettlemenetPart2Head;
 import com.bohai.subAccount.vo.SettlemenetPart3Body;
 import com.bohai.subAccount.vo.SettlemenetPart3Head;
+import com.bohai.subAccount.vo.SettlemenetPart4Body;
+import com.bohai.subAccount.vo.SettlemenetPart4Head;
 import com.bohai.subAccount.vo.SettlemenetTitleVO;
 import com.bohai.subAccount.vo.UserContractTradeRule;
 
@@ -103,6 +112,9 @@ public class AdminViewMain {
 	private TradeService tradeService;
 	private UserContractService userContractService;
 	private FutureMarketService futureMarketService;
+	private SellDetailService sellDetailService;
+	private BuyDetailService buyDetailService;
+	private PositionsDetailService positionsDetailService;
 	
 	private Map<String,UserContract> mapUserContractMemorySave;
     
@@ -177,6 +189,10 @@ public class AdminViewMain {
         tradeService = (TradeService) SpringContextUtil.getBean("tradeService");
         futureMarketService = (FutureMarketService) SpringContextUtil.getBean("futureMarketService");
         userContractService = (UserContractService) SpringContextUtil.getBean("userContractService");
+        
+        sellDetailService = (SellDetailService) SpringContextUtil.getBean("sellDetailService");
+        buyDetailService = (BuyDetailService) SpringContextUtil.getBean("buyDetailService");
+        positionsDetailService = (PositionsDetailService) SpringContextUtil.getBean("positionsDetailService");
     }
 
     /**
@@ -375,7 +391,7 @@ public class AdminViewMain {
             	thread.start();
             	
             	try {
-					Thread.sleep(3000);
+					Thread.sleep(10000);
 				} catch (InterruptedException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -476,6 +492,10 @@ public class AdminViewMain {
         String saveFile=dialog.open();  
         String tmpStr = "";
         
+        Date currentTime = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        String dateString = formatter.format(currentTime);
+        
         if(saveFile!=null){
         	File directiory=new File(saveFile);
             logger.info(directiory.getPath());
@@ -532,9 +552,11 @@ public class AdminViewMain {
             	SettlemenetPart1Head settlemenetPart1Head = new SettlemenetPart1Head();
             	SettlemenetPart2Head settlemenetPart2Head = new SettlemenetPart2Head();
             	SettlemenetPart3Head settlemenetPart3Head = new SettlemenetPart3Head();
+            	SettlemenetPart4Head settlemenetPart4Head = new SettlemenetPart4Head();
             	SettlemenetPart1Body settlemenetPart1Body = new SettlemenetPart1Body();
             	SettlemenetPart2Body settlemenetPart2Body = new SettlemenetPart2Body();
             	SettlemenetPart3Body settlemenetPart3Body = new SettlemenetPart3Body();
+            	SettlemenetPart4Body settlemenetPart4Body = new SettlemenetPart4Body();
             	
             	//查询成交表
             	try {
@@ -607,11 +629,120 @@ public class AdminViewMain {
 				}
             	
             	//查询平仓表
-            	// TODO 由COREAPP 增加新功能当平仓时写入平仓表
+            	//由COREAPP 增加新功能当平仓时写入平仓表
+            	//select COMBOKEY from T_SELL_DETAIL where SUBUSERID = '11111' and TRADEDATE = '20170611'
+            	//先查询平仓明细表
+            	try {
+					List<SellDetail> listSellDetail = sellDetailService.getSellDetailForUser(useravailableindb.getUsername(),dateString);
+					
+					for (SellDetail sellDetail : listSellDetail) {
+						//拿着平仓COMBOKEY去查开仓
+						List<BuyDetail> listBuyDetail = buyDetailService.getBuyDetailForComboKey(sellDetail.getCombokey());
+						
+						if(listBuyDetail.size() > 0){
+							strB.append(settlemenetPart2Head.getRetPart2Head1());
+							strB.append("\r\n");
+						}
+							
+						for (BuyDetail buyDetail : listBuyDetail) {
+							//输出平仓明细
+							settlemenetPart2Body.setCloseDate(sellDetail.getTradedate());
+							settlemenetPart2Body.setExchange(buyDetail.getExchangeid());
+							settlemenetPart2Body.setProduct(buyDetail.getInstrumentid());
+							settlemenetPart2Body.setInstrument(buyDetail.getInstrumentid());
+							settlemenetPart2Body.setOpenDate(buyDetail.getTradedate());
+							if(buyDetail.getDirection().equals("0")){
+								settlemenetPart2Body.setBS("买");
+							} else {
+								settlemenetPart2Body.setBS("卖");
+							}
+							if(sellDetail.getVolume() > buyDetail.getVolume()){
+								settlemenetPart2Body.setLots(String.valueOf(buyDetail.getVolume()));
+							} else {
+								settlemenetPart2Body.setLots(String.valueOf(sellDetail.getVolume()));
+							}
+							settlemenetPart2Body.setPos(buyDetail.getPrice().toString());
+							//昨结算 要实装 T_FUTURE_MARKET表PRE_SETTLEMENT_PRICE
+							settlemenetPart2Body.setPrev("");
+							settlemenetPart2Body.setTrans(sellDetail.getPrice().toString());
+							settlemenetPart2Body.setRealized(sellDetail.getPrice().subtract(buyDetail.getPrice()).toString());
+							settlemenetPart2Body.setPremium("0.00");
+							
+							strB.append(settlemenetPart2Body.getRetStr());
+							strB.append("\r\n");
+							
+						}
+					}
+					
+				} catch (FutureException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+            	
             	
             	
             	//查询持仓明细表
-            	// TODO 由COREAPP 增加新功能当平仓时写入平仓表
+            	//由COREAPP 增加新功能当平仓时写入平仓表
+            	//select * from T_POSITIONS_DETAIL where SUBUSERID = '1111111'
+            	//取得最新客户持仓表的信息
+            	try {
+					List<PositionsDetail> listPositionsDetail = positionsDetailService.getPositionsForUser(useravailableindb.getUsername(),dateString);
+					
+					for (PositionsDetail positionsDetail : listPositionsDetail) {
+						
+						List<BuyDetail> listBuyDetail = buyDetailService.getBuyDetailForComboKey(positionsDetail.getCombokey());
+						
+						if(listBuyDetail.size() > 0){
+							strB.append(settlemenetPart4Head.getRetPart4Head1());
+							strB.append("\r\n");
+						}
+						for (BuyDetail buyDetail : listBuyDetail) {
+							//输出平仓明细
+							settlemenetPart4Body.setExchange(buyDetail.getExchangeid());
+							settlemenetPart4Body.setProduct(buyDetail.getInstrumentid());
+							settlemenetPart4Body.setInstrument(buyDetail.getInstrumentid());
+							settlemenetPart4Body.setOpenDate(buyDetail.getTradedate());
+							settlemenetPart4Body.setSH("投");
+							if(buyDetail.getDirection().equals("0")){
+								settlemenetPart4Body.setBS("买");
+							} else {
+								settlemenetPart4Body.setBS("卖");
+							}
+							settlemenetPart4Body.setPositon(String.valueOf(positionsDetail.getVolume()));
+							settlemenetPart4Body.setPrice(buyDetail.getPrice().toString());
+							//昨结算 需要实装
+							BigDecimal prev = new BigDecimal(0) ;
+							settlemenetPart4Body.setPrev(prev.toString());
+							
+							//结算价 需要实装
+							BigDecimal settlement =new BigDecimal(0) ;
+							settlemenetPart4Body.setSettlement(prev.toString());
+							
+							//Accum 浮动盈亏
+							settlemenetPart4Body.setAccum("0");
+							
+							//盯市盈亏
+							settlemenetPart4Body.setMTM(buyDetail.getPrice().subtract(settlement).toString());
+							
+							//保证金
+							settlemenetPart4Body.setMargin("");
+							
+							//期权市值
+							settlemenetPart4Body.setMarketValue("0.00");
+							
+							
+							
+							
+							strB.append(settlemenetPart4Body.getRetStr());
+							strB.append("\r\n");
+							
+						}
+						
+					}
+				} catch (FutureException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
             	
             	
             	//查询持仓汇总表

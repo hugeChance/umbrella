@@ -23,4 +23,6 @@ public interface SellDetailMapper {
     int insertSelective(SellDetail record);
     
     List<SellDetail> getUserByDate(String strdate);
+    
+    List<SellDetail> getSellDetailForUser(String subUserId,String strdate);
 }

@@ -72,7 +72,14 @@
     where SUBUSERID = #{0,jdbcType=VARCHAR} 
     and INSTRUMENTID = #{2,jdbcType=VARCHAR} 
     and DIRECTION = #{1,jdbcType=VARCHAR} 
-    and VOLUME > 0
+    and VOLUME &gt; 0
+    order by COMBOKEY asc 
+  </select>
+  
+  <select id="getPositionsForUser" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select * from T_POSITIONS_DETAIL
+    where SUBUSERID = #{0,jdbcType=VARCHAR} 
+    and VOLUME &gt; 0
     order by COMBOKEY asc 
   </select>
   
@@ -94,8 +101,8 @@
   </delete>
   
   <insert id="insertTodayPositions">
-  	insert into T_POSITIONS_DETAIL(SUBUSERID,COMBOKEY,INSTRUMENTID,DIRECTION,VOLUME) select SUBUSERID,COMBOKEY,INSTRUMENTID,DIRECTION,VOLUME - SELLVOLUME from T_BUY_DETAIL where 
-	T_BUY_DETAIL.VOLUME != T_BUY_DETAIL.SELLVOLUME
+  	insert into T_POSITIONS_DETAIL( SUBUSERID,COMBOKEY,INSTRUMENTID,DIRECTION,VOLUME )
+	select SUBUSERID,COMBOKEY,INSTRUMENTID,DIRECTION,nvl(VOLUME,0) - nvl(SELLVOLUME,0) from T_BUY_DETAIL where nvl(VOLUME,0) != nvl(SELLVOLUME,0) 
   
   </insert>
 </mapper>
