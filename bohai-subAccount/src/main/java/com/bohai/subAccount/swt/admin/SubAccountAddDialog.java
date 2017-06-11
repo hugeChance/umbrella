@@ -19,6 +19,8 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import com.bohai.subAccount.dao.CapitalRateMapper;
+import com.bohai.subAccount.entity.CapitalRate;
 import com.bohai.subAccount.entity.GroupInfo;
 import com.bohai.subAccount.entity.UserInfo;
 import com.bohai.subAccount.exception.FutureException;
@@ -39,6 +41,7 @@ public class SubAccountAddDialog extends Dialog {
 	private GroupInfo groupInfo; 
 	private AdminViewMain adminView;
 	private MainForm mainForm;
+	private Text text;
 
 	/**
 	 * Create the dialog.
@@ -52,6 +55,9 @@ public class SubAccountAddDialog extends Dialog {
 		this.adminView = adminView;
 	}
 	
+	   /**
+	    * @wbp.parser.constructor
+	    */
 	   public SubAccountAddDialog(Shell parent, int style, GroupInfo groupInfo, MainForm mainForm) {
 	        super(parent, style);
 	        setText("添加新用户");
@@ -104,7 +110,7 @@ public class SubAccountAddDialog extends Dialog {
 		passwdLabel.setBounds(46, 74, 80, 23);
 		passwdLabel.setText("密码：");
 		
-		passwd = new Text(composite, SWT.BORDER|SWT.PASSWORD);
+		passwd = new Text(composite, SWT.BORDER);
 		passwd.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		passwd.setBounds(140, 75, 113, 23);
 		
@@ -113,7 +119,7 @@ public class SubAccountAddDialog extends Dialog {
 		passwdConfirmLabel.setBounds(46, 115, 80, 23);
 		passwdConfirmLabel.setText("确认密码：");
 		
-		passwdConfirm = new Text(composite, SWT.BORDER|SWT.PASSWORD);
+		passwdConfirm = new Text(composite, SWT.BORDER);
 		passwdConfirm.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		passwdConfirm.setBounds(140, 115, 113, 23);
 		
@@ -198,6 +204,15 @@ public class SubAccountAddDialog extends Dialog {
 					box.setText("警告");
 					box.open();
 				}
+				
+				CapitalRate capitalRate = new CapitalRate();
+				capitalRate.setUserName(username.getText());
+				capitalRate.setUserCapital(new BigDecimal(limit.getText()));
+				capitalRate.setUserCapitalRate(new BigDecimal(text.getText()));
+				//配资资金
+				capitalRate.setHostCapital1(new BigDecimal(limit.getText()).multiply(new BigDecimal(text.getText())));
+				CapitalRateMapper capitalRateMapper = (CapitalRateMapper) SpringContextUtil.getBean("capitalRateMapper");
+				capitalRateMapper.insert(capitalRate);
 			}
 		});
 		
@@ -212,7 +227,15 @@ public class SubAccountAddDialog extends Dialog {
 		
 		cancel.setBounds(194, 305, 80, 27);
 		cancel.setText("取消");
+		
+		Label label = new Label(composite, SWT.NONE);
+		label.setAlignment(SWT.RIGHT);
+		label.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
+		label.setBounds(25, 238, 101, 23);
+		label.setText("配资比例：");
+		
+		text = new Text(composite, SWT.BORDER);
+		text.setBounds(140, 238, 113, 23);
 
 	}
-
 }

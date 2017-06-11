@@ -20,6 +20,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.springframework.util.StringUtils;
 
+import com.bohai.subAccount.dao.CapitalRateMapper;
+import com.bohai.subAccount.entity.CapitalRate;
 import com.bohai.subAccount.entity.GroupInfo;
 import com.bohai.subAccount.entity.UserInfo;
 import com.bohai.subAccount.exception.FutureException;
@@ -41,6 +43,9 @@ public class SubAccountEditDialog extends Dialog {
 	private AdminViewMain adminView;
 	private UserInfo userInfo;
 	private MainForm mainForm;
+	private Text text;
+	
+	private String capRate;
 
 	/**
 	 * Create the dialog.
@@ -55,11 +60,15 @@ public class SubAccountEditDialog extends Dialog {
 		this.userInfo = userInfo;
 	}
 	
-   public SubAccountEditDialog(Shell parent, int style, UserInfo userInfo, MainForm mainForm) {
+   /**
+    * @wbp.parser.constructor
+    */
+   public SubAccountEditDialog(Shell parent, int style, UserInfo userInfo, MainForm mainForm,String capRate) {
         super(parent, style);
         setText("修改用户");
         this.mainForm = mainForm;
         this.userInfo = userInfo;
+        this.capRate = capRate;
     }
 
 	/**
@@ -108,23 +117,24 @@ public class SubAccountEditDialog extends Dialog {
 		passwdLabel.setBounds(46, 74, 80, 23);
 		passwdLabel.setText("密码：");
 		
-		passwd = new Text(composite, SWT.BORDER|SWT.PASSWORD);
+		passwd = new Text(composite, SWT.BORDER);
 		passwd.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		passwd.setBounds(140, 75, 113, 23);
 		
 		Label passwdConfirmLabel = new Label(composite, SWT.NONE);
+		passwdConfirmLabel.setAlignment(SWT.RIGHT);
 		passwdConfirmLabel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		passwdConfirmLabel.setBounds(46, 115, 80, 23);
+		passwdConfirmLabel.setBounds(23, 115, 103, 23);
 		passwdConfirmLabel.setText("确认密码：");
 		
-		passwdConfirm = new Text(composite, SWT.BORDER|SWT.PASSWORD);
+		passwdConfirm = new Text(composite, SWT.BORDER);
 		passwdConfirm.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		passwdConfirm.setBounds(140, 115, 113, 23);
 		
 		Label groupLabel = new Label(composite, SWT.NONE);
 		groupLabel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		groupLabel.setAlignment(SWT.RIGHT);
-		groupLabel.setBounds(46, 157, 80, 23);
+		groupLabel.setBounds(23, 157, 103, 23);
 		groupLabel.setText("用户组：");
 		
 		Combo groupCombo = new Combo(composite, SWT.NONE);
@@ -146,7 +156,7 @@ public class SubAccountEditDialog extends Dialog {
 		Label limitLabel = new Label(composite, SWT.NONE);
 		limitLabel.setAlignment(SWT.RIGHT);
 		limitLabel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		limitLabel.setBounds(46, 198, 80, 23);
+		limitLabel.setBounds(23, 198, 103, 23);
 		limitLabel.setText("资金额度：");
 		
 		limit = new Text(composite, SWT.BORDER);
@@ -158,6 +168,11 @@ public class SubAccountEditDialog extends Dialog {
 		passwd.setText(userInfo.getUserPwd());
 		passwdConfirm.setText(userInfo.getUserPwd());
 		limit.setText(StringUtils.isEmpty(userInfo.getCapital())?"":userInfo.getCapital().toString());
+		
+		//配资比例
+		if(!StringUtils.isEmpty(capRate)){
+		    text.setText(capRate);
+		}
 		
 		Button addButton = new Button(composite, SWT.NONE);
 		addButton.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
@@ -186,6 +201,17 @@ public class SubAccountEditDialog extends Dialog {
 				userInfo.setUpdateTime(new Date());
 				try {
 					userInfoService.updateUser(userInfo);
+					
+					CapitalRate capitalRate = new CapitalRate();
+	                capitalRate.setUserName(username.getText());
+	                capitalRate.setUserCapital(new BigDecimal(limit.getText()));
+	                capitalRate.setUserCapitalRate(new BigDecimal(text.getText()));
+	                //配资资金
+	                capitalRate.setHostCapital1(new BigDecimal(limit.getText()).multiply(new BigDecimal(text.getText())));
+	                CapitalRateMapper capitalRateMapper = (CapitalRateMapper) SpringContextUtil.getBean("capitalRateMapper");
+	                capitalRateMapper.updateByPrimaryKeySelective(capitalRate);
+					
+					
 					MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL|SWT.YES);
 					box.setMessage("更新成功");
 					box.setText("提示");
@@ -217,6 +243,17 @@ public class SubAccountEditDialog extends Dialog {
 		
 		cancel.setBounds(194, 305, 80, 27);
 		cancel.setText("取消");
+		
+		Label lblPeizi = new Label(composite, SWT.NONE);
+		lblPeizi.setText("配资比例：");
+		lblPeizi.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
+		lblPeizi.setAlignment(SWT.RIGHT);
+		lblPeizi.setBounds(46, 246, 80, 23);
+		
+		text = new Text(composite, SWT.BORDER);
+		text.setText("");
+		text.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
+		text.setBounds(140, 246, 113, 23);
 
 	}
 

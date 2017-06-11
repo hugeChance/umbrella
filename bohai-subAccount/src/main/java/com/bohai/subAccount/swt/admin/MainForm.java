@@ -804,13 +804,13 @@ public class MainForm {
 
 				MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION
 						| SWT.OK);
-				box.setMessage("版本号版本号版本号版本号");
+				box.setMessage("赫城资管系统 V2.0");
 				box.open();
 			}
 		});
 
 		MenuItem menuItem4_2 = new MenuItem(menu_4, SWT.NONE);
-		menuItem4_2.setText("联系电话");
+		menuItem4_2.setText("赫城科技：56994733");
 		menuItem4_2.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				// MessageDialog.openInformation(shell, "test", "test");
@@ -976,16 +976,21 @@ public class MainForm {
                 if(capital != null){
                     item.setText(3, capital.toString());
                 }
+                
+                if(map.get("USER_CAPITAL_RATE") != null){
+                    //配资比例
+                    item.setText(4, ((BigDecimal) map.get("USER_CAPITAL_RATE")).toString());
+                }
                 //动态权益
-                item.setText(4, ((BigDecimal)map.get("RIGHTS")).toString());
+                item.setText(5, ((BigDecimal)map.get("RIGHTS")).toString());
                 //可用资金
-                item.setText(5, ((BigDecimal)map.get("AVAILABLE")).toString());
+                item.setText(6, ((BigDecimal)map.get("AVAILABLE")).toString());
                 //持仓盈亏
-                item.setText(6, ((BigDecimal)map.get("POSITIONWIN")).toString());
+                item.setText(7, ((BigDecimal)map.get("POSITIONWIN")).toString());
                 //平仓盈亏
-                item.setText(7, ((BigDecimal)map.get("CLOSEWIN")).toString());
+                item.setText(8, ((BigDecimal)map.get("CLOSEWIN")).toString());
                 //占用保证金
-                item.setText(8, ((BigDecimal)map.get("MARGIN")).toString());
+                item.setText(9, ((BigDecimal)map.get("MARGIN")).toString());
                 
             }
         }
@@ -1100,21 +1105,23 @@ public class MainForm {
             List<UserContractTradeRule> list = tradeRuleService.getTradeRulesByUserNo(userNo);
             instrumentTable.removeAll();
             if(list != null && list.size() >0){
+                int i =0 ;
                 for (UserContractTradeRule rule : list) {
                     TableItem item= new TableItem(instrumentTable, SWT.NONE);
                     item.setData(rule);
-                    item.setText(0, rule.getUserName());//用户名
-                    item.setText(1, rule.getContractNo());//合约
-                    item.setText(2, StringUtils.isEmpty(rule.getCancelCount())?"":rule.getCancelCount().toString());//撤单数
-                    item.setText(3, StringUtils.isEmpty(rule.getEntrustCount())?"":rule.getEntrustCount().toString());//委托数
-                    item.setText(4, StringUtils.isEmpty(rule.getOpenCount())?"":rule.getOpenCount().toString());//开仓数
-                    item.setText(5, StringUtils.isEmpty(rule.getOpenCharge())?"":rule.getOpenCharge().toString());//开仓手续费固定值
-                    item.setText(6, StringUtils.isEmpty(rule.getOpenChargeRate())?"":rule.getOpenChargeRate().toString());//开仓手续费比例
-                    item.setText(7, StringUtils.isEmpty(rule.getCloseCurrCharge())?"":rule.getCloseCurrCharge().toString());//平今手续费固定值
-                    item.setText(8, StringUtils.isEmpty(rule.getCloseCurrChargeRate())?"":rule.getCloseCurrChargeRate().toString());//平今手续费比例
-                    item.setText(9, StringUtils.isEmpty(rule.getMargin())?"":rule.getMargin().toString());//保证金比例
-                    item.setText(10, StringUtils.isEmpty(rule.getContractUnit())?"":rule.getContractUnit().toString());//合约单位
-                    item.setText(11, StringUtils.isEmpty(rule.getTickSize())?"":rule.getTickSize().toString());//最小跳动单位
+                    item.setText(0, ++i +"");
+                    item.setText(1, rule.getUserName());//用户名
+                    item.setText(2, rule.getContractNo());//合约
+                    item.setText(3, StringUtils.isEmpty(rule.getCancelCount())?"":rule.getCancelCount().toString());//撤单数
+                    item.setText(4, StringUtils.isEmpty(rule.getEntrustCount())?"":rule.getEntrustCount().toString());//委托数
+                    item.setText(5, StringUtils.isEmpty(rule.getOpenCount())?"":rule.getOpenCount().toString());//开仓数
+                    item.setText(6, StringUtils.isEmpty(rule.getOpenCharge())?"":rule.getOpenCharge().toString());//开仓手续费固定值
+                    item.setText(7, StringUtils.isEmpty(rule.getOpenChargeRate())?"":rule.getOpenChargeRate().toString());//开仓手续费比例
+                    item.setText(8, StringUtils.isEmpty(rule.getCloseCurrCharge())?"":rule.getCloseCurrCharge().toString());//平今手续费固定值
+                    item.setText(9, StringUtils.isEmpty(rule.getCloseCurrChargeRate())?"":rule.getCloseCurrChargeRate().toString());//平今手续费比例
+                    item.setText(10, StringUtils.isEmpty(rule.getMargin())?"":rule.getMargin().toString());//保证金比例
+                    item.setText(11, StringUtils.isEmpty(rule.getContractUnit())?"":rule.getContractUnit().toString());//合约单位
+                    item.setText(12, StringUtils.isEmpty(rule.getTickSize())?"":rule.getTickSize().toString());//最小跳动单位
                 }
             }
         } catch (FutureException e) {
@@ -1530,6 +1537,10 @@ public class MainForm {
         TableColumn col2 = new TableColumn(subaccountTable, SWT.NONE);
         col2.setWidth(100);
         col2.setText("初始资金");
+        
+        TableColumn col3 = new TableColumn(subaccountTable, SWT.NONE);
+        col3.setWidth(100);
+        col3.setText("配资比例");
 
         TableColumn tblclmnNewColumn = new TableColumn(subaccountTable, SWT.NONE);
         tblclmnNewColumn.setWidth(100);
@@ -1615,7 +1626,7 @@ public class MainForm {
                     
                     MenuItem removeItem = new MenuItem(menu, SWT.NONE);
                     removeItem.setText("删除");
-                    removeItem.addSelectionListener(new RuleRemoveSelection(selected));
+                    removeItem.addSelectionListener(new UserContractRemoveSelection(selected));
                     
                     MenuItem addItem = new MenuItem(menu, SWT.NONE);
                     addItem.setText("添加合约");
@@ -1634,6 +1645,11 @@ public class MainForm {
         
         instrumentTable.setHeaderVisible(true);
         instrumentTable.setLinesVisible(true);
+        
+        TableColumn tableColumn111 = new TableColumn(instrumentTable, SWT.NONE);
+        tableColumn111.setText("序号");
+        tableColumn111.setWidth(100);
+        
         TableColumn tableColumn = new TableColumn(instrumentTable, SWT.NONE);
         tableColumn.setText("用户名");
         tableColumn.setWidth(100);
@@ -2032,15 +2048,15 @@ public class MainForm {
     }
     
     /**
-     * 删除交易规则
+     * 删除合约
      * @author caojia
      *
      */
-    public class RuleRemoveSelection extends SelectionAdapter {
+    public class UserContractRemoveSelection extends SelectionAdapter {
         
         private TableItem item;
         
-        public RuleRemoveSelection(TableItem item) {
+        public UserContractRemoveSelection(TableItem item) {
             this.item = item;
         }
         
@@ -2083,14 +2099,17 @@ public class MainForm {
         
         @Override
         public void widgetSelected(SelectionEvent e) {
-            //UserContractTradeRule rule = (UserContractTradeRule) item.getData();
-            //logger.debug("删除ID为："+rule.getTradeRuleId()+"的交易规则,合约编号："+rule.getContractNo());
+            UserContractTradeRule rule = (UserContractTradeRule) item.getData();
+            logger.debug("删除ID为："+rule.getTradeRuleId()+"的交易规则,合约编号："+rule.getContractNo());
+            
             try {
+                tradeRuleService.removeTradeRule(rule.getTradeRuleId());
                 MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                 box.setMessage("删除成功");
                 box.setText("提示");
                 box.open();
-                refreshContract(instrumentUserTree.getSelection()[0]);
+                refreshContractTradeRule();
+                
             } catch (Exception e1) {
                 MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                 box.setMessage(e1.getMessage());
@@ -2344,7 +2363,7 @@ public class MainForm {
             UserInfo userInfo = (UserInfo) tableItem.getData();
             
             SubAccountEditDialog subAccountEditDialog = new SubAccountEditDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL,
-                    userInfo, MainForm.this);
+                    userInfo, MainForm.this,tableItem.getText(4));
             subAccountEditDialog.open();
             
         }
