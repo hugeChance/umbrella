@@ -27,7 +27,7 @@ public class CapitalRateServiceImpl implements CapitalRateService {
 		
 		CapitalRate capitalRate = null;
 		try {
-			capitalRate = capitalRateMapper.getUserByUserName(subuserid);
+			capitalRate = capitalRateMapper.selectByPrimaryKey(subuserid);
 		} catch (Exception e) {
 			logger.error("查询capitalRate失败",e);
 			throw new FutureException("","查询capitalRate失败");
@@ -54,7 +54,7 @@ public class CapitalRateServiceImpl implements CapitalRateService {
 	public void updateCapitalRate(CapitalRate capitalRate) throws FutureException {
 		logger.info("updateCapitalRate入參："+JSON.toJSONString(capitalRate));
 		try {
-			capitalRateMapper.update(capitalRate);
+			capitalRateMapper.updateByPrimaryKeySelective(capitalRate);
 		} catch (Exception e) {
 			logger.error("更新capitalRate失败",e);
 			throw new FutureException("","更新capitalRate失败");
@@ -67,7 +67,7 @@ public class CapitalRateServiceImpl implements CapitalRateService {
 	public void deleteCapitalRate(String subuserid) throws FutureException {
 		logger.info("deleteCapitalRate入參："+subuserid);
 		try {
-			capitalRateMapper.delete(subuserid);
+			capitalRateMapper.deleteByPrimaryKey(subuserid);
 		} catch (Exception e) {
 			logger.error("删除capitalRate失败",e);
 			throw new FutureException("","删除capitalRate失败");
@@ -85,7 +85,7 @@ public class CapitalRateServiceImpl implements CapitalRateService {
 		double hostCapital1tmp = 0;
 		
 		//取得已有配资表总览的资金
-		tmpcapitalRate = capitalRateMapper.getUserByUserName(capitalRate.getUserName());
+		tmpcapitalRate = capitalRateMapper.selectByPrimaryKey(capitalRate.getUserName());
 		userCapitaltmp = capitalRate.getUserCapital().doubleValue();
 		hostCapital1tmp = capitalRate.getHostCapital1().doubleValue();
 		userCapitaltmp = userCapitaltmp + tmpcapitalRate.getUserCapital().doubleValue();
@@ -96,7 +96,7 @@ public class CapitalRateServiceImpl implements CapitalRateService {
 		newcapitalRate.setUserCapital(new BigDecimal(userCapitaltmp));
 		newcapitalRate.setUserCapitalRate(tmpcapitalRate.getUserCapitalRate());
 		newcapitalRate.setHostCapital1(new BigDecimal(hostCapital1tmp));
-		capitalRateMapper.update(newcapitalRate);
+		capitalRateMapper.updateByPrimaryKeySelective(newcapitalRate);
 		
 	}
 
@@ -110,7 +110,7 @@ public class CapitalRateServiceImpl implements CapitalRateService {
 		double hostCapital1tmp = 0;
 		
 		//取得已有配资表总览的资金
-		tmpcapitalRate = capitalRateMapper.getUserByUserName(capitalRate.getUserName());
+		tmpcapitalRate = capitalRateMapper.selectByPrimaryKey(capitalRate.getUserName());
 		userCapitaltmp = capitalRate.getUserCapital().doubleValue();
 		hostCapital1tmp = capitalRate.getHostCapital1().doubleValue();
 		userCapitaltmp = userCapitaltmp + tmpcapitalRate.getUserCapital().doubleValue();
@@ -121,7 +121,7 @@ public class CapitalRateServiceImpl implements CapitalRateService {
 		newcapitalRate.setUserCapital(new BigDecimal(userCapitaltmp));
 		newcapitalRate.setUserCapitalRate(tmpcapitalRate.getUserCapitalRate());
 		newcapitalRate.setHostCapital1(new BigDecimal(hostCapital1tmp));
-		capitalRateMapper.update(newcapitalRate);
+		capitalRateMapper.updateByPrimaryKeySelective(newcapitalRate);
 		
 	}
 

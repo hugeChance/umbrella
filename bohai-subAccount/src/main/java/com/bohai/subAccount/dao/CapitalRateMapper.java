@@ -50,4 +50,7 @@ public interface CapitalRateMapper {
      * @mbggenerated Sun Jun 11 19:00:26 CST 2017
      */
     int updateByPrimaryKey(CapitalRate record);
+    
+//    CapitalRate getUserByUserName(String userName);
+//    CapitalRate selectByPrimaryKey(String userName);
 }

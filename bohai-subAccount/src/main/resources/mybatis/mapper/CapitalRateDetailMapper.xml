@@ -130,4 +130,10 @@
       INSERT_TIME = #{insertTime,jdbcType=TIMESTAMP}
     where USER_NAME = #{userName,jdbcType=VARCHAR}
   </update>
+  
+  <select id="getUserByUserName" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select * from T_CAPITAL_RATE_DETAIL
+  	where USER_NAME = #{0,jdbcType=VARCHAR}
+  
+  </select>
 </mapper>
