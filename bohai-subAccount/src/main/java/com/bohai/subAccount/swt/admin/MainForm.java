@@ -1154,17 +1154,20 @@ public class MainForm {
         try {
             List<UserContract> list = userContractService.queryUserContractByAll();
             if(list != null && list.size() >0){
+                int i = 0;
                 for (UserContract userContract : list) {
                     TableItem item= new TableItem(allUserInstrumentTable, SWT.NONE);
-                    item.setText(0, userContract.getUserName());
-                    item.setText(1, userContract.getContractNo());
-                    item.setText(2, StringUtils.isEmpty(userContract.getOpenCharge())?"":userContract.getOpenCharge().toString());//开仓手续费固定值
-                    item.setText(3, StringUtils.isEmpty(userContract.getOpenChargeRate())?"":userContract.getOpenChargeRate().toString());//开仓手续费比例
-                    item.setText(4, StringUtils.isEmpty(userContract.getCloseCurrCharge())?"":userContract.getCloseCurrCharge().toString());//平今手续费固定值
-                    item.setText(5, StringUtils.isEmpty(userContract.getCloseCurrChargeRate())?"":userContract.getCloseCurrChargeRate().toString());//平今手续费比例
-                    item.setText(6, StringUtils.isEmpty(userContract.getMargin())?"":userContract.getMargin().toString());//保证金比例
-                    item.setText(7, StringUtils.isEmpty(userContract.getContractUnit())?"":userContract.getContractUnit().toString());//合约单位
-                    item.setText(8, StringUtils.isEmpty(userContract.getTickSize())?"":userContract.getTickSize().toString());//最小跳动单位
+                    item.setData(userContract);
+                    item.setText(0, ++i +"");
+                    item.setText(1, userContract.getUserName());
+                    item.setText(2, userContract.getContractNo());
+                    item.setText(3, StringUtils.isEmpty(userContract.getOpenCharge())?"":userContract.getOpenCharge().toString());//开仓手续费固定值
+                    item.setText(4, StringUtils.isEmpty(userContract.getOpenChargeRate())?"":userContract.getOpenChargeRate().toString());//开仓手续费比例
+                    item.setText(5, StringUtils.isEmpty(userContract.getCloseCurrCharge())?"":userContract.getCloseCurrCharge().toString());//平今手续费固定值
+                    item.setText(6, StringUtils.isEmpty(userContract.getCloseCurrChargeRate())?"":userContract.getCloseCurrChargeRate().toString());//平今手续费比例
+                    item.setText(7, StringUtils.isEmpty(userContract.getMargin())?"":userContract.getMargin().toString());//保证金比例
+                    item.setText(8, StringUtils.isEmpty(userContract.getContractUnit())?"":userContract.getContractUnit().toString());//合约单位
+                    item.setText(9, StringUtils.isEmpty(userContract.getTickSize())?"":userContract.getTickSize().toString());//最小跳动单位
                 }
             }
         } catch (FutureException e) {
@@ -1214,11 +1217,13 @@ public class MainForm {
         try {
             List<Map<String,Object>> list = this.userInfoMapper.selectUserInstrumentCount();
             if(list != null && list.size() >0){
+                int i = 0;
                 for (Map<String,Object> map : list) {
                     TableItem item= new TableItem(instrumentUserTable, SWT.NONE);
                     item.setData(map);
-                    item.setText(0, (String) map.get("USER_NAME"));
-                    item.setText(1, ((BigDecimal) map.get("COUNT")).toString());
+                    item.setText(0, ++i +"");
+                    item.setText(1, (String) map.get("USER_NAME"));
+                    item.setText(2, ((BigDecimal) map.get("COUNT")).toString());
                 }
             }
         } catch (Exception e) {
@@ -1238,10 +1243,11 @@ public class MainForm {
         try {
             List<Map<String,Object>> list = this.userInfoMapper.selectUserRiskCount();
             if(list != null && list.size() >0){
+                int i = 0;
                 for (Map<String,Object> map : list) {
                     TableItem item= new TableItem(riskUserTable, SWT.NONE);
                     item.setData(map);
-                    item.setText(0, "序号");
+                    item.setText(0, ++i +"");
                     item.setText(1, (String) map.get("USER_NAME"));
                     item.setText(2, ((BigDecimal) map.get("COUNT")).toString());
                 }
@@ -1273,14 +1279,15 @@ public class MainForm {
             
             TableItem item = new TableItem(riskGroupRuleTable, SWT.NULL);
             item.setData(groupRule);
+            item.setText(0, "1");
             //用户组
-            item.setText(0, group.getGroupName()==null?"":group.getGroupName());
+            item.setText(1, group.getGroupName()==null?"":group.getGroupName());
             /*//强平比例
             item.setText(1, groupRule.getForceCloseRate()==null?"":groupRule.getForceCloseRate().toString());
             //开仓时间
             item.setText(2, groupRule.getOpenTime()==null?"":groupRule.getOpenTime());*/
             //强平时间
-            item.setText(1, groupRule.getCloseTime()==null?"":groupRule.getCloseTime());
+            item.setText(2, groupRule.getCloseTime()==null?"":groupRule.getCloseTime());
         } catch (FutureException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -1390,6 +1397,10 @@ public class MainForm {
         
         riskGroupRuleTable.setHeaderVisible(true);
         riskGroupRuleTable.setLinesVisible(true);
+        
+        TableColumn tableColumn = new TableColumn(riskGroupRuleTable, SWT.NONE);
+        tableColumn.setText("序号");
+        tableColumn.setWidth(100);
         
         TableColumn tableColumn0 = new TableColumn(riskGroupRuleTable, SWT.NONE);
         tableColumn0.setText("用户组");
@@ -1744,6 +1755,10 @@ public class MainForm {
         allUserInstrumentTable.setHeaderVisible(true);
         allUserInstrumentTable.setLinesVisible(true);
         
+        TableColumn tableColumn00 = new TableColumn(allUserInstrumentTable, SWT.NONE);
+        tableColumn00.setText("序号");
+        tableColumn00.setWidth(100);
+        
         TableColumn tableColumn = new TableColumn(allUserInstrumentTable, SWT.NONE);
         tableColumn.setText("用户名");
         tableColumn.setWidth(100);
@@ -1833,6 +1848,10 @@ public class MainForm {
         
         instrumentUserTable.setHeaderVisible(true);
         instrumentUserTable.setLinesVisible(true);
+        
+        TableColumn tableColumn = new TableColumn(instrumentUserTable, SWT.NONE);
+        tableColumn.setText("序号");
+        tableColumn.setWidth(100);
         
         TableColumn tableColumn0 = new TableColumn(instrumentUserTable, SWT.NONE);
         tableColumn0.setText("用户名");

@@ -187,9 +187,9 @@ public class SubAccountAddDialog extends Dialog {
 					    adminView.refreshUserTree();
                     }
 					if(mainForm != null){
-					    mainForm.refreshUserTree(mainForm.userTree);
-					    mainForm.refreshUserTree(mainForm.instrumentUserTree);
-					    mainForm.refreshUserTree(mainForm.riskUserTree);
+					    mainForm.refreshUserTree(mainForm.userTree,"1");
+					    //mainForm.refreshUserTree(mainForm.instrumentUserTree);
+					    //mainForm.refreshUserTree(mainForm.riskUserTree);
 					}
 					shell.dispose();
 				} catch (FutureException e1) {

@@ -77,9 +77,9 @@ public interface UserInfoMapper {
      * 查询所有用户拥有的合约数量
      * @return
      */
-    @Select("select t.USER_NAME  ,t.USER_NO ,count(1) as COUNT from t_user_info t left join t_user_contract t1 on t.USER_NO = t1.USER_NO group by t.USER_NAME,t.USER_NO")
+    @Select("select t.USER_NAME  ,t.USER_NO ,count(t1.contract_no) as COUNT from t_user_info t left join t_user_contract t1 on t.USER_NO = t1.USER_NO group by t.USER_NAME,t.USER_NO")
     List<Map<String, Object>> selectUserInstrumentCount();
     
-    @Select("select t.USER_NAME,t.USER_NO,count(1) as COUNT from t_user_info t left join T_CLOSE_RULE t1 on t.USER_NAME = t1.USER_NAME group by t.USER_NAME,t.USER_NO")
+    @Select("select t.USER_NAME,t.USER_NO,count(t1.contract_no) as COUNT from t_user_info t left join T_CLOSE_RULE t1 on t.USER_NAME = t1.USER_NAME group by t.USER_NAME,t.USER_NO")
     List<Map<String, Object>> selectUserRiskCount();
 }
