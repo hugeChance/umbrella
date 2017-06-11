@@ -1,6 +1,8 @@
 package com.bohai.subAccount.swt.admin;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
@@ -38,12 +40,14 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.StringUtils;
 
 import com.bohai.subAccount.constant.CommonConstant;
+import com.bohai.subAccount.dao.UserInfoMapper;
 import com.bohai.subAccount.dao.UseravailableindbMapper;
 import com.bohai.subAccount.entity.CloseRule;
 import com.bohai.subAccount.entity.GroupInfo;
 import com.bohai.subAccount.entity.GroupRule;
 import com.bohai.subAccount.entity.MainAccount;
 import com.bohai.subAccount.entity.TradeRule;
+import com.bohai.subAccount.entity.UserContract;
 import com.bohai.subAccount.entity.UserInfo;
 import com.bohai.subAccount.entity.Useravailableindb;
 import com.bohai.subAccount.exception.FutureException;
@@ -66,6 +70,9 @@ public class MainForm {
     static Logger logger = Logger.getLogger(MainForm.class);
 	
 	TabItem tabItem_4;
+	TabItem tabItem2;
+	
+	TabItem riskTabItem;
 
 	private Table subaccountTable;
 	private Table instrumentTable;
@@ -73,6 +80,12 @@ public class MainForm {
 	private Table riskInstrumentTable;
 	private Table mainAccountTable;
 	private Table tradeRuleTable;
+	private Table allUserInstrumentTable;
+	private Table instrumentUserTable;
+	//风控用户表
+	private Table riskUserTable;
+	//所有风控规则列表
+	private Table allRiskTable;
 
 	private TabFolder tabFolder;
 	private ExpandBar expandBar;
@@ -95,6 +108,7 @@ public class MainForm {
     private TradeService tradeService;
     private UserContractService userContractService;
     private FutureMarketService futureMarketService;
+    private UserInfoMapper userInfoMapper;
 
 	/**
 	 * Launch the application.
@@ -128,6 +142,7 @@ public class MainForm {
         tradeService = (TradeService) SpringContextUtil.getBean("tradeService");
         futureMarketService = (FutureMarketService) SpringContextUtil.getBean("futureMarketService");
         userContractService = (UserContractService) SpringContextUtil.getBean("userContractService");
+        userInfoMapper = (UserInfoMapper)SpringContextUtil.getBean("userInfoMapper");
     }
 
 	/**
@@ -270,7 +285,7 @@ public class MainForm {
                     addGroupMenuItem.setText("添加用户组");
                     addGroupMenuItem.addSelectionListener(new GroupAddSelection());
                     
-                }else if(selected.getParentItem() == null && e.button == 3){//右键用户组
+                }else if(selected.getData() != null && selected.getData() instanceof GroupInfo && e.button == 3){//右键用户组
                     
                     MenuItem addSubAccountMenuItem = new MenuItem(rightClickMenu, SWT.NONE);
                     addSubAccountMenuItem.setText("添加子账户");
@@ -284,7 +299,7 @@ public class MainForm {
                     removeGroupMenuItem.addSelectionListener(new GroupRemoveSelection(selected));
                     
                     
-                }else if(selected.getParentItem() != null && e.button == 3){//右键用户
+                }else if(selected.getData() != null && selected.getData() instanceof UserInfo && e.button == 3){//右键用户
                     
                     MenuItem editGroupMenuItem = new MenuItem(rightClickMenu, SWT.NONE);
                     editGroupMenuItem.setText("修改子账户");
@@ -304,7 +319,47 @@ public class MainForm {
 			public void handleEvent(Event e) {
 				String string = "";
 				TreeItem[] selection = userTree.getSelection();
-				for (int i = 0; i < selection.length; i++) {
+				
+				TreeItem item = selection[0];
+				Table ctab = (Table)tabItem_4.getControl();
+				
+				if("主账号".equals(item.getText())){
+				    if(ctab != mainAccountTable){
+				        tabItem_4.setText("主账号明细");
+				        tabItem_4.setControl(mainAccountTable);
+				    }
+                    refreshMainAccount();
+                    if(tabItem2 != null && !tabItem2.isDisposed()){
+                        tabItem2.dispose();
+                    }
+                    if(riskTabItem != null && !riskTabItem.isDisposed()){
+                        riskTabItem.dispose();
+                    }
+				}else if ("用户组".equals(item.getText())) {
+				    /*if(ctab != subaccountTable){
+				        tabItem_4.setText("子账号明细");
+				        tabItem_4.setControl(subaccountTable);
+				    }
+                    refreshSubaccountByGroupId(null);
+                    if(tabItem2 != null && !tabItem2.isDisposed()){
+                        tabItem2.dispose();
+                    }*/
+                }else if (item.getData() != null && item.getData() instanceof GroupInfo) {
+                    if(ctab != subaccountTable){
+                        tabItem_4.setText("子账号明细");
+                        tabItem_4.setControl(subaccountTable);
+                    }
+                    if(tabItem2 != null && !tabItem2.isDisposed()){
+                        tabItem2.dispose();
+                    }
+                    if(riskTabItem != null && !riskTabItem.isDisposed()){
+                        riskTabItem.dispose();
+                    }
+                    refreshSubaccountByGroupId(((GroupInfo)item.getData()).getId());
+                }
+				
+				
+				/*for (int i = 0; i < selection.length; i++) {
 					string += selection[i] + " ";
 					System.out.println("Selection={" + string + "}");
 					Table ctab = (Table)tabItem_4.getControl();
@@ -319,6 +374,9 @@ public class MainForm {
 								tabItem_4.setText("主账号明细");
 								tabItem_4.setControl(mainAccountTable);
 								refreshMainAccount();
+								
+								tabItem2 = new TabItem(tabFolder, SWT.NONE);
+						        tabItem2.setText("tab2");
 							}
 							
 							return;
@@ -328,10 +386,14 @@ public class MainForm {
 					if (ctab != subaccountTable) {
 						tabItem_4.setText("子账号明细");
 						tabItem_4.setControl(subaccountTable);
+						
+						if(tabItem2 != null){
+						    tabItem2.dispose();
+						}
 					}
 					refreshSubaccount(selection[0]);
 
-				}
+				}*/
 				/*tabFolder.setSelection(4);
 				if(selection[0].getData() instanceof GroupInfo){
 				    tabItem_4.setText("主账号明细");
@@ -363,7 +425,7 @@ public class MainForm {
 		TreeItem treeItem = new TreeItem(userTree, SWT.NONE);
 		treeItem.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 		treeItem.setText("New TreeItem");*/
-		refreshUserTree(userTree);
+		refreshUserTree(userTree,"1");
 		
 		expdItem1.setHeight(150);
 
@@ -394,20 +456,58 @@ public class MainForm {
 		    
 		    public void handleEvent(Event e) {
                 String string = "";
-                TreeItem[] selection = instrumentUserTree.getSelection();
+                TreeItem selection = instrumentUserTree.getSelection()[0];
                 Table ctab = (Table)tabItem_4.getControl();
-                for (int i = 0; i < selection.length; i++) {
+                
+                if("合约交易规则".equals(selection.getText())){
+                    if(ctab != tradeRuleTable){
+                        tabItem_4.setText("合约交易规则");
+                        tabItem_4.setControl(tradeRuleTable);
+                    }
+                    if(tabItem2 != null && !tabItem2.isDisposed()){
+                        tabItem2.dispose();
+                    }
+                    if(riskTabItem != null && !riskTabItem.isDisposed()){
+                        riskTabItem.dispose();
+                    }
+                    refreshContractTradeRule();
+                    
+                }else if ("所有合约".equals(selection.getText())) {
+                    if(ctab != allUserInstrumentTable){
+                        tabItem_4.setText("所有合约");
+                        tabItem_4.setControl(allUserInstrumentTable);
+                    }
+                    if(tabItem2 != null && !tabItem2.isDisposed()){
+                        tabItem2.dispose();
+                    }
+                    if(riskTabItem != null && !riskTabItem.isDisposed()){
+                        riskTabItem.dispose();
+                    }
+                    refreshAllUserInstruments();
+                }else if ("按用户查找合约".equals(selection.getText())) {
+                    if(ctab != instrumentUserTable){
+                        tabItem_4.setText("按用户查询");
+                        tabItem_4.setControl(instrumentUserTable);
+                    }
+                    if(riskTabItem != null && !riskTabItem.isDisposed()){
+                        riskTabItem.dispose();
+                    }
+                    refreshInstrumentUserTable();
+                }
+                
+                
+                /*for (int i = 0; i < selection.length; i++) {
                     
                     string += selection[i] + " ";
                     System.out.println("Selection={" + string + "}");
-                    for (TreeItem item : userTree.getItems()) {
+                    for (TreeItem item : instrumentUserTree.getItems()) {
 
                         if (item.getText().equals(selection[i].getText())) {
                             
                             if (ctab != tradeRuleTable) {
                                 tabItem_4.setText("合约交易规则");
                                 tabItem_4.setControl(tradeRuleTable);
-                                refreshContractTradeRule();;
+                                refreshContractTradeRule();
                             }
                             
                             return;
@@ -420,13 +520,19 @@ public class MainForm {
                     }
                     refreshContract(instrumentUserTree.getSelection()[0]);
                     //tabFolder.setSelection(1); // 合约明细
-                }
+                }*/
             }
 		};
 
 		instrumentUserTree.addListener(SWT.Selection, tree1Selection);
 		//合约用户树
-		refreshUserTree(instrumentUserTree);
+		//refreshUserTree(instrumentUserTree);
+		TreeItem treeItem = new TreeItem(instrumentUserTree, SWT.NONE);
+		treeItem.setText("合约交易规则");
+		TreeItem treeItem1 = new TreeItem(instrumentUserTree, SWT.NONE);
+		treeItem1.setText("所有合约");
+		TreeItem treeItem2 = new TreeItem(instrumentUserTree, SWT.NONE);
+		treeItem2.setText("按用户查找合约");
 		
 		expdItem2.setHeight(150);
 		
@@ -443,9 +549,47 @@ public class MainForm {
 		Listener tree2Selection = new Listener() {
 			public void handleEvent(Event e) {
 				String string = "";
-				TreeItem[] selection = riskUserTree.getSelection();
+				TreeItem selection = riskUserTree.getSelection()[0];
 				Table ctab = (Table)tabItem_4.getControl();
-				for (int i = 0; i < selection.length; i++) {
+				
+				if("风控组规则".equals(selection.getText())){
+				    if (ctab != riskGroupRuleTable) {
+                        tabItem_4.setText("风控组规则明细");
+                        tabItem_4.setControl(riskGroupRuleTable);
+                        if(tabItem2 != null && !tabItem2.isDisposed()){
+                            tabItem2.dispose();
+                        }
+                        
+                        if(riskTabItem != null && !riskTabItem.isDisposed()){
+                            riskTabItem.dispose();
+                        }
+                        refreshGroupRuleTable();
+                    }
+				}else if ("所有风控明细".equals(selection.getText())) {
+				    if (ctab != allRiskTable) {
+                        tabItem_4.setText("风控合约规则明细");
+                        tabItem_4.setControl(allRiskTable);
+                    }
+                    if(tabItem2 != null && !tabItem2.isDisposed()){
+                        tabItem2.dispose();
+                    }
+                    if(riskTabItem != null && !riskTabItem.isDisposed()){
+                        riskTabItem.dispose();
+                    }
+                    refreshAllRiskTable();
+                }else if ("按用户查找风控明细".equals(selection.getText())) {
+                    if (ctab != riskUserTable) {
+                        tabItem_4.setText("按用户查询风控");
+                        tabItem_4.setControl(riskUserTable);
+                    }
+                    if(tabItem2 != null && !tabItem2.isDisposed()){
+                        tabItem2.dispose();
+                    }
+                    refreshRiskUserTable();
+                }
+				
+				
+				/*for (int i = 0; i < selection.length; i++) {
 					string += selection[i] + " ";
 					System.out.println("Selection={" + string + "}");
 					for (TreeItem item : riskUserTree.getItems()) {
@@ -453,6 +597,9 @@ public class MainForm {
 							if (ctab != riskGroupRuleTable) {
 								tabItem_4.setText("风控组规则明细");
 								tabItem_4.setControl(riskGroupRuleTable);
+								if(tabItem2 != null && !tabItem2.isDisposed()){
+			                        tabItem2.dispose();
+			                    }
 								refreshGroupRuleTable();
 							}
 							//tabFolder.setSelection(2); // 风控组
@@ -464,15 +611,25 @@ public class MainForm {
 						tabItem_4.setText("风控合约规则明细");
 						tabItem_4.setControl(riskInstrumentTable);
 					}
+					if(tabItem2 != null && !tabItem2.isDisposed()){
+                        tabItem2.dispose();
+                    }
 					refreshRiskClose(selection[0]);
 					//tabFolder.setSelection(3); // 风控明细
-				}
+				}*/
 			}
 		};
 
 		riskUserTree.addListener(SWT.Selection, tree2Selection);
-		refreshUserTree(riskUserTree);
+		//refreshUserTree(riskUserTree);
+		TreeItem tree = new TreeItem(riskUserTree, SWT.NONE);
+		tree.setText("风控组规则");
 		
+		TreeItem tree1 = new TreeItem(riskUserTree, SWT.NONE);
+		tree1.setText("所有风控明细");
+		
+		TreeItem tree2 = new TreeItem(riskUserTree, SWT.NONE);
+		tree2.setText("按用户查找风控明细");
 
 		/*TreeItem treeItem4 = new TreeItem(tree_2, SWT.NONE);
 		treeItem4.setText("风控组");
@@ -480,7 +637,6 @@ public class MainForm {
 		TreeItem treeSubItem4_1 = new TreeItem(treeItem4, SWT.NONE);
 		treeSubItem4_1.setText("风控明细");
 		treeItem4.setExpanded(true);*/
-		
 
 	}
 
@@ -542,6 +698,17 @@ public class MainForm {
 		
 		//创建风控规则表格
 		createCloseRuleTable(tabFolder);
+		
+		//创建所有用户的合约
+		createAllUserInstrumentsTable(tabFolder);
+		
+		//创建用户拥有的合约数量
+		createInstrumentUserTable(tabFolder);
+		
+		//
+		createAllRiskTable(tabFolder);
+		
+		createRiskUserTable(tabFolder);
 		
 	}
 
@@ -660,44 +827,91 @@ public class MainForm {
      * 用户组树结构
      * @param tree
      */
-    public void refreshUserTree(Tree tree){
+    public void refreshUserTree(Tree tree,String ... strings){
         //清空tree
         tree.removeAll();
         
-        //查询用户组
-        List<GroupInfo> groupInfos = null;
-        try {
-            groupInfos = groupInfoService.getGroups();
-        } catch (FutureException e1) {
-            logger.error(e1.getMessage());
-        }
-        
-        if(groupInfos != null){
+        if(strings != null && strings.length >0){
             
-            for (GroupInfo groupInfo : groupInfos) {
-                TreeItem groupTreeItem = new TreeItem(tree, SWT.NONE);
-                groupTreeItem.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
-                groupTreeItem.setText(groupInfo.getGroupName());
-                groupTreeItem.setData(groupInfo);
-                //查询组用户
-                try {
-                    List<UserInfo> userInfos = this.userInfoService.getUsersByGroupId(groupInfo.getId());
-                    if(userInfos != null){
-                        for (UserInfo userInfo : userInfos) {
-                            TreeItem userTreeItem = new TreeItem(groupTreeItem, SWT.NONE);
-                            userTreeItem.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
-                            userTreeItem.setText(userInfo.getUserName());
-                            userTreeItem.setData(userInfo);
-                            userTreeItem.setExpanded(true);
+            TreeItem mainAccountTreeItem = new TreeItem(tree, SWT.NONE);
+            mainAccountTreeItem.setText("主账号");
+            mainAccountTreeItem.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+            
+            TreeItem groupTopTreeItem = new TreeItem(tree, SWT.NONE);
+            groupTopTreeItem.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+            groupTopTreeItem.setText("用户组");
+          //查询用户组
+            List<GroupInfo> groupInfos = null;
+            try {
+                groupInfos = groupInfoService.getGroups();
+            } catch (FutureException e1) {
+                logger.error(e1.getMessage());
+            }
+            
+            if(groupInfos != null){
+                
+                for (GroupInfo groupInfo : groupInfos) {
+                    TreeItem groupTreeItem = new TreeItem(groupTopTreeItem, SWT.NONE);
+                    groupTreeItem.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+                    groupTreeItem.setText(groupInfo.getGroupName());
+                    groupTreeItem.setData(groupInfo);
+                    //查询组用户
+                    /*try {
+                        List<UserInfo> userInfos = this.userInfoService.getUsersByGroupId(groupInfo.getId());
+                        if(userInfos != null){
+                            for (UserInfo userInfo : userInfos) {
+                                TreeItem userTreeItem = new TreeItem(groupTreeItem, SWT.NONE);
+                                userTreeItem.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+                                userTreeItem.setText(userInfo.getUserName());
+                                userTreeItem.setData(userInfo);
+                                userTreeItem.setExpanded(true);
+                            }
                         }
-                    }
-                } catch (FutureException e1) {
-                    logger.error(e1.getMessage());
+                    } catch (FutureException e1) {
+                        logger.error(e1.getMessage());
+                    }*/
+                    //展开树节点
+                    groupTreeItem.setExpanded(true);
                 }
-                //展开树节点
-                groupTreeItem.setExpanded(true);
+            }
+            
+        }else {
+          //查询用户组
+            List<GroupInfo> groupInfos = null;
+            try {
+                groupInfos = groupInfoService.getGroups();
+            } catch (FutureException e1) {
+                logger.error(e1.getMessage());
+            }
+            
+            if(groupInfos != null){
+                
+                for (GroupInfo groupInfo : groupInfos) {
+                    TreeItem groupTreeItem = new TreeItem(tree, SWT.NONE);
+                    groupTreeItem.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+                    groupTreeItem.setText(groupInfo.getGroupName());
+                    groupTreeItem.setData(groupInfo);
+                    //查询组用户
+                    try {
+                        List<UserInfo> userInfos = this.userInfoService.getUsersByGroupId(groupInfo.getId());
+                        if(userInfos != null){
+                            for (UserInfo userInfo : userInfos) {
+                                TreeItem userTreeItem = new TreeItem(groupTreeItem, SWT.NONE);
+                                userTreeItem.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+                                userTreeItem.setText(userInfo.getUserName());
+                                userTreeItem.setData(userInfo);
+                                userTreeItem.setExpanded(true);
+                            }
+                        }
+                    } catch (FutureException e1) {
+                        logger.error(e1.getMessage());
+                    }
+                    //展开树节点
+                    groupTreeItem.setExpanded(true);
+                }
             }
         }
+        
     }
     
     public void refreshMainAccount(){
@@ -713,19 +927,58 @@ public class MainForm {
         }
         
         if(list != null && list.size()>0){
+            int i = 0;
             for (MainAccount mainAccount : list) {
                 TableItem item = new TableItem(mainAccountTable, SWT.NULL);
                 item.setData(mainAccount);
-                item.setText(0,mainAccount.getAccountNo());
-                item.setText(1,mainAccount.getBrokerId());
+                item.setText(0,++i +"");
+                item.setText(1,mainAccount.getAccountNo());
+                item.setText(2,mainAccount.getBrokerId());
                 if(!StringUtils.isEmpty(mainAccount.getAccountType())){
-                    item.setText(2,mainAccount.getAccountType().equals("1") ? "账户主" : "账户备");
+                    item.setText(3,mainAccount.getAccountType().equals("1") ? "账户主" : "账户备");
                 }
-                item.setText(3, mainAccount.getCreateTime()==null?"":DateFormatterUtil.getDateStr(mainAccount.getCreateTime()));
-                item.setText(4, mainAccount.getUpdateTime()==null?"":DateFormatterUtil.getDateStr(mainAccount.getUpdateTime()));
+                item.setText(4, mainAccount.getCreateTime()==null?"":DateFormatterUtil.getDateStr(mainAccount.getCreateTime()));
+                item.setText(5, mainAccount.getUpdateTime()==null?"":DateFormatterUtil.getDateStr(mainAccount.getUpdateTime()));
             }
         }
         
+    }
+    
+    public void refreshSubaccountByGroupId(String groupId){
+      //清空子账户表
+        subaccountTable.removeAll();
+        UserInfo info = new UserInfo();
+        info.setGroupId(groupId);
+        List<Map<String,Object>> list = userInfoMapper.selectUserInfoByGroupId(info);
+        
+        if(list != null && list.size() > 0){
+            int i = 0;
+            for (Map<String, Object> map : list) {
+                TableItem item = new TableItem(subaccountTable, SWT.NULL);
+                
+                item.setText(0, ++i +"");
+                //用户名
+                item.setText(1, (String) map.get("USER_NAME"));
+                //密码
+                item.setText(2, (String) map.get("USER_PWD"));
+                //初始资金
+                BigDecimal capital = (BigDecimal) map.get("CAPITAL");
+                if(capital != null){
+                    item.setText(4, capital.toString());
+                }
+                //动态权益
+                item.setText(4, ((BigDecimal)map.get("RIGHTS")).toString());
+                //可用资金
+                item.setText(5, ((BigDecimal)map.get("AVAILABLE")).toString());
+                //持仓盈亏
+                item.setText(6, ((BigDecimal)map.get("POSITIONWIN")).toString());
+                //平仓盈亏
+                item.setText(7, ((BigDecimal)map.get("CLOSEWIN")).toString());
+                //占用保证金
+                item.setText(8, ((BigDecimal)map.get("MARGIN")).toString());
+                
+            }
+        }
     }
     
     public void refreshSubaccount(TreeItem treeItem){
@@ -760,7 +1013,7 @@ public class MainForm {
     }
     
     /**
-     * 刷新交易组规则
+     * 刷新合约
      * @param treeItem
      */
     public void refreshContract(TreeItem treeItem){
@@ -828,6 +1081,41 @@ public class MainForm {
     }
     
     /**
+     * 刷新合约
+     * @param treeItem
+     */
+    public void refreshUserContract(String userNo){
+        
+        try {
+            List<UserContractTradeRule> list = tradeRuleService.getTradeRulesByUserNo(userNo);
+            instrumentTable.removeAll();
+            if(list != null && list.size() >0){
+                for (UserContractTradeRule rule : list) {
+                    TableItem item= new TableItem(instrumentTable, SWT.NONE);
+                    item.setData(rule);
+                    item.setText(0, rule.getUserName());//用户名
+                    item.setText(1, rule.getContractNo());//合约
+                    item.setText(2, StringUtils.isEmpty(rule.getCancelCount())?"":rule.getCancelCount().toString());//撤单数
+                    item.setText(3, StringUtils.isEmpty(rule.getEntrustCount())?"":rule.getEntrustCount().toString());//委托数
+                    item.setText(4, StringUtils.isEmpty(rule.getOpenCount())?"":rule.getOpenCount().toString());//开仓数
+                    item.setText(5, StringUtils.isEmpty(rule.getOpenCharge())?"":rule.getOpenCharge().toString());//开仓手续费固定值
+                    item.setText(6, StringUtils.isEmpty(rule.getOpenChargeRate())?"":rule.getOpenChargeRate().toString());//开仓手续费比例
+                    item.setText(7, StringUtils.isEmpty(rule.getCloseCurrCharge())?"":rule.getCloseCurrCharge().toString());//平今手续费固定值
+                    item.setText(8, StringUtils.isEmpty(rule.getCloseCurrChargeRate())?"":rule.getCloseCurrChargeRate().toString());//平今手续费比例
+                    item.setText(9, StringUtils.isEmpty(rule.getMargin())?"":rule.getMargin().toString());//保证金比例
+                    item.setText(10, StringUtils.isEmpty(rule.getContractUnit())?"":rule.getContractUnit().toString());//合约单位
+                    item.setText(11, StringUtils.isEmpty(rule.getTickSize())?"":rule.getTickSize().toString());//最小跳动单位
+                }
+            }
+        } catch (FutureException e) {
+            MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+            box.setMessage(e.getMessage());
+            box.setText("警告");
+            box.open();
+        }
+    }
+    
+    /**
      * 查询合约交易规则
      */
     public void refreshContractTradeRule(){
@@ -840,17 +1128,126 @@ public class MainForm {
             rules = this.tradeRuleService.getTradeRulesByAll();
             
             if(rules != null){
-                
+                int i = 0;
                 for(TradeRule rule :rules){
                     TableItem item= new TableItem(tradeRuleTable, SWT.NONE);
                     item.setData(rule);
-                    item.setText(0, rule.getContract());//合约
-                    item.setText(1, StringUtils.isEmpty(rule.getCancelCount())?"":rule.getCancelCount().toString());//撤单数
-                    item.setText(2, StringUtils.isEmpty(rule.getEntrustCount())?"":rule.getEntrustCount().toString());//委托数
-                    item.setText(3, StringUtils.isEmpty(rule.getOpenCount())?"":rule.getOpenCount().toString());//开仓数
+                    item.setText(0, ++i +"");
+                    item.setText(1, rule.getContract());//合约
+                    item.setText(2, StringUtils.isEmpty(rule.getCancelCount())?"":rule.getCancelCount().toString());//撤单数
+                    item.setText(3, StringUtils.isEmpty(rule.getEntrustCount())?"":rule.getEntrustCount().toString());//委托数
+                    item.setText(4, StringUtils.isEmpty(rule.getOpenCount())?"":rule.getOpenCount().toString());//开仓数
                 }
             }
         } catch (FutureException e) {
+            MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+            box.setMessage(e.getMessage());
+            box.setText("警告");
+            box.open();
+        }
+        
+    }
+    
+    public void refreshAllUserInstruments(){
+        allUserInstrumentTable.removeAll();
+        
+        try {
+            List<UserContract> list = userContractService.queryUserContractByAll();
+            if(list != null && list.size() >0){
+                for (UserContract userContract : list) {
+                    TableItem item= new TableItem(allUserInstrumentTable, SWT.NONE);
+                    item.setText(0, userContract.getUserName());
+                    item.setText(1, userContract.getContractNo());
+                    item.setText(2, StringUtils.isEmpty(userContract.getOpenCharge())?"":userContract.getOpenCharge().toString());//开仓手续费固定值
+                    item.setText(3, StringUtils.isEmpty(userContract.getOpenChargeRate())?"":userContract.getOpenChargeRate().toString());//开仓手续费比例
+                    item.setText(4, StringUtils.isEmpty(userContract.getCloseCurrCharge())?"":userContract.getCloseCurrCharge().toString());//平今手续费固定值
+                    item.setText(5, StringUtils.isEmpty(userContract.getCloseCurrChargeRate())?"":userContract.getCloseCurrChargeRate().toString());//平今手续费比例
+                    item.setText(6, StringUtils.isEmpty(userContract.getMargin())?"":userContract.getMargin().toString());//保证金比例
+                    item.setText(7, StringUtils.isEmpty(userContract.getContractUnit())?"":userContract.getContractUnit().toString());//合约单位
+                    item.setText(8, StringUtils.isEmpty(userContract.getTickSize())?"":userContract.getTickSize().toString());//最小跳动单位
+                }
+            }
+        } catch (FutureException e) {
+            MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+            box.setMessage(e.getMessage());
+            box.setText("警告");
+            box.open();
+        }
+    }
+    
+    /**
+     * 刷新所有平仓规则
+     */
+    public void refreshAllRiskTable(){
+        allRiskTable.removeAll();
+        try {
+            List<CloseRule> list = this.closeRuleService.getAllCloseRule();
+            if(list != null && list.size() >0){
+                int i = 0;
+                for (CloseRule closeRule : list) {
+                    
+                    TableItem item= new TableItem(allRiskTable, SWT.NONE);
+                    item.setData(closeRule);
+                    item.setText(0, ++i+"");
+                    item.setText(1, closeRule.getUserName());//用户名
+                    item.setText(2, closeRule.getContractNo());//合约
+                    item.setText(3, StringUtils.isEmpty(closeRule.getTickSize())?"":closeRule.getTickSize().toString());//最小跳动单位
+                    item.setText(4, StringUtils.isEmpty(closeRule.getHop())?"":closeRule.getHop().toString());//跳数
+                    item.setText(5, StringUtils.isEmpty(closeRule.getForceCloseRate())?"":closeRule.getForceCloseRate().toString());
+                }
+            }
+        } catch (FutureException e) {
+            MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+            box.setMessage(e.getMessage());
+            box.setText("警告");
+            box.open();
+        }
+        
+    }
+    
+    /**
+     * 刷新用户合约信息
+     */
+    public void refreshInstrumentUserTable(){
+        instrumentUserTable.removeAll();
+        
+        try {
+            List<Map<String,Object>> list = this.userInfoMapper.selectUserInstrumentCount();
+            if(list != null && list.size() >0){
+                for (Map<String,Object> map : list) {
+                    TableItem item= new TableItem(instrumentUserTable, SWT.NONE);
+                    item.setData(map);
+                    item.setText(0, (String) map.get("USER_NAME"));
+                    item.setText(1, ((BigDecimal) map.get("COUNT")).toString());
+                }
+            }
+        } catch (Exception e) {
+            logger.error("查询用户拥有的合约数量失败",e);
+            MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+            box.setMessage(e.getMessage());
+            box.setText("警告");
+            box.open();
+        }
+    }
+    
+    /**
+     * 刷新用户平仓规则信息
+     */
+    public void refreshRiskUserTable(){
+        riskUserTable.removeAll();
+        try {
+            List<Map<String,Object>> list = this.userInfoMapper.selectUserRiskCount();
+            if(list != null && list.size() >0){
+                for (Map<String,Object> map : list) {
+                    TableItem item= new TableItem(riskUserTable, SWT.NONE);
+                    item.setData(map);
+                    item.setText(0, "序号");
+                    item.setText(1, (String) map.get("USER_NAME"));
+                    item.setText(2, ((BigDecimal) map.get("COUNT")).toString());
+                }
+            }
+        } catch (Exception e) {
+            logger.error("查询用户拥有的风控规则失败",e);
             MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
             box.setMessage(e.getMessage());
             box.setText("警告");
@@ -894,15 +1291,15 @@ public class MainForm {
     /**
      * 查询风控平仓规则
      */
-    public void refreshRiskClose(TreeItem treeItem){
+    public void refreshRiskClose(String userName){
         
-        UserInfo userInfo = (UserInfo) treeItem.getData();
+        //UserInfo userInfo = (UserInfo) treeItem.getData();
         
       //查询该用户所有平仓规则
         List<CloseRule> closeRules = null;
         try {
             //closeRules = closeRuleService.getCloseRuleByUserNo(userInfo.getUserNo());
-            closeRules = closeRuleService.getCloseRuleByUserName(userInfo.getUserName());
+            closeRules = closeRuleService.getCloseRuleByUserName(userName);
         } catch (FutureException e) {
             MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
             box.setMessage(e.getMessage());
@@ -913,13 +1310,16 @@ public class MainForm {
         if(closeRules == null || closeRules.size() <1){
             return;
         }
+        int i = 0;
         for(CloseRule closeRule :closeRules){
             TableItem item= new TableItem(riskInstrumentTable, SWT.NONE);
             item.setData(closeRule);
-            item.setText(0, closeRule.getContractNo());//合约
-            item.setText(1, StringUtils.isEmpty(closeRule.getTickSize())?"":closeRule.getTickSize().toString());//最小跳动单位
-            item.setText(2, StringUtils.isEmpty(closeRule.getHop())?"":closeRule.getHop().toString());//跳数
-            item.setText(3, StringUtils.isEmpty(closeRule.getForceCloseRate())?"":closeRule.getForceCloseRate().toString());
+            item.setText(0, ++i+"");
+            item.setText(1, closeRule.getUserName());
+            item.setText(2, closeRule.getContractNo());//合约
+            item.setText(3, StringUtils.isEmpty(closeRule.getTickSize())?"":closeRule.getTickSize().toString());//最小跳动单位
+            item.setText(4, StringUtils.isEmpty(closeRule.getHop())?"":closeRule.getHop().toString());//跳数
+            item.setText(5, StringUtils.isEmpty(closeRule.getForceCloseRate())?"":closeRule.getForceCloseRate().toString());
         }
     }
     
@@ -1063,6 +1463,10 @@ public class MainForm {
         tabItem_4.setControl(mainAccountTable);
         mainAccountTable.setHeaderVisible(true);
         mainAccountTable.setLinesVisible(true);
+        
+        TableColumn tableColumn = new TableColumn(mainAccountTable, SWT.NONE);
+        tableColumn.setWidth(100);
+        tableColumn.setText("序号");
 
         TableColumn tableColumn_7 = new TableColumn(mainAccountTable, SWT.NONE);
         tableColumn_7.setWidth(100);
@@ -1089,6 +1493,17 @@ public class MainForm {
         //tabItem.setControl(table);
         subaccountTable.setHeaderVisible(true);
         subaccountTable.setLinesVisible(true);
+        TableColumn col = new TableColumn(subaccountTable, SWT.NONE);
+        col.setWidth(100);
+        col.setText("用户名");
+        
+        TableColumn col1 = new TableColumn(subaccountTable, SWT.NONE);
+        col1.setWidth(100);
+        col1.setText("密码");
+        
+        TableColumn col2 = new TableColumn(subaccountTable, SWT.NONE);
+        col2.setWidth(100);
+        col2.setText("初始资金");
 
         TableColumn tblclmnNewColumn = new TableColumn(subaccountTable, SWT.NONE);
         tblclmnNewColumn.setWidth(100);
@@ -1106,7 +1521,42 @@ public class MainForm {
         tblclmnNewColumn_3.setWidth(100);
         tblclmnNewColumn_3.setText("平仓盈亏");
         
+        TableColumn tblclmnNewColumn_4 = new TableColumn(subaccountTable, SWT.NONE);
+        tblclmnNewColumn_4.setWidth(100);
+        tblclmnNewColumn_4.setText("占用保证金");
         
+        subaccountTable.addMouseListener(new MouseAdapter() {
+            
+          //单击数据项事件
+            @Override
+            public void mouseDown(MouseEvent e) {
+                TableItem selected = subaccountTable.getItem(new Point(e.x, e.y));
+                
+                //创建菜单
+                Menu menu = new  Menu(subaccountTable);
+                subaccountTable.setMenu(menu);
+                
+                
+                if(selected != null && e.button == 3){//鼠标右键数据项
+                    logger.debug("鼠标右键数据项："+selected.getText());
+                    
+                    MenuItem editGroupMenuItem = new MenuItem(menu, SWT.NONE);
+                    editGroupMenuItem.setText("修改子账户");
+                    //editGroupMenuItem.addSelectionListener(new SubAccountEditSelection(selected));
+                    
+                    MenuItem removeUserMenuItem = new MenuItem(menu, SWT.NONE);
+                    removeUserMenuItem.setText("删除子账户");
+                    //removeUserMenuItem.addSelectionListener(new SubAccountRemoveSelection(selected));
+                }else if (selected == null && e.button == 3) {//鼠标右键空白
+
+                    logger.debug("鼠标右键规则表空白区域");
+                    
+                    
+                }
+            }
+            
+           
+        });
     }
     
     
@@ -1119,7 +1569,7 @@ public class MainForm {
             public void mouseDoubleClick(MouseEvent e) {
                 TableItem selected = instrumentTable.getItem(new Point(e.x, e.y));
                 if(e.button ==1 && selected != null){//左键双击数据项
-                    TradeRuleEditDialog dialog = new TradeRuleEditDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, selected ,MainForm.this ,instrumentUserTree.getSelection()[0]);
+                    TradeRuleEditDialog dialog = new TradeRuleEditDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, selected ,MainForm.this ,null);
                     dialog.open();
                 }
             }
@@ -1158,6 +1608,9 @@ public class MainForm {
         
         instrumentTable.setHeaderVisible(true);
         instrumentTable.setLinesVisible(true);
+        TableColumn tableColumn = new TableColumn(instrumentTable, SWT.NONE);
+        tableColumn.setText("用户名");
+        tableColumn.setWidth(100);
         
         TableColumn tableColumn0 = new TableColumn(instrumentTable, SWT.NONE);
         tableColumn0.setText("合约");
@@ -1258,6 +1711,10 @@ public class MainForm {
         tradeRuleTable.setHeaderVisible(true);
         tradeRuleTable.setLinesVisible(true);
         
+        TableColumn tableColumn = new TableColumn(tradeRuleTable, SWT.NONE);
+        tableColumn.setText("序号");
+        tableColumn.setWidth(100);
+        
         TableColumn tableColumn0 = new TableColumn(tradeRuleTable, SWT.NONE);
         tableColumn0.setText("合约");
         tableColumn0.setWidth(100);
@@ -1276,6 +1733,200 @@ public class MainForm {
         
         refreshContractTradeRule();
     }
+    
+    /**
+     * 创建所有合约表
+     * @param parent
+     */
+    public void createAllUserInstrumentsTable(Composite parent){
+        allUserInstrumentTable = new Table(parent, SWT.BORDER | SWT.FULL_SELECTION);
+        
+        allUserInstrumentTable.setHeaderVisible(true);
+        allUserInstrumentTable.setLinesVisible(true);
+        
+        TableColumn tableColumn = new TableColumn(allUserInstrumentTable, SWT.NONE);
+        tableColumn.setText("用户名");
+        tableColumn.setWidth(100);
+        
+        TableColumn tableColumn0 = new TableColumn(allUserInstrumentTable, SWT.NONE);
+        tableColumn0.setText("合约");
+        tableColumn0.setWidth(100);
+        
+        /*TableColumn tableColumn1 = new TableColumn(allUserInstrumentTable, SWT.NONE);
+        tableColumn1.setText("撤单数");
+        tableColumn1.setWidth(100);
+          
+        TableColumn tableColumn2 = new TableColumn(allUserInstrumentTable, SWT.NONE);
+        tableColumn2.setText("委托数");
+        tableColumn2.setWidth(100);
+        
+        TableColumn tableColumn3 = new TableColumn(allUserInstrumentTable, SWT.NONE);
+        tableColumn3.setText("开仓数");
+        tableColumn3.setWidth(100);*/
+        
+        TableColumn tableColumn4 = new TableColumn(allUserInstrumentTable, SWT.NONE);
+        tableColumn4.setText("开仓手续费值");
+        tableColumn4.setWidth(100);
+        
+        TableColumn tableColumn5 = new TableColumn(allUserInstrumentTable, SWT.NONE);
+        tableColumn5.setText("开仓手续费%");
+        tableColumn5.setWidth(100);
+        
+        TableColumn tableColumn6 = new TableColumn(allUserInstrumentTable, SWT.NONE);
+        tableColumn6.setText("平今手续费值");
+        tableColumn6.setWidth(100);
+        
+        TableColumn tableColumn7 = new TableColumn(allUserInstrumentTable, SWT.NONE);
+        tableColumn7.setText("平今手续费%");
+        tableColumn7.setWidth(100);
+        
+        TableColumn tableColumn8 = new TableColumn(allUserInstrumentTable, SWT.NONE);
+        tableColumn8.setText("保证金比例");
+        tableColumn8.setWidth(100);
+        
+        TableColumn tableColumn9 = new TableColumn(allUserInstrumentTable, SWT.NONE);
+        tableColumn9.setText("合约单位");
+        tableColumn9.setWidth(100);
+        
+        TableColumn tableColumn10 = new TableColumn(allUserInstrumentTable, SWT.NONE);
+        tableColumn10.setText("最小跳动单位");
+        tableColumn10.setWidth(100);
+        
+    }
+    
+    /**
+     * 创建用户拥有的合约数量
+     * @param parent
+     */
+    public void createInstrumentUserTable(Composite parent){
+        
+        instrumentUserTable = new Table(parent, SWT.BORDER | SWT.FULL_SELECTION);
+        
+        instrumentUserTable.addMouseListener(new MouseAdapter() {
+        
+            
+          //双击数据项事件
+            @Override
+            public void mouseDoubleClick(MouseEvent e) {
+                TableItem selected = instrumentUserTable.getItem(new Point(e.x, e.y));
+                
+                
+                
+                if(selected != null ){
+                    if(tabItem2 == null || tabItem2.isDisposed()){
+                        
+                        tabItem2 = new TabItem(tabFolder, SWT.NONE);
+                        tabItem2.setText("用户合约信息");
+                    }
+                    
+                    //用户所拥有的合约信息
+                    tabItem2.setControl(instrumentTable);
+                    
+                    Map<String, Object> map = (Map<String, Object>) selected.getData();
+                    refreshUserContract((String) map.get("USER_NO"));
+                    tabFolder.setSelection(tabItem2);
+                }
+                
+            }
+
+        });
+        
+        instrumentUserTable.setHeaderVisible(true);
+        instrumentUserTable.setLinesVisible(true);
+        
+        TableColumn tableColumn0 = new TableColumn(instrumentUserTable, SWT.NONE);
+        tableColumn0.setText("用户名");
+        tableColumn0.setWidth(100);
+        
+        TableColumn tableColumn1 = new TableColumn(instrumentUserTable, SWT.NONE);
+        tableColumn1.setText("合约数");
+        tableColumn1.setWidth(100);
+    }
+    
+    /**
+     * 创建所有风控表格
+     * @param parent
+     */
+    public void createAllRiskTable(Composite parent){
+        
+        allRiskTable = new Table(parent, SWT.BORDER | SWT.FULL_SELECTION);
+        
+        allRiskTable.setHeaderVisible(true);
+        allRiskTable.setLinesVisible(true);
+        
+        TableColumn tableColumn = new TableColumn(allRiskTable, SWT.NONE);
+        tableColumn.setText("序号");
+        tableColumn.setWidth(100);
+        
+        TableColumn tableColumn00 = new TableColumn(allRiskTable, SWT.NONE);
+        tableColumn00.setText("用户名");
+        tableColumn00.setWidth(100);
+        
+        TableColumn tableColumn0 = new TableColumn(allRiskTable, SWT.NONE);
+        tableColumn0.setText("合约");
+        tableColumn0.setWidth(100);
+        
+        TableColumn tableColumn1 = new TableColumn(allRiskTable, SWT.NONE);
+        tableColumn1.setText("最小变动单位");
+        tableColumn1.setWidth(100);
+          
+        TableColumn tableColumn2 = new TableColumn(allRiskTable, SWT.NONE);
+        tableColumn2.setText("跳数");
+        tableColumn2.setWidth(100);
+        
+    }
+    
+    //创建风控用户表格
+    public void createRiskUserTable(Composite parent){
+        
+        riskUserTable = new Table(parent, SWT.BORDER | SWT.FULL_SELECTION);
+        
+        riskUserTable.setHeaderVisible(true);
+        riskUserTable.setLinesVisible(true);
+        
+        TableColumn tableColumn0 = new TableColumn(riskUserTable, SWT.NONE);
+        tableColumn0.setText("序号");
+        tableColumn0.setWidth(100);
+        
+        TableColumn tableColumn1 = new TableColumn(riskUserTable, SWT.NONE);
+        tableColumn1.setText("用户名");
+        tableColumn1.setWidth(100);
+          
+        TableColumn tableColumn2 = new TableColumn(riskUserTable, SWT.NONE);
+        tableColumn2.setText("风控规则数量");
+        tableColumn2.setWidth(100);
+        
+        
+        riskUserTable.addMouseListener(new MouseAdapter() {
+            
+            
+            //双击数据项事件
+              @Override
+              public void mouseDoubleClick(MouseEvent e) {
+                  TableItem selected = riskUserTable.getItem(new Point(e.x, e.y));
+                  
+                  
+                  
+                  if(selected != null ){
+                      if(riskTabItem == null || riskTabItem.isDisposed()){
+                          
+                          riskTabItem = new TabItem(tabFolder, SWT.NONE);
+                          riskTabItem.setText("用户风控信息");
+                      }
+                      
+                      //用户拥有的合约信息
+                      riskTabItem.setControl(riskInstrumentTable);
+                      //123
+                      Map<String, Object> map = (Map<String, Object>) selected.getData();
+                      refreshRiskClose((String) map.get("USER_NAME"));
+                      tabFolder.setSelection(riskTabItem);
+                  }
+                  
+              }
+
+          });
+    }
+        
     
     //添加风控平仓规则表格
     public void createCloseRuleTable(Composite parent){
@@ -1320,16 +1971,24 @@ public class MainForm {
         riskInstrumentTable.setLinesVisible(true);
         
         TableColumn tableColumn0 = new TableColumn(riskInstrumentTable, SWT.NONE);
-        tableColumn0.setText("合约");
+        tableColumn0.setText("序号");
         tableColumn0.setWidth(100);
         
         TableColumn tableColumn1 = new TableColumn(riskInstrumentTable, SWT.NONE);
-        tableColumn1.setText("最小变动单位");
+        tableColumn1.setText("用户名");
         tableColumn1.setWidth(100);
-          
+        
         TableColumn tableColumn2 = new TableColumn(riskInstrumentTable, SWT.NONE);
-        tableColumn2.setText("跳数");
+        tableColumn2.setText("合约");
         tableColumn2.setWidth(100);
+        
+        TableColumn tableColumn3 = new TableColumn(riskInstrumentTable, SWT.NONE);
+        tableColumn3.setText("最小变动单位");
+        tableColumn3.setWidth(100);
+          
+        TableColumn tableColumn4 = new TableColumn(riskInstrumentTable, SWT.NONE);
+        tableColumn4.setText("跳数");
+        tableColumn4.setWidth(100);
         
         
         
@@ -1365,7 +2024,7 @@ public class MainForm {
                 box.setMessage("删除成功");
                 box.setText("提示");
                 box.open();
-                refreshContract(instrumentUserTree.getSelection()[0]);
+                refreshUserContract(rule.getUserNo());
             } catch (FutureException e1) {
                 MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                 box.setMessage(e1.getMessage());
@@ -1423,7 +2082,10 @@ public class MainForm {
                 return ;
             }
             TreeItem item = instrumentUserTree.getSelection().length <1 ? instrumentUserTree.getTopItem() : instrumentUserTree.getSelection()[0];
-            RuleAddDialog ruleAddDialog = new RuleAddDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, MainForm.this ,item);
+            
+            
+            //RuleAddDialog ruleAddDialog = new RuleAddDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, MainForm.this ,item);
+            RuleAddDialog ruleAddDialog = new RuleAddDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, MainForm.this ,instrumentUserTable.getSelection()[0]);
             ruleAddDialog.open();
         }
     }
@@ -1462,7 +2124,7 @@ public class MainForm {
                 box.open();
                 return ;
             }
-            CloseRuleAddDialog closeRuleAddDialog = new CloseRuleAddDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, MainForm.this,riskUserTree.getSelection()[0]);
+            CloseRuleAddDialog closeRuleAddDialog = new CloseRuleAddDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, MainForm.this,riskUserTable.getSelection()[0]);
             closeRuleAddDialog.open();
         }
     }
@@ -1515,7 +2177,8 @@ public class MainForm {
                 box.open();
                 //TODO
                 //refreshTradeRule(tree.getSelection()==null?null:tree.getSelection()[0]);
-                refreshRiskClose(riskUserTree.getSelection()[0]);
+                //refreshRiskClose(riskUserTree.getSelection()[0]);
+                refreshRiskClose(closeRule.getUserName());
             } catch (FutureException e1) {
                 MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                 box.setMessage(e1.getMessage());
@@ -1686,7 +2349,7 @@ public class MainForm {
                 box.setText("提示");
                 box.open();
                 //刷新用户组树
-                refreshUserTree(userTree);
+                refreshUserTree(userTree,"1");
                 refreshUserTree(instrumentUserTree);
                 refreshUserTree(riskUserTree);
             } catch (FutureException e1) {
@@ -1721,7 +2384,7 @@ public class MainForm {
                 box.setText("提示");
                 box.open();
                 //刷新用户组树
-                refreshUserTree(userTree);
+                refreshUserTree(userTree,"1");
             } catch (FutureException e1) {
                 MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                 box.setMessage(e1.getMessage());

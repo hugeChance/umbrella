@@ -38,7 +38,7 @@ public class CloseRuleServiceImpl implements CloseRuleService {
 		UserContract contract = new UserContract();
 		contract.setContractNo(closeRule.getContractNo());
 		contract.setUserName(closeRule.getUserName());
-		int count = this.userContractMapper.countByContractNo(contract);
+		int count = this.userContractMapper.countByContractNoAndUserName(contract);
 		
 		if(count < 1){
 			throw new FutureException("", "请先添加合约交易规则");

@@ -57,8 +57,12 @@ public interface UserContractMapper {
      */
     int updateByPrimaryKey(UserContract record);
     
-    @Select("select count(1) from t_user_contract t where t.contract_no = #{contractNo} and exists (select 1 from t_user_info t1 where t.user_no = t1.user_no and t1.user_name = #{userName})")
+    //@Select("select count(1) from t_user_contract t where t.contract_no = #{contractNo} and exists (select 1 from t_user_info t1 where t.user_no = t1.user_no and t1.user_name = #{userName})")
+    @Select("select count(1) from t_user_contract t where t.contract_no = #{contractNo} and user_no = #{userNo}")
     Integer countByContractNo(UserContract record);
+    
+    @Select("select count(1) from t_user_contract t where t.contract_no = #{contractNo} and exists (select 1 from t_user_info t1 where t.user_no = t1.user_no and t1.user_name = #{userName})")
+    Integer countByContractNoAndUserName(UserContract record);
     
     List<UserContract> queryUserContractByUserName(String userName);
     

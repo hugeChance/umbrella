@@ -54,4 +54,5 @@ public interface UserInfoService {
 	 */
 	public String getUserInfoCapital(String userName) throws FutureException;
 	
+	
 }

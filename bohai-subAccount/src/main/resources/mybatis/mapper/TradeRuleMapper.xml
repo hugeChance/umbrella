@@ -27,6 +27,7 @@
     <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
     <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
     <result column="USER_NO" property="userNo" jdbcType="VARCHAR" />
+    <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
     <result column="CONTRACT_NO" property="contractNo" jdbcType="VARCHAR" />
     <result column="OPEN_CHARGE" property="openCharge" jdbcType="DECIMAL" />
     <result column="CLOSE_CURR_CHARGE" property="closeCurrCharge" jdbcType="DECIMAL" />
@@ -189,12 +190,13 @@
   </update>
   
   <select id="selectTradeRulesByUserNo" parameterType="java.lang.String" resultMap="UserContractTradeRuleMap">
-    select t.ID, t.USER_NO, t.CONTRACT_NO, t.OPEN_CHARGE, t.CLOSE_CURR_CHARGE, t.CLOSE_LAST_CHARGE, t.MARGIN, 
+    select t.ID, t.USER_NO,u.USER_NAME, t.CONTRACT_NO, t.OPEN_CHARGE, t.CLOSE_CURR_CHARGE, t.CLOSE_LAST_CHARGE, t.MARGIN, 
     t.CONTRACT_UNIT, t.TICK_SIZE, t.OPEN_CHARGE_RATE, t.CLOSE_CURR_CHARGE_RATE,
     t1.ID as TRADE_RULE_ID, t1.GROUP_ID, t1.CANCEL_COUNT, t1.ENTRUST_COUNT, t1.OPEN_COUNT
-    from T_USER_CONTRACT t left join T_TRADE_RULE t1
+    from T_USER_INFO u ,T_USER_CONTRACT t left join T_TRADE_RULE t1
     on t.CONTRACT_NO = t1.CONTRACT
-    where t.USER_NO = #{userNo,jdbcType=VARCHAR}
+    where u.user_no = t.user_no
+    and t.USER_NO = #{userNo,jdbcType=VARCHAR}
   </select>
   
   <select id="selectTradeRulesByGroupId" parameterType="java.lang.String" resultMap="UserContractTradeRuleMap">

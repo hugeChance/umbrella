@@ -7,6 +7,8 @@ public class UserContractTradeRule {
 	private String id;
 
     private String userNo;
+    
+    private String userName;
 
     private String contractNo;
 
@@ -41,8 +43,17 @@ public class UserContractTradeRule {
     private Integer entrustCount;
     
     private Integer openCount;
+    
 
-	public String getId() {
+	public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getId() {
 		return id;
 	}
 

@@ -3,6 +3,7 @@ package com.bohai.subAccount.swt.admin;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 
@@ -41,6 +42,7 @@ public class CloseRuleAddDialog extends Dialog {
 	
 	private AdminViewMain main;
 	private TreeItem treeItem;
+	private TableItem tableItem;
 	
 	private MainForm mainForm;
 
@@ -59,11 +61,11 @@ public class CloseRuleAddDialog extends Dialog {
 	   /**
 	    * @wbp.parser.constructor
 	    */
-	   public CloseRuleAddDialog(Shell parent, int style, MainForm mainForm, TreeItem treeItem) {
+	   public CloseRuleAddDialog(Shell parent, int style, MainForm mainForm, TableItem tableItem) {
 	        super(parent, style);
 	        setText("添加开平仓规则");
 	        this.mainForm = mainForm;
-	        this.treeItem = treeItem;
+	        this.tableItem = tableItem;
 	    }
 
 	/**
@@ -103,6 +105,8 @@ public class CloseRuleAddDialog extends Dialog {
         //获取用户名
         if(treeItem != null){
             userNameLab.setText(((UserInfo)treeItem.getData()).getUserName());
+        }else if (tableItem != null) {
+            userNameLab.setText(tableItem.getText(1));
         }
 		
 		Label label_2 = new Label(shell, SWT.NONE);
@@ -232,7 +236,7 @@ public class CloseRuleAddDialog extends Dialog {
 				}
 				if(mainForm != null){
 				    //刷新风控平仓信息
-				    mainForm.refreshRiskClose(treeItem);
+				    mainForm.refreshRiskClose(tableItem.getText(1));
 				}
 				shell.close();
 			}
