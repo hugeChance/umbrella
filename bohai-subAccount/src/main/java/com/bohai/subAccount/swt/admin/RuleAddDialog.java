@@ -68,6 +68,9 @@ public class RuleAddDialog extends Dialog {
 		this.mainForm = mainForm;
 	}
 	
+   /**
+    * @wbp.parser.constructor
+    */
    public RuleAddDialog(Shell parent, int style, MainForm mainForm, TableItem tableItem) {
         super(parent, style);
         setText("添加合约");
@@ -98,7 +101,7 @@ public class RuleAddDialog extends Dialog {
 	 */
 	private void createContents() {
 		shell = new Shell(getParent(), getStyle());
-		shell.setSize(521, 447);
+		shell.setSize(521, 361);
 		shell.setText(getText());
 		
 		Label groupLabel = new Label(shell, SWT.NONE);
@@ -164,73 +167,71 @@ public class RuleAddDialog extends Dialog {
 		openCount.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		openCount.setBounds(111, 123, 84, 23);*/
 		
-		Label cutoff = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL);
-		cutoff.setBounds(0, 161, 515, 2);
 		
 		Label openChargeLabel = new Label(shell, SWT.NONE);
 		openChargeLabel.setText("开仓手续费：");
 		openChargeLabel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		openChargeLabel.setAlignment(SWT.RIGHT);
-		openChargeLabel.setBounds(21, 185, 105, 23);
+		openChargeLabel.setBounds(20, 90, 105, 23);
 		
 		openCharge = new Text(shell, SWT.BORDER);
 		openCharge.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		openCharge.setBounds(132, 185, 84, 23);
+		openCharge.setBounds(131, 90, 84, 23);
 		
 		Label openChargeRateLabel = new Label(shell, SWT.NONE);
 		openChargeRateLabel.setText("开仓手续费%：");
 		openChargeRateLabel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		openChargeRateLabel.setAlignment(SWT.RIGHT);
-		openChargeRateLabel.setBounds(245, 185, 129, 23);
+		openChargeRateLabel.setBounds(244, 90, 129, 23);
 		
 		openChargeRate = new Text(shell, SWT.BORDER);
 		openChargeRate.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		openChargeRate.setBounds(386, 185, 84, 23);
+		openChargeRate.setBounds(385, 90, 84, 23);
 		
 		Label closeCurrLabel = new Label(shell, SWT.NONE);
 		closeCurrLabel.setText("平今手续费：");
 		closeCurrLabel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		closeCurrLabel.setAlignment(SWT.RIGHT);
-		closeCurrLabel.setBounds(21, 229, 105, 23);
+		closeCurrLabel.setBounds(20, 134, 105, 23);
 		
 		closeCurrCharge = new Text(shell, SWT.BORDER);
 		closeCurrCharge.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		closeCurrCharge.setBounds(132, 229, 84, 23);
+		closeCurrCharge.setBounds(131, 134, 84, 23);
 		
 		Label closeCurrChargeRateLabel = new Label(shell, SWT.NONE);
 		closeCurrChargeRateLabel.setText("平今手续费%：");
 		closeCurrChargeRateLabel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		closeCurrChargeRateLabel.setAlignment(SWT.RIGHT);
-		closeCurrChargeRateLabel.setBounds(257, 229, 116, 23);
+		closeCurrChargeRateLabel.setBounds(256, 134, 116, 23);
 		
 		closeCurrChargeRate = new Text(shell, SWT.BORDER);
 		closeCurrChargeRate.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		closeCurrChargeRate.setBounds(385, 229, 84, 23);
+		closeCurrChargeRate.setBounds(384, 134, 84, 23);
 		
 		Label marginLabel = new Label(shell, SWT.NONE);
 		marginLabel.setText("保证金比例：");
 		marginLabel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		marginLabel.setAlignment(SWT.RIGHT);
-		marginLabel.setBounds(21, 275, 105, 23);
+		marginLabel.setBounds(20, 180, 105, 23);
 		
 		margin = new Text(shell, SWT.BORDER);
 		margin.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		margin.setBounds(132, 275, 84, 23);
+		margin.setBounds(131, 180, 84, 23);
 		
 		Label unitLabel = new Label(shell, SWT.NONE);
 		unitLabel.setText("合约单位：");
 		unitLabel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		unitLabel.setAlignment(SWT.RIGHT);
-		unitLabel.setBounds(273, 275, 95, 23);
+		unitLabel.setBounds(272, 180, 95, 23);
 		
 		unit = new Text(shell, SWT.BORDER);
 		unit.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		unit.setBounds(386, 275, 84, 23);
+		unit.setBounds(385, 180, 84, 23);
 		
 		
 		Button button = new Button(shell, SWT.NONE);
 		button.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		button.setBounds(71, 362, 95, 27);
+		button.setBounds(70, 267, 95, 27);
 		button.setText("添加");
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -356,17 +357,17 @@ public class RuleAddDialog extends Dialog {
 		
 		Button cancel = new Button(shell, SWT.NONE);
 		cancel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		cancel.setBounds(348, 362, 95, 27);
+		cancel.setBounds(347, 267, 95, 27);
 		cancel.setText("取消");
 		
 		Label label = new Label(shell, SWT.NONE);
 		label.setText("最小跳动单位：");
 		label.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		label.setBounds(32, 318, 116, 23);
+		label.setBounds(31, 223, 116, 23);
 		
 		tickSize = new Text(shell, SWT.BORDER);
 		tickSize.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		tickSize.setBounds(154, 315, 84, 23);
+		tickSize.setBounds(153, 220, 84, 23);
 		
 		cancel.addSelectionListener(new SelectionAdapter() {
 			@Override

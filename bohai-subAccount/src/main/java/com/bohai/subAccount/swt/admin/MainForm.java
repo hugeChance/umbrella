@@ -75,7 +75,9 @@ public class MainForm {
 	
 	TabItem riskTabItem;
 
+	//子账户表
 	private Table subaccountTable;
+	//用户合约信息表
 	private Table instrumentTable;
 	private Table riskGroupRuleTable;
 	private Table riskInstrumentTable;
@@ -1112,16 +1114,16 @@ public class MainForm {
                     item.setText(0, ++i +"");
                     item.setText(1, rule.getUserName());//用户名
                     item.setText(2, rule.getContractNo());//合约
-                    item.setText(3, StringUtils.isEmpty(rule.getCancelCount())?"":rule.getCancelCount().toString());//撤单数
+                    /*item.setText(3, StringUtils.isEmpty(rule.getCancelCount())?"":rule.getCancelCount().toString());//撤单数
                     item.setText(4, StringUtils.isEmpty(rule.getEntrustCount())?"":rule.getEntrustCount().toString());//委托数
                     item.setText(5, StringUtils.isEmpty(rule.getOpenCount())?"":rule.getOpenCount().toString());//开仓数
-                    item.setText(6, StringUtils.isEmpty(rule.getOpenCharge())?"":rule.getOpenCharge().toString());//开仓手续费固定值
-                    item.setText(7, StringUtils.isEmpty(rule.getOpenChargeRate())?"":rule.getOpenChargeRate().toString());//开仓手续费比例
-                    item.setText(8, StringUtils.isEmpty(rule.getCloseCurrCharge())?"":rule.getCloseCurrCharge().toString());//平今手续费固定值
-                    item.setText(9, StringUtils.isEmpty(rule.getCloseCurrChargeRate())?"":rule.getCloseCurrChargeRate().toString());//平今手续费比例
-                    item.setText(10, StringUtils.isEmpty(rule.getMargin())?"":rule.getMargin().toString());//保证金比例
-                    item.setText(11, StringUtils.isEmpty(rule.getContractUnit())?"":rule.getContractUnit().toString());//合约单位
-                    item.setText(12, StringUtils.isEmpty(rule.getTickSize())?"":rule.getTickSize().toString());//最小跳动单位
+*/                    item.setText(3, StringUtils.isEmpty(rule.getOpenCharge())?"":rule.getOpenCharge().toString());//开仓手续费固定值
+                    item.setText(4, StringUtils.isEmpty(rule.getOpenChargeRate())?"":rule.getOpenChargeRate().toString());//开仓手续费比例
+                    item.setText(5, StringUtils.isEmpty(rule.getCloseCurrCharge())?"":rule.getCloseCurrCharge().toString());//平今手续费固定值
+                    item.setText(6, StringUtils.isEmpty(rule.getCloseCurrChargeRate())?"":rule.getCloseCurrChargeRate().toString());//平今手续费比例
+                    item.setText(7, StringUtils.isEmpty(rule.getMargin())?"":rule.getMargin().toString());//保证金比例
+                    item.setText(8, StringUtils.isEmpty(rule.getContractUnit())?"":rule.getContractUnit().toString());//合约单位
+                    item.setText(9, StringUtils.isEmpty(rule.getTickSize())?"":rule.getTickSize().toString());//最小跳动单位
                 }
             }
         } catch (FutureException e) {
@@ -1658,7 +1660,7 @@ public class MainForm {
         tableColumn0.setText("合约");
         tableColumn0.setWidth(100);
         
-        TableColumn tableColumn1 = new TableColumn(instrumentTable, SWT.NONE);
+        /*TableColumn tableColumn1 = new TableColumn(instrumentTable, SWT.NONE);
         tableColumn1.setText("撤单数");
         tableColumn1.setWidth(100);
           
@@ -1668,7 +1670,7 @@ public class MainForm {
         
         TableColumn tableColumn3 = new TableColumn(instrumentTable, SWT.NONE);
         tableColumn3.setText("开仓数");
-        tableColumn3.setWidth(100);
+        tableColumn3.setWidth(100);*/
         
         TableColumn tableColumn4 = new TableColumn(instrumentTable, SWT.NONE);
         tableColumn4.setText("开仓手续费值");
