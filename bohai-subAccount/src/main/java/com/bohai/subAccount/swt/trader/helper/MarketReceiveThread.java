@@ -98,7 +98,7 @@ public class MarketReceiveThread implements Runnable {
                                         //买量
                                         Integer bidVolume1 = json.getInteger("bidVolume1");
                                         tableItem.setText(2, bidVolume1.toString());
-                                        
+                                        tableItem.setForeground(2, SWTResourceManager.getColor(242,14,14));
                                         //买价
                                         Double buyPrice = json.getDouble("bidPrice1");
                                         if(buyPrice.equals(Double.MAX_VALUE)||buyPrice.equals(Double.MIN_VALUE)){
@@ -106,6 +106,7 @@ public class MarketReceiveThread implements Runnable {
                                         	buyPrice = json.getDouble("lowerLimitPrice");
                                         }
                                         tableItem.setText(3, new BigDecimal(buyPrice).setScale(1, RoundingMode.HALF_UP).toString());
+                                        tableItem.setForeground(3, SWTResourceManager.getColor(242,14,14));
                                         
                                         //卖价
                                         Double sellPrice = json.getDouble("askPrice1");
@@ -114,10 +115,11 @@ public class MarketReceiveThread implements Runnable {
                                         	sellPrice = json.getDouble("upperLimitPrice");
                                         }
                                         tableItem.setText(4, new BigDecimal(sellPrice).setScale(1, RoundingMode.HALF_UP).toString());
-                                        
+                                        tableItem.setForeground(4, SWTResourceManager.getColor(78,178,88));
                                         //卖量
                                         Integer askVolume1 = json.getInteger("askVolume1");
                                         tableItem.setText(5, askVolume1.toString());
+                                        tableItem.setForeground(5, SWTResourceManager.getColor(78,178,88));
                                         //涨跌 = 最新价 - 昨收盘
                                         BigDecimal change= new BigDecimal(json.getString("lastPrice")).subtract(new BigDecimal(json.getString("preSettlementPrice"))).setScale(1, RoundingMode.HALF_UP);
                                         tableItem.setText(6, String.valueOf(change));

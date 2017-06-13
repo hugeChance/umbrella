@@ -238,8 +238,8 @@ public class SubAccountAddDialog extends Dialog {
 		Label label = new Label(composite, SWT.NONE);
 		label.setAlignment(SWT.RIGHT);
 		label.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		label.setBounds(25, 238, 101, 23);
-		label.setText("配资比例：");
+		label.setBounds(10, 238, 116, 23);
+		label.setText("资金调入比例：");
 		
 		text = new Text(composite, SWT.BORDER);
 		text.setFont(SWTResourceManager.getFont("Microsoft YaHei UI", 12, SWT.NORMAL));

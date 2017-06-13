@@ -303,7 +303,7 @@ public class RiskMainMarketReceiveThread implements Runnable {
     	}
     	
     	for(CloseRule closeRule:closeRules){
-    		if(investorPosition.getInstrumentid().equals(closeRule.getContractNo())){
+    		if(investorPosition.getInstrumentid().equals(closeRule.getContractNo()) && contract.getUserName().equals(closeRule.getUserName())){
     			
     			if(closeRule.getHop() == null){
     				return;

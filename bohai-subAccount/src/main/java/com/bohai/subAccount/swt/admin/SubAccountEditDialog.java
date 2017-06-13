@@ -250,10 +250,10 @@ public class SubAccountEditDialog extends Dialog {
 		cancel.setText("取消");
 		
 		Label lblPeizi = new Label(composite, SWT.NONE);
-		lblPeizi.setText("配资比例：");
+		lblPeizi.setText("资金调入比例：");
 		lblPeizi.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		lblPeizi.setAlignment(SWT.RIGHT);
-		lblPeizi.setBounds(46, 246, 80, 23);
+		lblPeizi.setBounds(10, 246, 116, 23);
 		
 	}
 
