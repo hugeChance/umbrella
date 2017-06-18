@@ -32,8 +32,8 @@ public class CapitalRateDetailServiceImpl implements CapitalRateDetailService {
 		try {
 			list = capitalRateDetailMapper.getUserByUserName(subuserid);
 		} catch (Exception e) {
-			logger.error("查询order失败",e);
-			throw new FutureException("","查询order失败");
+			logger.error("查询getUserByUserName失败",e);
+			throw new FutureException("","查询getUserByUserName失败");
 		}
 		
 		return list;
@@ -41,13 +41,13 @@ public class CapitalRateDetailServiceImpl implements CapitalRateDetailService {
 
 
 	@Override
-	public void saveOrder(CapitalRateDetail capitalRateDetail) throws FutureException {
-		logger.info("order入參："+JSON.toJSONString(capitalRateDetail));
+	public void saveCapitalRateDetail(CapitalRateDetail capitalRateDetail) throws FutureException {
+		logger.info("saveCapitalRateDetail入參："+JSON.toJSONString(capitalRateDetail));
 		try {
 			capitalRateDetailMapper.insert(capitalRateDetail);
 		} catch (Exception e) {
-			logger.error("插入order失败",e);
-			throw new FutureException("","插入order失败");
+			logger.error("插入saveCapitalRateDetail失败",e);
+			throw new FutureException("","配资表明细 出金插入数据失败！插入saveCapitalRateDetail失败");
 		}
 		
 	}

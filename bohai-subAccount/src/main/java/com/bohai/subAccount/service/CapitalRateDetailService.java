@@ -20,7 +20,7 @@ public interface CapitalRateDetailService {
 	 * @param userInfo
 	 * @throws FutureException
 	 */
-	public void saveOrder(CapitalRateDetail capitalRateDetail) throws FutureException;
+	public void saveCapitalRateDetail(CapitalRateDetail capitalRateDetail) throws FutureException;
 	
 	
 	

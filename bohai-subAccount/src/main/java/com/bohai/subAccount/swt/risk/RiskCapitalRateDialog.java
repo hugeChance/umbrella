@@ -52,6 +52,8 @@ public class RiskCapitalRateDialog extends Dialog {
 	
 	private UserCapitalRateVO userCapitalRateVO;
 	static Logger logger = Logger.getLogger(AdminViewMain.class);
+	private Text text_2;
+	private Text text_3;
 
 	/**
 	 * Create the dialog.
@@ -172,15 +174,9 @@ public class RiskCapitalRateDialog extends Dialog {
 		lblNewLabel_1.setBounds(182, 80, 61, 17);
 		lblNewLabel_1.setText("入金调配：");
 		
-		Label lblNewLabel_2 = new Label(shell, SWT.NONE);
-		lblNewLabel_2.setBounds(249, 80, 96, 17);
-		
 		Label label_9 = new Label(shell, SWT.NONE);
 		label_9.setBounds(182, 120, 61, 17);
 		label_9.setText("出金调配：");
-		
-		Label lblNewLabel_3 = new Label(shell, SWT.NONE);
-		lblNewLabel_3.setBounds(249, 120, 96, 17);
 		
 		Button button = new Button(shell, SWT.NONE);
 		button.setFont(SWTResourceManager.getFont("微软雅黑", 9, SWT.NORMAL));
@@ -193,7 +189,8 @@ public class RiskCapitalRateDialog extends Dialog {
 				// 出入金CHECK
 				if (checkCapital(item.getText(0),text.getText(),text_1.getText(),String.valueOf(doublej),"0") == 1){
 					// 出入金操作
-					setCapital(item.getText(0),text.getText(),text_1.getText(),capitalRate.getUserCapitalRate().toString());
+					// 现在质押资金设了常量为0
+					setCapital(item.getText(0),text.getText(),text_1.getText(),capitalRate.getUserCapitalRate().toString(),text_2.getText(),text_3.getText());
 				} else {
 					MessageBox messagebox = new MessageBox(shell, SWT.ICON_QUESTION
 	                        | SWT.YES );
@@ -213,6 +210,12 @@ public class RiskCapitalRateDialog extends Dialog {
 		button_1.setBounds(185, 178, 80, 27);
 		button_1.setText("取      消");
 		
+		text_2 = new Text(shell, SWT.BORDER);
+		text_2.setBounds(249, 80, 96, 23);
+		
+		text_3 = new Text(shell, SWT.BORDER);
+		text_3.setBounds(249, 120, 96, 23);
+		
 		
 
 	}
@@ -223,12 +226,12 @@ public class RiskCapitalRateDialog extends Dialog {
 		double tempdbout = 0; 
 		double tempOwnCapital = 0;
 		double tempCapitalRetain = 0;
-		if( inCapital.equals("")) {
+		if( inCapital == null || inCapital.equals("")) {
 			tempdbin = 0;
 		} else {
 			tempdbin = Double.valueOf(inCapital);
 		}
-		if( outCapital.equals("")) {
+		if( outCapital == null || outCapital.equals("")) {
 			tempdbout = 0;
 		} else {
 			tempdbout = Double.valueOf(outCapital);
@@ -258,23 +261,23 @@ public class RiskCapitalRateDialog extends Dialog {
 		return 0;
 	}
 	
-	private void setCapital(String userName,String inCapital,String outCapital,String userCapitalRate)
+	private void setCapital(String userName,String inCapital,String outCapital,String userCapitalRate,String hostInCapital,String hostOutCapital)
 	{
-		double hostCapital1 = 0;
+		
 		double tmpAdd = 0;
 		CapitalRateDetail capitalRateDetail = new CapitalRateDetail();
 		CapitalRate capitalRate = new CapitalRate();
 		//入金
 		if( Double.valueOf(inCapital) > 0 ) {
-			hostCapital1 = Double.valueOf(inCapital) * Double.valueOf(userCapitalRate);
+			
 			capitalRateDetail.setUserName(userName);
 			capitalRateDetail.setInsertTime(new Date());
-			capitalRateDetail.setHostCapital(new BigDecimal( hostCapital1));
+			capitalRateDetail.setHostCapital(new BigDecimal( hostInCapital));
 			capitalRateDetail.setUserCapital(new BigDecimal(inCapital));
-			tmpAdd = Double.valueOf(inCapital) + hostCapital1;
+			tmpAdd = Double.valueOf(inCapital) + Double.valueOf(hostInCapital);
 			//配资表明细 插入数据
 			try {
-				capitalRateDetailService.saveOrder(capitalRateDetail);
+				capitalRateDetailService.saveCapitalRateDetail(capitalRateDetail);
 			} catch (FutureException e) {
 
 				logger.debug("配资表明细 入金插入数据失败！");
@@ -282,7 +285,7 @@ public class RiskCapitalRateDialog extends Dialog {
 			
 			//配资表总览更新数据
 			capitalRate.setUserName(userName);
-			capitalRate.setHostCapital1(new BigDecimal( hostCapital1));
+			capitalRate.setHostCapital1(new BigDecimal( hostInCapital));
 			capitalRate.setUpdateTime(new Date());
 			capitalRate.setUserCapital(new BigDecimal(inCapital));
 			try {
@@ -314,32 +317,42 @@ public class RiskCapitalRateDialog extends Dialog {
 		
 		//出金
 		if( Double.valueOf(outCapital) > 0 ) {
-			double tmpinCapital = 0;
-			hostCapital1 = Double.valueOf(outCapital) * Double.valueOf(userCapitalRate) * -1;
+			double tmpOutCapital = 0;
+			
 			capitalRateDetail.setUserName(userName);
 			capitalRateDetail.setInsertTime(new Date());
-			capitalRateDetail.setHostCapital(new BigDecimal( hostCapital1));
-			tmpinCapital = Double.valueOf(inCapital) * -1;
-			capitalRateDetail.setUserCapital(new BigDecimal(tmpinCapital));
-			tmpAdd = Double.valueOf(tmpinCapital) + hostCapital1;
+			capitalRateDetail.setHostCapital(new BigDecimal( hostOutCapital).multiply(new BigDecimal("-1")));
+			tmpOutCapital = Double.valueOf(outCapital) * -1;
+			capitalRateDetail.setUserCapital(new BigDecimal(tmpOutCapital));
+			tmpAdd = Double.valueOf(tmpOutCapital) + Double.valueOf(hostOutCapital) * -1;
 			//表明细 插入数据
 			try {
-				capitalRateDetailService.saveOrder(capitalRateDetail);
+				capitalRateDetailService.saveCapitalRateDetail(capitalRateDetail);
 			} catch (FutureException e) {
 				
 				logger.debug("配资表明细 出金插入数据失败！");
+				MessageBox messagebox = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES );
+                messagebox.setText("错误");
+                messagebox.setMessage(e.getMessage()) ;
+                messagebox.open();
+				return;
 			}
 			
 			//配资表总览更新数据
 			capitalRate.setUserName(userName);
-			capitalRate.setHostCapital1(new BigDecimal( hostCapital1));
+			capitalRate.setHostCapital1(new BigDecimal( hostOutCapital));
 			capitalRate.setUpdateTime(new Date());
-			capitalRate.setUserCapital(new BigDecimal(inCapital));
+			capitalRate.setUserCapital(new BigDecimal(outCapital));
 			try {
 				capitalRateService.distractCapitalRate(capitalRate);
 			} catch (FutureException e) {
 				
 				logger.debug("配资表总览 出金更新数据失败！");
+				MessageBox messagebox = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES );
+                messagebox.setText("错误");
+                messagebox.setMessage(e.getMessage()) ;
+                messagebox.open();
+				return;
 			}
 			
 			//推送COREAPP

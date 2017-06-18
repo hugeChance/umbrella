@@ -84,19 +84,25 @@ public class CapitalRateServiceImpl implements CapitalRateService {
 		double userCapitaltmp = 0;
 		double hostCapital1tmp = 0;
 		
-		//取得已有配资表总览的资金
-		tmpcapitalRate = capitalRateMapper.selectByPrimaryKey(capitalRate.getUserName());
-		userCapitaltmp = capitalRate.getUserCapital().doubleValue();
-		hostCapital1tmp = capitalRate.getHostCapital1().doubleValue();
-		userCapitaltmp = userCapitaltmp + tmpcapitalRate.getUserCapital().doubleValue();
-		hostCapital1tmp = hostCapital1tmp + tmpcapitalRate.getHostCapital1().doubleValue();
+		try {
 		
-		newcapitalRate.setUserName(capitalRate.getUserName());
-		newcapitalRate.setUpdateTime(capitalRate.getUpdateTime());
-		newcapitalRate.setUserCapital(new BigDecimal(userCapitaltmp));
-		newcapitalRate.setUserCapitalRate(tmpcapitalRate.getUserCapitalRate());
-		newcapitalRate.setHostCapital1(new BigDecimal(hostCapital1tmp));
-		capitalRateMapper.updateByPrimaryKeySelective(newcapitalRate);
+			//取得已有配资表总览的资金
+			tmpcapitalRate = capitalRateMapper.selectByPrimaryKey(capitalRate.getUserName());
+			userCapitaltmp = capitalRate.getUserCapital().doubleValue();
+			hostCapital1tmp = capitalRate.getHostCapital1().doubleValue();
+			userCapitaltmp = userCapitaltmp + tmpcapitalRate.getUserCapital().doubleValue();
+			hostCapital1tmp = hostCapital1tmp + tmpcapitalRate.getHostCapital1().doubleValue();
+			
+			newcapitalRate.setUserName(capitalRate.getUserName());
+			newcapitalRate.setUpdateTime(capitalRate.getUpdateTime());
+			newcapitalRate.setUserCapital(new BigDecimal(userCapitaltmp));
+			newcapitalRate.setUserCapitalRate(tmpcapitalRate.getUserCapitalRate());
+			newcapitalRate.setHostCapital1(new BigDecimal(hostCapital1tmp));
+			capitalRateMapper.updateByPrimaryKeySelective(newcapitalRate);
+		} catch (Exception e) {
+			logger.error("插入addCapitalRate失败！",e);
+			throw new FutureException("","插入addCapitalRate失败！");
+		}
 		
 	}
 
@@ -109,19 +115,25 @@ public class CapitalRateServiceImpl implements CapitalRateService {
 		double userCapitaltmp = 0;
 		double hostCapital1tmp = 0;
 		
-		//取得已有配资表总览的资金
-		tmpcapitalRate = capitalRateMapper.selectByPrimaryKey(capitalRate.getUserName());
-		userCapitaltmp = capitalRate.getUserCapital().doubleValue();
-		hostCapital1tmp = capitalRate.getHostCapital1().doubleValue();
-		userCapitaltmp = userCapitaltmp + tmpcapitalRate.getUserCapital().doubleValue();
-		hostCapital1tmp = hostCapital1tmp + tmpcapitalRate.getHostCapital1().doubleValue();
+		try {
 		
-		newcapitalRate.setUserName(capitalRate.getUserName());
-		newcapitalRate.setUpdateTime(capitalRate.getUpdateTime());
-		newcapitalRate.setUserCapital(new BigDecimal(userCapitaltmp));
-		newcapitalRate.setUserCapitalRate(tmpcapitalRate.getUserCapitalRate());
-		newcapitalRate.setHostCapital1(new BigDecimal(hostCapital1tmp));
-		capitalRateMapper.updateByPrimaryKeySelective(newcapitalRate);
+			//取得已有配资表总览的资金
+			tmpcapitalRate = capitalRateMapper.selectByPrimaryKey(capitalRate.getUserName());
+			userCapitaltmp = capitalRate.getUserCapital().doubleValue() * -1 ;
+			hostCapital1tmp = capitalRate.getHostCapital1().doubleValue() * -1;
+			userCapitaltmp = userCapitaltmp + tmpcapitalRate.getUserCapital().doubleValue();
+			hostCapital1tmp = hostCapital1tmp + tmpcapitalRate.getHostCapital1().doubleValue();
+			
+			newcapitalRate.setUserName(capitalRate.getUserName());
+			newcapitalRate.setUpdateTime(capitalRate.getUpdateTime());
+			newcapitalRate.setUserCapital(new BigDecimal(userCapitaltmp));
+			newcapitalRate.setUserCapitalRate(tmpcapitalRate.getUserCapitalRate());
+			newcapitalRate.setHostCapital1(new BigDecimal(hostCapital1tmp));
+			capitalRateMapper.updateByPrimaryKeySelective(newcapitalRate);
+		} catch (Exception e) {
+			logger.error("插入distractCapitalRate失败！",e);
+			throw new FutureException("","插入distractCapitalRate失败！");
+		}
 		
 	}
 

@@ -2763,7 +2763,7 @@ public class CoreappView {
         double getOldInOutMoney = 0;
         //出入金推送
         //logger.info("用户名:"+subUserid+"|持仓盈亏做可用计算:"+JSON.toJSONString(available));
-        UserAvailableMemorySave userAvailableMemorySave =         mapAvailableMemorySave.get(subUserid);
+        UserAvailableMemorySave userAvailableMemorySave = mapAvailableMemorySave.get(subUserid);
         getOldInOutMoney = Double.valueOf(userAvailableMemorySave.getInOutMoney());
         getOldInOutMoney = getOldInOutMoney + Double.valueOf(available);
         userAvailableMemorySave.setInOutMoney(String.valueOf(getOldInOutMoney));
