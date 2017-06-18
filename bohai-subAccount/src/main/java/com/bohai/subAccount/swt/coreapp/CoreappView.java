@@ -725,6 +725,7 @@ public class CoreappView {
     			tmpStrCombokey = trade.getTradedate()+trade.getExchangeid()+trade.getOrdersysid();
     			buyDetail.setCombokey(tmpStrCombokey);
     			buyDetail.setSellvolume(Short.valueOf("0"));
+    			buyDetailService.saveBuyDetail(buyDetail);
     			
     		} catch (Exception e1) {
     			// TODO Auto-generated catch block
@@ -741,6 +742,7 @@ public class CoreappView {
     			BeanUtils.copyProperties(sellDetail, trade);
     			tmpStrCombokey = trade.getTradedate()+trade.getExchangeid()+trade.getOrdersysid();
     			sellDetail.setCombokey(tmpStrCombokey);
+    			sellDetailService.saveSellDetail(sellDetail);
     			
     		} catch (Exception e1) {
     			// TODO Auto-generated catch block

@@ -135,14 +135,6 @@ public class RiskCapitalRateDialog extends Dialog {
 		label_10.setBounds(144, 10, 61, 17);
 		label_10.setText(label_1.getText());
 		
-		Label label_2 = new Label(shell, SWT.NONE);
-		label_2.setBounds(217, 10, 61, 17);
-		label_2.setText("配置比例：");
-		
-		Label label_3 = new Label(shell, SWT.NONE);
-		label_3.setBounds(284, 10, 61, 17);
-		label_3.setText("1 : " + capitalRate.getUserCapitalRate());
-		
 		Label label_4 = new Label(shell, SWT.NONE);
 		label_4.setBounds(10, 44, 61, 17);
 		label_4.setText("自有资金：");
@@ -155,11 +147,11 @@ public class RiskCapitalRateDialog extends Dialog {
 		label_5.setText(String.valueOf(doublei));
 		
 		Label lblNewLabel = new Label(shell, SWT.NONE);
-		lblNewLabel.setBounds(182, 44, 61, 17);
+		lblNewLabel.setBounds(182, 10, 61, 17);
 		lblNewLabel.setText("现有调配：");
 		
 		Label label_6 = new Label(shell, SWT.NONE);
-		label_6.setBounds(249, 44, 96, 17);
+		label_6.setBounds(249, 10, 96, 17);
 		label_6.setText(capitalRate.getHostCapital1().toString());
 		
 		Label label_7 = new Label(shell, SWT.NONE);
@@ -214,11 +206,11 @@ public class RiskCapitalRateDialog extends Dialog {
 			    
 			}
 		});
-		button.setBounds(10, 161, 80, 27);
+		button.setBounds(10, 178, 80, 27);
 		button.setText("确      认");
 		
 		Button button_1 = new Button(shell, SWT.NONE);
-		button_1.setBounds(182, 161, 80, 27);
+		button_1.setBounds(185, 178, 80, 27);
 		button_1.setText("取      消");
 		
 		
