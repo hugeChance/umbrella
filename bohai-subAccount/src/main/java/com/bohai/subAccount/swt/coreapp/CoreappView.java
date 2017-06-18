@@ -435,20 +435,22 @@ public class CoreappView {
         try {
             //卖开 买平路线     账户备
             MainAccount accountSecondary = this.mainAccountService.getAccountByType("2");
-            ctpSecond = new Socket(ApplicationConfig.getProperty("addressSecond"),
-                    Integer.parseInt(ApplicationConfig.getProperty("portSecond")));
-            outSecond = new PrintWriter(new OutputStreamWriter(ctpSecond.getOutputStream(),"UTF-8"));
-            Thread sellConnect = new Thread(new CtpConnectThread(CoreappView.this,ctpSecond));
-            sellConnect.setDaemon(true);
-            sellConnect.start();
-            
-            //登录
-            CThostFtdcReqUserLoginField userLoginField = new CThostFtdcReqUserLoginField();
-            userLoginField.setBrokerID(accountSecondary.getBrokerId());
-            userLoginField.setUserID(accountSecondary.getAccountNo());
-            userLoginField.setPassword(accountSecondary.getPasswd());
-            outSecond.println("reqUserLogin|"+JSON.toJSONString(userLoginField)+"|1");
-            outSecond.flush();
+            if(accountSecondary != null){
+                ctpSecond = new Socket(ApplicationConfig.getProperty("addressSecond"),
+                        Integer.parseInt(ApplicationConfig.getProperty("portSecond")));
+                outSecond = new PrintWriter(new OutputStreamWriter(ctpSecond.getOutputStream(),"UTF-8"));
+                Thread sellConnect = new Thread(new CtpConnectThread(CoreappView.this,ctpSecond));
+                sellConnect.setDaemon(true);
+                sellConnect.start();
+                
+                //登录
+                CThostFtdcReqUserLoginField userLoginField = new CThostFtdcReqUserLoginField();
+                userLoginField.setBrokerID(accountSecondary.getBrokerId());
+                userLoginField.setUserID(accountSecondary.getAccountNo());
+                userLoginField.setPassword(accountSecondary.getPasswd());
+                outSecond.println("reqUserLogin|"+JSON.toJSONString(userLoginField)+"|1");
+                outSecond.flush();
+            }
         }  catch (FutureException e) {
             logger.error("查询备账户信息失败",e);
             MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
@@ -1516,8 +1518,13 @@ public class CoreappView {
         } else if(json.getString("userID").equals("1")){
             //卖开买平前置2
             //logger.info("zzzzz"+CTPApi.reqOrderAction(pInputOrderAction, nRequestID));
-            outSecond.println(sb.toString());
-            outSecond.flush();
+            if(outSecond != null){
+                outSecond.println(sb.toString());
+                outSecond.flush();
+            }else {
+                outFirst.println(sb.toString());
+                outFirst.flush();
+            }
         }
         // caoxx2 end 自成交 前置新规改修
         
@@ -1823,8 +1830,13 @@ public class CoreappView {
             outFirst.println(sb.toString());
             outFirst.flush();
         }else {
-            outSecond.println(sb.toString());
-            outSecond.flush();
+            if(outSecond != null){
+                outSecond.println(sb.toString());
+                outSecond.flush();
+            }else {
+                outFirst.println(sb.toString());
+                outFirst.flush();
+            }
         }
         
         Display.getDefault().syncExec(new Runnable() {
@@ -2432,8 +2444,13 @@ public class CoreappView {
                     outFirst.flush();
                 }else {
                     //卖开买平路线
-                    outSecond.println(sb.toString());
-                    outSecond.flush();
+                    if(outSecond != null){
+                        outSecond.println(sb.toString());
+                        outSecond.flush();
+                    }else {
+                        outFirst.println(sb.toString());
+                        outFirst.flush();
+                    }
                 }
                 
                 Display.getDefault().syncExec(new Runnable() {
@@ -2503,8 +2520,14 @@ public class CoreappView {
                         outFirst.println(sb.toString());
                         outFirst.flush();
                     }else{
-                        outSecond.println(sb.toString());
-                        outSecond.flush();
+                        if(outSecond != null){
+                            outSecond.println(sb.toString());
+                            outSecond.flush();
+                        }else {
+                            outFirst.println(sb.toString());
+                            outFirst.flush();
+                        }
+                        
                     }
                     
                     
@@ -2615,8 +2638,14 @@ public class CoreappView {
             outFirst.println(sb.toString());
             outFirst.flush();
         }else {
-            outSecond.println(sb.toString());
-            outSecond.flush();
+            if(outSecond != null){
+                
+                outSecond.println(sb.toString());
+                outSecond.flush();
+            }else {
+                outFirst.println(sb.toString());
+                outFirst.flush();
+            }
         }
         
         Display.getDefault().syncExec(new Runnable() {
@@ -2666,8 +2695,13 @@ public class CoreappView {
                     outFirst.println(sb.toString());
                     outFirst.flush();
                 }else {
-                    outSecond.println(sb.toString());
-                    outSecond.flush();
+                    if(outSecond != null){
+                        outSecond.println(sb.toString());
+                        outSecond.flush();
+                    }else {
+                        outFirst.println(sb.toString());
+                        outFirst.flush();
+                    }
                 }
                 
                 Display.getDefault().syncExec(new Runnable() {
@@ -2858,8 +2892,13 @@ public class CoreappView {
                 outFirst.flush();
             }else {
                 //买平
-                outSecond.println(sb.toString());
-                outSecond.flush();
+                if(outSecond != null){
+                    outSecond.println(sb.toString());
+                    outSecond.flush();
+                }else {
+                    outFirst.println(sb.toString());
+                    outFirst.flush();
+                }
             }
             
             Display.getDefault().syncExec(new Runnable() {

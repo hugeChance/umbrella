@@ -930,11 +930,12 @@ public class MainForm {
                 item.setText(0,++i +"");
                 item.setText(1,mainAccount.getBrokerId());
                 item.setText(2,mainAccount.getAccountNo());
+                item.setText(3, mainAccount.getPasswd());
                 if(!StringUtils.isEmpty(mainAccount.getAccountType())){
-                    item.setText(3,mainAccount.getAccountType().equals("1") ? "账户主" : "账户备");
+                    item.setText(4,mainAccount.getAccountType().equals("1") ? "账户主" : "账户备");
                 }
-                item.setText(4, mainAccount.getCreateTime()==null?"":DateFormatterUtil.getDateStr(mainAccount.getCreateTime()));
-                item.setText(5, mainAccount.getUpdateTime()==null?"":DateFormatterUtil.getDateStr(mainAccount.getUpdateTime()));
+                //item.setText(4, mainAccount.getCreateTime()==null?"":DateFormatterUtil.getDateStr(mainAccount.getCreateTime()));
+                //item.setText(5, mainAccount.getUpdateTime()==null?"":DateFormatterUtil.getDateStr(mainAccount.getUpdateTime()));
             }
         }
         
@@ -973,9 +974,9 @@ public class MainForm {
                     item.setText(3, capital.toString());
                 }
                 
-                if(map.get("USER_CAPITAL_RATE") != null){
-                    //配资比例
-                    item.setText(4, ((BigDecimal) map.get("USER_CAPITAL_RATE")).toString());
+                if(map.get("HOST_CAPITAL1") != null){
+                    //资金调入金额
+                    item.setText(4, ((BigDecimal) map.get("HOST_CAPITAL1")).toString());
                 }
                 //动态权益
                 item.setText(5, ((BigDecimal)map.get("RIGHTS")).toString());
@@ -1536,7 +1537,7 @@ public class MainForm {
         
         TableColumn col3 = new TableColumn(subaccountTable, SWT.NONE);
         col3.setWidth(100);
-        col3.setText("配资比例");
+        col3.setText("资金调入金额");
 
         TableColumn tblclmnNewColumn = new TableColumn(subaccountTable, SWT.NONE);
         tblclmnNewColumn.setWidth(100);
@@ -1899,6 +1900,19 @@ public class MainForm {
         
         allRiskTable.setHeaderVisible(true);
         allRiskTable.setLinesVisible(true);
+        
+        allRiskTable.addMouseListener(new MouseAdapter() {
+            
+            //双击数据项事件
+            @Override
+            public void mouseDoubleClick(MouseEvent e) {
+                TableItem selected = allRiskTable.getItem(new Point(e.x, e.y));
+                if(e.button ==1 && selected != null){//左键双击数据项
+                    CloseRuleEditDialog dialog = new CloseRuleEditDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, MainForm.this, selected);
+                    dialog.open();
+                }
+            }
+        });
         
         TableColumn tableColumn = new TableColumn(allRiskTable, SWT.NONE);
         tableColumn.setText("序号");

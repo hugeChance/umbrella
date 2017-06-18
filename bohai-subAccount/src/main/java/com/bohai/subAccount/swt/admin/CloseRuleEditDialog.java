@@ -196,6 +196,7 @@ public class CloseRuleEditDialog extends Dialog {
                 }
 				if (mainForm != null) {
                     mainForm.refreshRiskClose(tableItem.getText(1));
+                    mainForm.refreshAllRiskTable();
                 }
 				shell.close();
 			}

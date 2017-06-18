@@ -174,24 +174,24 @@ public class SubAccountAddDialog extends Dialog {
 				}
 				
 				UserInfoService userInfoService = (UserInfoService) SpringContextUtil.getBean("userInfoService");
-				UserInfo userInfo = new UserInfo();
-				userInfo.setUserNo(GenerateCodeUtil.generateCustNo());
-				userInfo.setUserName(username.getText());
-				userInfo.setUserPwd(passwd.getText());
-				//userInfo.setContract(instrumentId.getText());
-				userInfo.setGroupId(groupInfo.getId());
-				userInfo.setCapital(new BigDecimal(limit.getText()));
-				userInfo.setCreateTime(new Date());
-				userInfo.setUpdateTime(new Date());
+				
 				try {
+				    UserInfo userInfo = new UserInfo();
+	                userInfo.setUserNo(GenerateCodeUtil.generateCustNo());
+	                userInfo.setUserName(username.getText());
+	                userInfo.setUserPwd(passwd.getText());
+	                //userInfo.setContract(instrumentId.getText());
+	                userInfo.setGroupId(groupInfo.getId());
+	                userInfo.setCapital(new BigDecimal(limit.getText()));
+	                userInfo.setCreateTime(new Date());
+	                userInfo.setUpdateTime(new Date());
 					userInfoService.saveUser(userInfo);
 					
 					CapitalRate capitalRate = new CapitalRate();
 	                capitalRate.setUserName(username.getText());
 	                capitalRate.setUserCapital(new BigDecimal(limit.getText()));
-	                capitalRate.setUserCapitalRate(new BigDecimal(text.getText()));
 	                //配资资金
-	                capitalRate.setHostCapital1(new BigDecimal(limit.getText()).multiply(new BigDecimal(text.getText())));
+	                capitalRate.setHostCapital1(new BigDecimal(text.getText()));
 	                CapitalRateMapper capitalRateMapper = (CapitalRateMapper) SpringContextUtil.getBean("capitalRateMapper");
 	                capitalRateMapper.insert(capitalRate);
 	                
@@ -239,7 +239,7 @@ public class SubAccountAddDialog extends Dialog {
 		label.setAlignment(SWT.RIGHT);
 		label.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		label.setBounds(10, 238, 116, 23);
-		label.setText("资金调入比例：");
+		label.setText("资金调入金额：");
 		
 		text = new Text(composite, SWT.BORDER);
 		text.setFont(SWTResourceManager.getFont("Microsoft YaHei UI", 12, SWT.NORMAL));

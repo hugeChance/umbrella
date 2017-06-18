@@ -210,9 +210,9 @@ public class SubAccountEditDialog extends Dialog {
 					CapitalRate capitalRate = new CapitalRate();
 	                capitalRate.setUserName(username.getText());
 	                capitalRate.setUserCapital(new BigDecimal(limit.getText()));
-	                capitalRate.setUserCapitalRate(new BigDecimal(text.getText()));
+	                //capitalRate.setUserCapitalRate(new BigDecimal(text.getText()));
 	                //配资资金
-	                capitalRate.setHostCapital1(new BigDecimal(limit.getText()).multiply(new BigDecimal(text.getText())));
+	                capitalRate.setHostCapital1(new BigDecimal(text.getText()));
 	                CapitalRateMapper capitalRateMapper = (CapitalRateMapper) SpringContextUtil.getBean("capitalRateMapper");
 	                capitalRateMapper.updateByPrimaryKeySelective(capitalRate);
 					
@@ -250,7 +250,7 @@ public class SubAccountEditDialog extends Dialog {
 		cancel.setText("取消");
 		
 		Label lblPeizi = new Label(composite, SWT.NONE);
-		lblPeizi.setText("资金调入比例：");
+		lblPeizi.setText("资金调入金额：");
 		lblPeizi.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		lblPeizi.setAlignment(SWT.RIGHT);
 		lblPeizi.setBounds(10, 246, 116, 23);
