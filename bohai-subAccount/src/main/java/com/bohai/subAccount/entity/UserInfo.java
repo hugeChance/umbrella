@@ -46,7 +46,25 @@ public class UserInfo {
     
     private String groupName;
     
+    private String forceRate;
     
+    private String forceLimit;
+    
+    public String getForceRate() {
+        return forceRate;
+    }
+
+    public void setForceRate(String forceRate) {
+        this.forceRate = forceRate;
+    }
+
+    public String getForceLimit() {
+        return forceLimit;
+    }
+
+    public void setForceLimit(String forceLimit) {
+        this.forceLimit = forceLimit;
+    }
 
     public String getGroupName() {
         return groupName;

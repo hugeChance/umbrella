@@ -62,7 +62,6 @@ import com.bohai.subAccount.service.TradeRuleService;
 import com.bohai.subAccount.service.TradeService;
 import com.bohai.subAccount.service.UserContractService;
 import com.bohai.subAccount.service.UserInfoService;
-import com.bohai.subAccount.utils.DateFormatterUtil;
 import com.bohai.subAccount.utils.SpringContextUtil;
 import com.bohai.subAccount.vo.UserContractTradeRule;
 
@@ -961,6 +960,8 @@ public class MainForm {
                 userInfo.setGroupName((String) map.get("GROUP_NAME"));
                 userInfo.setUserPwd((String) map.get("USER_PWD"));
                 userInfo.setCapital((BigDecimal) map.get("CAPITAL"));
+                userInfo.setForceRate((String) map.get("FORCE_RATE"));
+                userInfo.setForceLimit((String) map.get("FORCE_LIMIT"));
                 item.setData(userInfo);
                 
                 item.setText(0, ++i +"");
@@ -978,16 +979,23 @@ public class MainForm {
                     //资金调入金额
                     item.setText(4, ((BigDecimal) map.get("HOST_CAPITAL1")).toString());
                 }
+                
+                //强平比例
+                item.setText(5, StringUtils.isEmpty(userInfo.getForceRate())?"":userInfo.getForceRate());
+                
+                //强平金额
+                item.setText(6, StringUtils.isEmpty(userInfo.getForceLimit())?"":userInfo.getForceLimit());
+                
                 //动态权益
-                item.setText(5, ((BigDecimal)map.get("RIGHTS")).toString());
+                item.setText(7, ((BigDecimal)map.get("RIGHTS")).toString());
                 //可用资金
-                item.setText(6, ((BigDecimal)map.get("AVAILABLE")).toString());
+                item.setText(8, ((BigDecimal)map.get("AVAILABLE")).toString());
                 //持仓盈亏
-                item.setText(7, ((BigDecimal)map.get("POSITIONWIN")).toString());
+                item.setText(9, ((BigDecimal)map.get("POSITIONWIN")).toString());
                 //平仓盈亏
-                item.setText(8, ((BigDecimal)map.get("CLOSEWIN")).toString());
+                item.setText(10, ((BigDecimal)map.get("CLOSEWIN")).toString());
                 //占用保证金
-                item.setText(9, ((BigDecimal)map.get("MARGIN")).toString());
+                item.setText(11, ((BigDecimal)map.get("MARGIN")).toString());
                 
             }
         }
@@ -1537,7 +1545,15 @@ public class MainForm {
         
         TableColumn col3 = new TableColumn(subaccountTable, SWT.NONE);
         col3.setWidth(100);
-        col3.setText("资金调入金额");
+        col3.setText("调入金额");
+        
+        TableColumn forceCloseCol = new TableColumn(subaccountTable, SWT.NONE);
+        forceCloseCol.setWidth(100);
+        forceCloseCol.setText("强平比例");
+        
+        TableColumn forceLimitCol = new TableColumn(subaccountTable, SWT.NONE);
+        forceLimitCol.setWidth(100);
+        forceLimitCol.setText("强平金额");
 
         TableColumn tblclmnNewColumn = new TableColumn(subaccountTable, SWT.NONE);
         tblclmnNewColumn.setWidth(100);

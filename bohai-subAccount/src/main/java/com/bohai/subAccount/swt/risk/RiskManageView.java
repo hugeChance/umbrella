@@ -18,11 +18,14 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -34,6 +37,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
@@ -46,6 +51,7 @@ import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.bohai.subAccount.constant.CommonConstant;
@@ -57,13 +63,13 @@ import com.bohai.subAccount.entity.SubTradingaccount;
 import com.bohai.subAccount.entity.UserContract;
 import com.bohai.subAccount.entity.UserInfo;
 import com.bohai.subAccount.exception.FutureException;
-import com.bohai.subAccount.service.MainAccountService;
-import com.bohai.subAccount.service.SubTradingaccountService;
-import com.bohai.subAccount.service.UserInfoService;
 import com.bohai.subAccount.service.CloseRuleService;
 import com.bohai.subAccount.service.GroupRuleService;
 import com.bohai.subAccount.service.InvestorPositionService;
+import com.bohai.subAccount.service.MainAccountService;
+import com.bohai.subAccount.service.SubTradingaccountService;
 import com.bohai.subAccount.service.UserContractService;
+import com.bohai.subAccount.service.UserInfoService;
 import com.bohai.subAccount.swt.risk.helper.RiskMainMarketReceiveThread;
 import com.bohai.subAccount.swt.risk.helper.RiskMainTradeReceiveThread;
 import com.bohai.subAccount.utils.ApplicationConfig;
@@ -72,13 +78,14 @@ import com.bohai.subAccount.utils.SpringContextUtil;
 import com.bohai.subAccount.vo.UserPositionVO;
 
 import swing2swt.layout.BorderLayout;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.DisposeEvent;
 
 public class RiskManageView {
 	
+    private static Logger logger = Logger.getLogger(RiskManageView.class);
+    
 	//static final String MARKET_IP = "10.0.0.204";
 	static final String MARKET_IP = ApplicationConfig.getProperty("marketAddr");
+	
 
 	//static final String TRADE_IP = "10.0.0.202";
 	static final String TRADE_IP = ApplicationConfig.getProperty("tradeAddr");
@@ -93,7 +100,6 @@ public class RiskManageView {
 	private SubTradingaccountService subTradingaccountService;
 	private GroupRuleService groupRuleService;
 	private CloseRuleService closeRuleService;
-	private static Logger logger = Logger.getLogger(RiskManageView.class);
     private Socket socket;
     private Socket tradeSocket;
     private Datecalculate dateCalcuate = new Datecalculate();
@@ -376,6 +382,10 @@ public class RiskManageView {
 					userInfoTableItem.setText(3, retResult[2]);
 					userInfoTableItem.setText(4, retResult[3]);
 					//userInfoTableItem.setText(4, retResult[3]);
+					//强平比例
+					userInfoTableItem.setText(5, StringUtils.isEmpty(userInfo.getForceRate())?"":userInfo.getForceRate());
+					//强平金额
+					userInfoTableItem.setText(6, StringUtils.isEmpty(userInfo.getForceLimit())?"":userInfo.getForceLimit());
 
 				} catch (FutureException e) {
 					logger.error("查询用户持仓失败",e);
@@ -424,15 +434,46 @@ public class RiskManageView {
 			
 			@Override
 			public void mouseDown(MouseEvent e) {
+			    
+			    TableItem item = subAccountTable.getItem(new Point(e.x, e.y));
+                if(item == null){
+                    return;
+                }
+                
+			    //创建菜单
+                Menu menu = new  Menu(subAccountTable);
+                subAccountTable.setMenu(menu);
+			    
+			    
 				if(e.button == 3) {
-					TableItem item = subAccountTable.getItem(new Point(e.x, e.y));
-					if(item == null){
-						return;
-					}
-					RiskCapitalRateDialog riskCapitalRateDialog = new RiskCapitalRateDialog(shell, SWT.CLOSE, item,RiskManageView.this);
-					riskCapitalRateDialog.open();
+				    
+				    MenuItem removeItem = new MenuItem(menu, SWT.NONE);
+                    removeItem.setText("调整平仓比例");
+                    removeItem.addSelectionListener(new SelectionAdapter() {
+                        
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            
+                        }
+                        
+                    });
+                    
+                    MenuItem addItem = new MenuItem(menu, SWT.NONE);
+                    addItem.setText("出入金");
+                    addItem.addSelectionListener(new SelectionAdapter() {
+                        
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            
+                            RiskCapitalRateDialog riskCapitalRateDialog = new RiskCapitalRateDialog(shell, SWT.CLOSE, item,RiskManageView.this);
+                            riskCapitalRateDialog.open();
+                        }
+                        
+                    });
+                    
 				}
 			}
+			
 		});
 		TableLayout tLayout = new TableLayout();//专用于表格的布局
 		subAccountTable.setLayout(tLayout);
@@ -452,6 +493,12 @@ public class RiskManageView {
 		
 		tLayout.addColumnData(new ColumnWeightData(60));
 		new TableColumn(subAccountTable, SWT.NONE).setText("平仓盈亏");
+		
+		tLayout.addColumnData(new ColumnWeightData(60));
+        new TableColumn(subAccountTable, SWT.NONE).setText("强平比例");
+        
+        tLayout.addColumnData(new ColumnWeightData(60));
+        new TableColumn(subAccountTable, SWT.NONE).setText("强平金额");
 		
 	}
 	
@@ -698,6 +745,119 @@ public class RiskManageView {
 			} catch (Exception e) {
 				logger.error("定时强平失败",e);
 			}
+    }
+    
+    /**
+     * 止损强平
+     * @param userName
+     */
+    public void forceCloseByUserName(String userName){
+        try {
+            PrintWriter out = new PrintWriter(new OutputStreamWriter(getTradeSocket().getOutputStream(),"UTF-8"));
+            StringBuffer stringBuffer = new StringBuffer();;
+            stringBuffer.append("risk|");
+            stringBuffer.append(userName + "|");
+            stringBuffer.append("QPXZ|");
+            logger.info("强平指令：" + stringBuffer.toString());
+            out.println(stringBuffer.toString());
+            out.flush();
+            Thread.sleep(200);
+            
+            for(TableItem item :subAccountTable.getItems()){
+                if(!userName.equals(item.getText(0))){
+                    continue;
+                }
+                
+                UserPositionVO userPositionVO = (UserPositionVO) item.getData();
+                List<InvestorPosition> list = userPositionVO.getInvestorPositions();
+                if(list != null && list.size() > 0){
+                    
+                    for(InvestorPosition position : list){
+                        
+                        StringBuffer sb = new StringBuffer();
+                        sb.append("risk");
+                        sb.append("|"+userName);
+                        sb.append("|FKQP");
+                        //报单入参
+                        CThostFtdcInputOrderField inputOrderField = new CThostFtdcInputOrderField();
+                        //合约代码
+                        String instrumentid = position.getInstrumentid();
+                        inputOrderField.setInstrumentID(instrumentid);
+                        //数量
+                        inputOrderField.setVolumeTotalOriginal(position.getPosition().intValue());
+                        //平今仓
+                        inputOrderField.setCombOffsetFlag("3");
+                        //投资者代码
+                        inputOrderField.setInvestorID(userName);
+                        // 用户代码
+                        inputOrderField.setUserID(userName);
+                        // 报单价格条件
+                        inputOrderField.setOrderPriceType(THOST_FTDC_OPT_LimitPrice);
+                        // 组合投机套保标志
+                        inputOrderField.setCombHedgeFlag("1");
+                        // 有效期类型
+                        inputOrderField.setTimeCondition(THOST_FTDC_TC_GFD);
+                        // GTD日期
+                        inputOrderField.setGTDDate("");
+                        // 成交量类型
+                        inputOrderField.setVolumeCondition(THOST_FTDC_VC_AV);
+                        // 最小成交量
+                        inputOrderField.setMinVolume(0);
+                        // 触发条件
+                        inputOrderField.setContingentCondition(THOST_FTDC_CC_Immediately);
+                        // 止损价
+                        inputOrderField.setStopPrice(0);
+                        // 强平原因
+                        inputOrderField.setForceCloseReason(THOST_FTDC_FCC_NotForceClose);
+                        // 自动挂起标志
+                        inputOrderField.setIsAutoSuspend(0);
+                        //合约属性
+                        UserContract contract = this.getContractByContractNo(instrumentid);
+                        if(position.getPosidirection().equals("0")){
+                            logger.debug("买开强平持仓信息："+JSON.toJSONString(position));
+                            //买开强平 ---> 卖平
+                            inputOrderField.setDirection(THOST_FTDC_D_Sell);
+                            //价格 = 对手价（买价） - 10跳
+                            BigDecimal price = position.getBidPrice1().subtract(contract.getTickSize().multiply(new BigDecimal("10"))).setScale(2, RoundingMode.HALF_UP);
+                            //跌停价
+                            BigDecimal lowerLimitPrice = position.getLowerLimitPrice();
+                            if(price.compareTo(lowerLimitPrice)<0){
+                                //如果价格小于跌停价，就用跌停价
+                                price = lowerLimitPrice;
+                            }
+                            logger.debug("强平价格："+price);
+                            inputOrderField.setLimitPrice(price.doubleValue());
+                            
+                        }else {
+                            logger.debug("卖开强平持仓信息："+JSON.toJSONString(position));
+                            //卖开强平 ---> 买平
+                            inputOrderField.setDirection(THOST_FTDC_D_Buy);
+                            //价格 = 对手价（卖价） + 10跳
+                            BigDecimal price = position.getAskPrice1().add(contract.getTickSize().multiply(new BigDecimal("10"))).setScale(2, RoundingMode.HALF_UP);
+                            //涨停价
+                            BigDecimal upperLimitPrice = position.getUpperLimitPrice();
+                            if(price.compareTo(upperLimitPrice)>0){
+                                //如果价格大于涨停价，就用涨停价
+                                price = upperLimitPrice;
+                            }
+                            logger.debug("强平价格："+price);
+                            inputOrderField.setLimitPrice(price.doubleValue());
+                        }
+                        sb.append("|"+JSON.toJSONString(inputOrderField));
+                        logger.info("风控强平指令："+sb.toString());
+                        
+                        out.println(sb.toString());
+                        out.flush();
+                        
+                    }
+                }
+            }
+            
+            
+        } catch (Exception e) {
+            logger.error("强平失败",e);
+        }
+        
     }
     
     // 一键撤单操作

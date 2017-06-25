@@ -45,12 +45,12 @@ public class ApplicationConfig {
 			
 			//初始化交易地址
 			if(StringUtils.isEmpty(getProperty("tradeAddr"))){
-				setProperty("tradeAddr", "10.0.0.202");
+				setProperty("tradeAddr", "localhost");
 			}
 			
 			//初始化行情地址
 			if(StringUtils.isEmpty(getProperty("marketAddr"))){
-				setProperty("marketAddr", "10.0.0.204");
+				setProperty("marketAddr", "localhost");
 			}
 			
 			//行情前置机

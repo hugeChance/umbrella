@@ -151,7 +151,8 @@ public class UserInfoServiceImpl implements UserInfoService {
         logger.info("更新用户信息入参："+JSON.toJSONString(userInfo));
         
         try {
-            this.userInfoMapper.updateByPrimaryKeySelective(userInfo);
+            //this.userInfoMapper.updateByPrimaryKeySelective(userInfo);
+            this.userInfoMapper.updateByPrimaryKey(userInfo);
         } catch (Exception e) {
             logger.error("更新用户信息失败",e);
             throw new FutureException("", "更新用户信息失败");

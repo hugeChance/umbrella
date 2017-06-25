@@ -75,6 +75,11 @@ public class RiskMainTradeReceiveThread implements Runnable {
 									//平仓盈亏
 									BigDecimal closeWin = jo.getBigDecimal("closeWin").setScale(2, RoundingMode.HALF_UP);
 									item.setText(4, closeWin.toString());
+									
+									
+									if("自有资金".equals("超过平仓限")){
+									    riskManageView.forceCloseByUserName(userName);
+									}
 								}
 							}
 							

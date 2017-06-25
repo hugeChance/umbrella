@@ -62,6 +62,13 @@ public interface UserInfoMapper {
      */
     int updateByPrimaryKey(UserInfo record);
     
+    /**
+     * 更新客户强平比例和金额
+     * @param info
+     * @return
+     */
+    int updateUserForceClose(UserInfo info);
+    
     @Select("select count(1) from t_user_info where user_name = #{0} and user_pwd = #{1}")
     int countUserInfoByUserNameAndPasswd(String userName, String password);
     
@@ -82,4 +89,6 @@ public interface UserInfoMapper {
     
     @Select("select t.USER_NAME,t.USER_NO,count(t1.contract_no) as COUNT from t_user_info t left join T_CLOSE_RULE t1 on t.USER_NAME = t1.USER_NAME group by t.USER_NAME,t.USER_NO")
     List<Map<String, Object>> selectUserRiskCount();
+    
+    
 }
