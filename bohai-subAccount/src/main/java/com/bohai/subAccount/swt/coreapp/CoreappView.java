@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.crypto.*;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
@@ -88,6 +89,8 @@ import com.bohai.subAccount.utils.SpringContextUtil;
 import com.bohai.subAccount.vo.UserAvailableMemorySave;
 import com.bohai.subAccount.vo.UserFlgMemorySave;
 import com.bohai.subAccount.vo.UserTradeRuleMemorySave;
+
+
 
 public class CoreappView {
     
@@ -171,6 +174,16 @@ public class CoreappView {
      */
     public static void main(String[] args) {
         try {
+        	//license 安装
+        	
+        	VerifyLicense vLicense = new VerifyLicense();
+    		//获取参数
+    		vLicense.setParam("./param.properties");
+    		//生成证书
+    		vLicense.verify();
+        	
+        	
+        	
             CoreappView window = new CoreappView();
             window.loadSpringContext();
             atomicInteger = new AtomicInteger(0);
@@ -181,6 +194,8 @@ public class CoreappView {
             e.printStackTrace();
         }
     }
+    
+ 
     
     public synchronized void addClient(Socket client){
         if(clients == null){
