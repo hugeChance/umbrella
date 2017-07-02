@@ -396,7 +396,7 @@ public class CoreappView {
     	
     	VerifyLicense vLicense = new VerifyLicense();
 		//获取参数
-		vLicense.setParam("./param.properties");
+		vLicense.setParam("param.properties");
 		//生成证书
 		if(vLicense.verify()) {
 			
@@ -1423,22 +1423,37 @@ public class CoreappView {
             CThostFtdcRspInfoField pRspInfo, int nRequestID, boolean bIsLast) {
         
 //        JSON.toJSONString(pRspUserLogin);
-        logger.info("ERRORID = "+pRspInfo.getErrorID());
-        logger.info(pRspUserLogin.getLoginTime());
-        logger.info(pRspUserLogin.getCZCETime());
-        logger.info(pRspUserLogin.getDCETime());
-        logger.info(pRspUserLogin.getFFEXTime());
-        logger.info(pRspUserLogin.getSHFETime());
-        logger.info("getMaxOrderRef=" +pRspUserLogin.getMaxOrderRef());
-        logger.info("nRequestID=" + nRequestID);
-        logger.info("getSessionID=" + pRspUserLogin.getSessionID());
-        logger.info("getFrontID=" + pRspUserLogin.getFrontID());
-        sessionID = pRspUserLogin.getSessionID();
-        frontID = pRspUserLogin.getFrontID();
+        try {
+			logger.info("ERRORID = "+pRspInfo.getErrorID());
+			logger.info(pRspUserLogin.getLoginTime());
+			logger.info(pRspUserLogin.getCZCETime());
+			logger.info(pRspUserLogin.getDCETime());
+			logger.info(pRspUserLogin.getFFEXTime());
+			logger.info(pRspUserLogin.getSHFETime());
+			logger.info("getMaxOrderRef=" +pRspUserLogin.getMaxOrderRef());
+			logger.info("nRequestID=" + nRequestID);
+			logger.info("getSessionID=" + pRspUserLogin.getSessionID());
+			logger.info("getFrontID=" + pRspUserLogin.getFrontID());
+			sessionID = pRspUserLogin.getSessionID();
+			frontID = pRspUserLogin.getFrontID();
 //        orderRef = pRspUserLogin.getMaxOrderRef();
-        atomicInteger.getAndSet(Integer.parseInt(pRspUserLogin.getMaxOrderRef()));
-        this.nRequestID = nRequestID;
-        CTPerrID = pRspInfo.getErrorID();
+			atomicInteger.getAndSet(Integer.parseInt(pRspUserLogin.getMaxOrderRef()));
+			this.nRequestID = nRequestID;
+			CTPerrID = pRspInfo.getErrorID();
+		} catch (NumberFormatException e) {
+			logger.error("主账户登入失败！" ,e);
+			Display.getDefault().syncExec(new Runnable() {
+                @Override
+                public void run() {
+                	MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                    box.setMessage("主账户登入失败！");
+                    box.setText("错误");
+                    box.open();
+                    shell.dispose();
+                }
+			});
+			
+		}
         if(CTPerrID != 0){
             Display.getDefault().syncExec(new Runnable() {
                 @Override

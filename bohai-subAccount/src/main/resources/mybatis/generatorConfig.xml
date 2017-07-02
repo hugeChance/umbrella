@@ -5,13 +5,13 @@
 
 <generatorConfiguration>
   <!-- 驱动物理路径 -->
-  <classPathEntry location="D:\git\umbrella\bohai-subAccount\ojdbc6.jar" />
+  <classPathEntry location="D:\odbc\ojdbc6.jar" />
 
   <context id="OracleTables" targetRuntime="MyBatis3">
     <jdbcConnection driverClass="oracle.jdbc.driver.OracleDriver"
-        connectionURL="jdbc:oracle:thin:@192.168.1.104:1521:XE"
-        userId="SUBACCOUNT"
-        password="SUBACCOUNT">
+        connectionURL="jdbc:oracle:thin:@106.14.215.221:1521:XE"
+        userId="SUBACCOUNT2"
+        password="SUBACCOUNT2">
     </jdbcConnection>
 
     <javaTypeResolver >
@@ -154,7 +154,7 @@
        enableUpdateByExample="false" selectByExampleQueryId="false">
     </table>  -->
     
-    <table schema="" tableName="T_CAPITAL_RATE" domainObjectName="CapitalRate" 
+    <!-- <table schema="" tableName="T_CAPITAL_RATE" domainObjectName="CapitalRate" 
        enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
        enableUpdateByExample="false" selectByExampleQueryId="false">
     </table>
@@ -162,7 +162,9 @@
      <table schema="" tableName="T_CAPITAL_RATE_DETAIL" domainObjectName="CapitalRateDetail" 
        enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
        enableUpdateByExample="false" selectByExampleQueryId="false">
-    </table> 
+    </table>  -->
+    
+    
     
     <!-- <table schema="" tableName="T_USERAVAILABLEINDB" domainObjectName="Useravailableindb" 
        enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
@@ -198,6 +200,11 @@
        enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
        enableUpdateByExample="false" selectByExampleQueryId="false">
     </table> -->
+    
+    <table schema="" tableName="T_CAPITAL_RATE" domainObjectName="CapitalRate" 
+       enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+       enableUpdateByExample="false" selectByExampleQueryId="false">
+    </table>
     
   </context>
 </generatorConfiguration>
