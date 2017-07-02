@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Delete;
 
 import com.bohai.subAccount.entity.InputOrder;
 import com.bohai.subAccount.entity.SubTradingaccount;
+import com.bohai.subAccount.vo.UserAccountVO;
 
 public interface SubTradingaccountMapper {
     /**
@@ -31,7 +32,7 @@ public interface SubTradingaccountMapper {
     
     int delete(String subuserid);
     
-    SubTradingaccount getUserByUserName2(String subuserid);
+    UserAccountVO getUserByUserName10(String subuserid);
     
     int setFrozen(Map<String,Object> map);
     

@@ -19,8 +19,16 @@ public class UserPositionVO {
 	/**
 	 * 用户资金信息
 	 */
-	private SubTradingaccount subTradingaccount;
+	private UserAccountVO subTradingaccount;
 	
+	public UserAccountVO getSubTradingaccount() {
+		return subTradingaccount;
+	}
+
+	public void setSubTradingaccount(UserAccountVO subTradingaccount) {
+		this.subTradingaccount = subTradingaccount;
+	}
+
 	/**
 	 * 用户持仓信息
 	 */
@@ -34,13 +42,7 @@ public class UserPositionVO {
 		this.userName = userName;
 	}
 
-	public SubTradingaccount getSubTradingaccount() {
-		return subTradingaccount;
-	}
-
-	public void setSubTradingaccount(SubTradingaccount subTradingaccount) {
-		this.subTradingaccount = subTradingaccount;
-	}
+	
 
 	public List<InvestorPosition> getInvestorPositions() {
 		return investorPositions;

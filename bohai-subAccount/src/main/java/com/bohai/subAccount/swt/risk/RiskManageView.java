@@ -75,6 +75,7 @@ import com.bohai.subAccount.swt.risk.helper.RiskMainTradeReceiveThread;
 import com.bohai.subAccount.utils.ApplicationConfig;
 import com.bohai.subAccount.utils.Datecalculate;
 import com.bohai.subAccount.utils.SpringContextUtil;
+import com.bohai.subAccount.vo.UserAccountVO;
 import com.bohai.subAccount.vo.UserPositionVO;
 
 import swing2swt.layout.BorderLayout;
@@ -351,7 +352,7 @@ public class RiskManageView {
 				//List<Trade> trades = null;
 				//投资者持仓信息取得
 				List<InvestorPosition> investorPositions = new ArrayList<InvestorPosition>();
-				SubTradingaccount subTradingaccount = new SubTradingaccount();
+				UserAccountVO subTradingaccount = new UserAccountVO();
 
 				//计算返回结果
 				String[] retResult;
@@ -367,7 +368,7 @@ public class RiskManageView {
 					//投资者持仓信息取得
 					investorPositions = investorPositionService.getUserUnClosePostion(strUsername);
 					//子账户资金信息
-					subTradingaccount = subTradingaccountService.getUserByUserName2(strUsername);
+					subTradingaccount = subTradingaccountService.getUserByUserName10(strUsername);
 					
 					UserPositionVO userPositionVO = new UserPositionVO();
 					userPositionVO.setUserName(strUsername);

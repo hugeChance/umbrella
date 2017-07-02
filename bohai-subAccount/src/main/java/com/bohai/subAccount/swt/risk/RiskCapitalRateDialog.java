@@ -17,9 +17,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.springframework.util.StringUtils;
 
+import com.bohai.subAccount.dao.UserInfoMapper;
 import com.bohai.subAccount.entity.CapitalRate;
 import com.bohai.subAccount.entity.CapitalRateDetail;
+import com.bohai.subAccount.entity.UserInfo;
 import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.service.CapitalRateDetailService;
 import com.bohai.subAccount.service.CapitalRateService;
@@ -50,6 +53,8 @@ public class RiskCapitalRateDialog extends Dialog {
 	private CapitalRateDetailService capitalRateDetailService;
 	private CapitalRate capitalRate;
 	
+	private UserInfoMapper userInfoMapper;
+	
 	private UserCapitalRateVO userCapitalRateVO;
 	static Logger logger = Logger.getLogger(AdminViewMain.class);
 	private Text text_2;
@@ -77,7 +82,7 @@ public class RiskCapitalRateDialog extends Dialog {
 		capitalRateService = (CapitalRateService) SpringContextUtil.getBean("capitalRateService");
 		capitalRateDetailService = (CapitalRateDetailService) SpringContextUtil.getBean("capitalRateDetailService");
 		
-		
+		userInfoMapper = (UserInfoMapper) SpringContextUtil.getBean("userInfoMapper");
 	}
 
 	/**
@@ -313,6 +318,31 @@ public class RiskCapitalRateDialog extends Dialog {
                 messagebox.open();
 				return;
 			}
+			
+			
+			
+			try {
+				String forceLimit = userInfoMapper.getUserCloseLimitByUserName(userName);
+				if(!StringUtils.isEmpty(forceLimit)){
+					UserInfo userInfo = new UserInfo();
+					userInfo.setUserName(userName);
+					userInfo.setUserName(userName);
+					BigDecimal newLimit = new BigDecimal(forceLimit).add(new BigDecimal(inCapital));
+					userInfo.setForceLimit(newLimit.toString());
+					userInfoMapper.updateUserForceClose(userInfo);
+					item.setText(6, newLimit.toString());
+				}
+			} catch (Exception e) {
+				logger.error("入金更新平仓金额失败",e);
+				MessageBox messagebox = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES );
+                messagebox.setText("错误");
+                messagebox.setMessage("入金更新平仓金额失败"+e.getMessage()) ;
+                messagebox.open();
+				return;
+			}
+			
+			
+			
 		}
 		
 		//出金
@@ -368,6 +398,26 @@ public class RiskCapitalRateDialog extends Dialog {
 				MessageBox messagebox = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES );
                 messagebox.setText("提示");
                 messagebox.setMessage(e.getMessage()) ;
+                messagebox.open();
+				return;
+			}
+			
+			try {
+				String forceLimit = userInfoMapper.getUserCloseLimitByUserName(userName);
+				if(!StringUtils.isEmpty(forceLimit)){
+					UserInfo userInfo = new UserInfo();
+					userInfo.setUserName(userName);
+					userInfo.setUserName(userName);
+					BigDecimal newLimit = new BigDecimal(forceLimit).subtract(new BigDecimal(inCapital));
+					userInfo.setForceLimit(newLimit.toString());
+					userInfoMapper.updateUserForceClose(userInfo);
+					item.setText(6, newLimit.toString());
+				}
+			} catch (Exception e) {
+				logger.error("出金更新平仓金额失败",e);
+				MessageBox messagebox = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES );
+                messagebox.setText("错误");
+                messagebox.setMessage("出金更新平仓金额失败"+e.getMessage()) ;
                 messagebox.open();
 				return;
 			}

@@ -7,6 +7,7 @@ import com.bohai.subAccount.entity.SubTradingaccount;
 import com.bohai.subAccount.entity.UserInfo;
 import com.bohai.subAccount.entity.UserLogin;
 import com.bohai.subAccount.exception.FutureException;
+import com.bohai.subAccount.vo.UserAccountVO;
 
 public interface SubTradingaccountService {
 	
@@ -26,7 +27,7 @@ public interface SubTradingaccountService {
 	 * @return
 	 * @throws FutureException
 	 */
-	public SubTradingaccount getUserByUserName2(String subuserid) throws FutureException;
+	public UserAccountVO getUserByUserName10(String subuserid) throws FutureException;
 	
 	
 	/**

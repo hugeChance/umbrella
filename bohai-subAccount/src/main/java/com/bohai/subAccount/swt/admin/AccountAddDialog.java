@@ -141,7 +141,7 @@ public class AccountAddDialog extends Dialog {
 					box.setText("提示");
 					box.open();
 					if(mainView != null){
-					    mainView.refreshMainAccount();
+//					    mainView.refreshMainAccount();
 					}
 					if(mainForm != null){
 					    mainForm.refreshMainAccount();

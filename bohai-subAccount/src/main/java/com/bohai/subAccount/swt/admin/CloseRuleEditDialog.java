@@ -192,7 +192,7 @@ public class CloseRuleEditDialog extends Dialog {
 				}
 				
 				if (main != null) {
-				    main.refreshTradeRule(treeItem);
+//				    main.refreshTradeRule(treeItem);
                 }
 				if (mainForm != null) {
                     mainForm.refreshRiskClose(tableItem.getText(1));

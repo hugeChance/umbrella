@@ -206,8 +206,14 @@
   <update id="updateUserForceClose" parameterType="com.bohai.subAccount.entity.UserInfo">
     
     update T_USER_INFO
-    set FORCE_LIMIT = #{forceLimit,jdbcType=VARCHAR},
-        FORCE_RATE = #{forceRate,jdbcType=VARCHAR}
+    <set>
+    	<if test="forceLimit != null and forceLimit != ''">
+    		FORCE_LIMIT = #{forceLimit,jdbcType=VARCHAR},
+    	</if>
+    	<if test="forceRate != null and forceRate != ''">
+    		FORCE_RATE = #{forceRate,jdbcType=VARCHAR},
+    	</if>
+    </set>
     where USER_NO = #{userNo,jdbcType=VARCHAR}
   </update>
   

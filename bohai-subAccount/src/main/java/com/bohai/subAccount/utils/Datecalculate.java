@@ -19,6 +19,7 @@ import com.bohai.subAccount.entity.InvestorPosition2;
 import com.bohai.subAccount.entity.SubTradingaccount;
 import com.bohai.subAccount.entity.UserContract;
 import com.bohai.subAccount.utils.CommonUtil;
+import com.bohai.subAccount.vo.UserAccountVO;
 import com.bohai.subAccount.vo.UserPositionVO;
 
 public class Datecalculate {
@@ -219,7 +220,7 @@ public class Datecalculate {
 	}
 	
 	//初期化的计算
-	public String[] getCapitalinit(List<InvestorPosition> investorPositionsInfos, SubTradingaccount subTradingaccount) {
+	public String[] getCapitalinit(List<InvestorPosition> investorPositionsInfos, UserAccountVO subTradingaccount) {
 		
 		String[] strCapital = new String[4];
 		//动态权益
@@ -233,11 +234,11 @@ public class Datecalculate {
 		
 		//先从子账户资金取出
 		//可用资金
-		bigFunds = commonUtil.isNull(subTradingaccount.getAvailable());
+		bigFunds = commonUtil.isNull(subTradingaccount.getAVAILABLE());
 		//动态权益 = 平仓盈亏 +浮动盈亏 - 累计手续费
-		bigInterest = commonUtil.isNull(subTradingaccount.getCloseprofit())
-				.add(commonUtil.isNull(subTradingaccount.getPositionprofit()))
-				.subtract(commonUtil.isNull(subTradingaccount.getCommission()));
+		bigInterest = commonUtil.isNull(subTradingaccount.getCLOSEPROFIT())
+				.add(commonUtil.isNull(subTradingaccount.getPOSITIONPROFIT()))
+				.subtract(commonUtil.isNull(subTradingaccount.getCOMMISSION()));
 		for (InvestorPosition investorPositionsInfo : investorPositionsInfos) {
 
 			//持仓盈亏
@@ -261,13 +262,13 @@ public class Datecalculate {
 	 */
 	public void initCapital(TableItem item){
 		UserPositionVO userPositionVO = (UserPositionVO) item.getData();
-		SubTradingaccount subTradingaccount = userPositionVO.getSubTradingaccount();
+		UserAccountVO subTradingaccount = userPositionVO.getSubTradingaccount();
 		//用户名
 		item.setText(0,userPositionVO.getUserName());
 		//动态权益
 		item.setText(1, "0");
 		//可用资金
-		item.setText(2, subTradingaccount.getAvailable().toString());
+		item.setText(2, subTradingaccount.getAVAILABLE().toString());
 		//持仓盈亏
 		item.setText(3, "0");
 		//平仓盈亏

@@ -174,15 +174,6 @@ public class CoreappView {
      */
     public static void main(String[] args) {
         try {
-        	//license 安装
-        	
-        	VerifyLicense vLicense = new VerifyLicense();
-    		//获取参数
-    		vLicense.setParam("./param.properties");
-    		//生成证书
-    		vLicense.verify();
-        	
-        	
         	
             CoreappView window = new CoreappView();
             window.loadSpringContext();
@@ -399,6 +390,25 @@ public class CoreappView {
         createContents();
         shell.open();
         shell.layout();
+        
+        
+      //license 安装
+    	
+    	VerifyLicense vLicense = new VerifyLicense();
+		//获取参数
+		vLicense.setParam("./param.properties");
+		//生成证书
+		if(vLicense.verify()) {
+			
+		} else {
+			//LISENCE FAILED
+			MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+            box.setMessage("认证失败");
+            box.setText("错误");
+            box.open();
+            shell.close();
+		}
+        
         
         //查询主账号
         List<MainAccount> listmainAccount = findMainAcc();

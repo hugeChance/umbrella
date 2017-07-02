@@ -279,7 +279,7 @@ public class SubAccountAddDialog extends Dialog {
 					box.setText("提示");
 					box.open();
 					if (adminView != null) {
-					    adminView.refreshUserTree();
+//					    adminView.refreshUserTree();
                     }
 					if(mainForm != null){
 					    mainForm.refreshUserTree(mainForm.userTree,"1");

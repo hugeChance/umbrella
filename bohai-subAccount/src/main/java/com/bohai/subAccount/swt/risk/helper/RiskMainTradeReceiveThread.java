@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.springframework.util.StringUtils;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.bohai.subAccount.entity.InvestorPosition;
@@ -75,11 +77,50 @@ public class RiskMainTradeReceiveThread implements Runnable {
 									//平仓盈亏
 									BigDecimal closeWin = jo.getBigDecimal("closeWin").setScale(2, RoundingMode.HALF_UP);
 									item.setText(4, closeWin.toString());
+									//持仓盈亏
+									BigDecimal positionWin = jo.getBigDecimal("positionWin").setScale(2, RoundingMode.HALF_UP);
 									
 									
-									if("自有资金".equals("超过平仓限")){
-									    riskManageView.forceCloseByUserName(userName);
+									//自有资金强平
+									TableItem[] items =  riskManageView.getSubAccountTable().getItems();
+									for(TableItem tableItem : items){
+										
+										UserPositionVO positionVO = (UserPositionVO) tableItem.getData();
+										if(positionVO.getUserName().equals(userName)){
+											
+											BigDecimal limit = positionVO.getSubTradingaccount().getUSER_CAPITAL().subtract(positionVO.getSubTradingaccount().getUSER_CAPITAL_YESTORDAY());
+											
+											//已亏损金额
+											limit = limit.add(closeWin).add(positionWin);
+											
+											//强平比例
+											String closeRate = tableItem.getText(5);
+											if(!StringUtils.isEmpty(closeRate)){
+												BigDecimal closeRateBig = new BigDecimal(closeRate);
+												//允许亏损的最大值 = 自有资金*强平比例
+												BigDecimal closeAmountBig = closeRateBig.multiply(positionVO.getSubTradingaccount().getUSER_CAPITAL());
+												
+												if(closeAmountBig.compareTo(limit) <= 0){
+													riskManageView.forceCloseByUserName(userName);
+												}
+											}
+											//强平金额
+											String closeAmount = tableItem.getText(6);
+											if(!StringUtils.isEmpty(closeAmount)){
+												BigDecimal closeAmountBig = new BigDecimal(closeAmount);
+												
+												//允许亏损的最大金额 <= 已亏损金额 ，则强平 
+												if( closeAmountBig.compareTo(limit) <= 0){
+													riskManageView.forceCloseByUserName(userName);
+												}
+											}
+											break;
+										}
+										
 									}
+										
+										
+									    
 								}
 							}
 							

@@ -14,6 +14,7 @@ import com.bohai.subAccount.entity.SubTradingaccount;
 import com.bohai.subAccount.entity.UserLogin;
 import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.service.SubTradingaccountService;
+import com.bohai.subAccount.vo.UserAccountVO;
 
 @Service("subTradingaccountService")
 public class SubTradingaccountServiceImpl implements SubTradingaccountService {
@@ -77,12 +78,12 @@ public class SubTradingaccountServiceImpl implements SubTradingaccountService {
 	}
 	
 	
-	public SubTradingaccount getUserByUserName2(String subuserid) throws FutureException {
-		logger.info("getUserByUserName2 getUserByUserName2入參：userName = "+subuserid);
+	public UserAccountVO getUserByUserName10(String subuserid) throws FutureException {
+		logger.info("getUserByUserName2 getUserByUserName10入參：userName = "+subuserid);
 		
-		SubTradingaccount subTradingaccount = null;
+		UserAccountVO subTradingaccount = null;
 		try {
-			subTradingaccount = subTradingaccountMapper.getUserByUserName2(subuserid);
+			subTradingaccount = subTradingaccountMapper.getUserByUserName10(subuserid);
 		} catch (Exception e) {
 			logger.error("查询SubTradingaccount失败",e);
 			throw new FutureException("","查询SubTradingaccount失败");

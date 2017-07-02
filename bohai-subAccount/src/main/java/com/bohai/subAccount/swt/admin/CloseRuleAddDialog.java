@@ -232,7 +232,7 @@ public class CloseRuleAddDialog extends Dialog {
 				}
 				
 				if(main != null){
-				    main.refreshTradeRule(treeItem);
+//				    main.refreshTradeRule(treeItem);
 				}
 				if(mainForm != null){
 				    //刷新风控平仓信息

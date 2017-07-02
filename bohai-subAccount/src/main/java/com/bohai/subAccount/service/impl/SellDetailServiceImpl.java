@@ -11,7 +11,7 @@ import com.bohai.subAccount.entity.SellDetail;
 import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.service.SellDetailService;
 
-@Service("SellDetailService")
+@Service("sellDetailService")
 public class SellDetailServiceImpl implements SellDetailService {
 	
 	static Logger logger = Logger.getLogger(SellDetailServiceImpl.class);

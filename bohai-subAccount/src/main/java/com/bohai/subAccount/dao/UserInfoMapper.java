@@ -90,5 +90,6 @@ public interface UserInfoMapper {
     @Select("select t.USER_NAME,t.USER_NO,count(t1.contract_no) as COUNT from t_user_info t left join T_CLOSE_RULE t1 on t.USER_NAME = t1.USER_NAME group by t.USER_NAME,t.USER_NO")
     List<Map<String, Object>> selectUserRiskCount();
     
-    
+    @Select("select FORCE_LIMIT from t_user_info where user_name = #{0} ")
+    String getUserCloseLimitByUserName(String userName);
 }
