@@ -454,7 +454,8 @@ public class RiskManageView {
                         
                         @Override
                         public void widgetSelected(SelectionEvent e) {
-                            
+                            ForceCloseDialog closeDialog = new ForceCloseDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, item, RiskManageView.this);
+                            closeDialog.open();
                         }
                         
                     });
