@@ -210,7 +210,7 @@ public class CoreappView {
                 logger.info("setMemory="+JSON.toJSONString(userContract2));
                 
 //                listUserContractMemorySave.set
-                mapUserContractMemorySave.put(userContract2.getUserNo() +userContract2.getContractNo(), userContract2);
+                mapUserContractMemorySave.put(userContract2.getUserName() +userContract2.getContractNo(), userContract2);
                 
                 
             }
@@ -1596,25 +1596,27 @@ public class CoreappView {
             UserTradeRuleMemorySave userTradeRuleMemorySave = new UserTradeRuleMemorySave();
             userTradeRuleMemorySave = mapTradeRuleMemorySave.get(json.getString("instrumentID"));
             //最大委托量  < 已经委托量 + 当前委托量
-            if(userTradeRuleMemorySave.getMaxEntrustCount() < userTradeRuleMemorySave.getRealEntrustCount() + json.getIntValue("volumeTotalOriginal")){
-                //不能开仓 最大开仓量受限
-                StringBuffer sb = new StringBuffer();
-                sb.append("onRtnOrder|" + subAccount + "|error|不能委托  最大委托量受限");
-                SocketPrintOut(sb.toString());
-                //socketStr = ;
-                Display.getDefault().syncExec(new Runnable() {
-                                    
-                    @Override
-                    public void run() {
-                    getTradeResponse().append(sb.toString()+"\r\n");
-                    }
-                });
-                return;
-            } else {
-                int realOpenCount = 0;
-                realOpenCount = userTradeRuleMemorySave.getRealEntrustCount() + json.getIntValue("volumeTotalOriginal");
-                logger.info("realOpenCount:"+realOpenCount);
-                userTradeRuleMemorySave.setRealEntrustCount(realOpenCount);
+            if(userTradeRuleMemorySave != null){
+	            if(userTradeRuleMemorySave.getMaxEntrustCount() < userTradeRuleMemorySave.getRealEntrustCount() + json.getIntValue("volumeTotalOriginal")){
+	                //不能开仓 最大开仓量受限
+	                StringBuffer sb = new StringBuffer();
+	                sb.append("onRtnOrder|" + subAccount + "|error|不能委托  最大委托量受限");
+	                SocketPrintOut(sb.toString());
+	                //socketStr = ;
+	                Display.getDefault().syncExec(new Runnable() {
+	                                    
+	                    @Override
+	                    public void run() {
+	                    getTradeResponse().append(sb.toString()+"\r\n");
+	                    }
+	                });
+	                return;
+	            } else {
+	                int realOpenCount = 0;
+	                realOpenCount = userTradeRuleMemorySave.getRealEntrustCount() + json.getIntValue("volumeTotalOriginal");
+	                logger.info("realOpenCount:"+realOpenCount);
+	                userTradeRuleMemorySave.setRealEntrustCount(realOpenCount);
+	            }
             }
             
         }
