@@ -157,9 +157,9 @@ public class TradeReceiveThread implements Runnable {
                         //orderRef
                         order.setOrderref(jo.getString("orderref"));
                         //orderSysID
-                        order.setOrdersysid(jo.getString("orderSysID"));
+                        order.setOrdersysid(jo.getString("ordersysid"));
                         //exchangeID
-                        order.setExchangeid(jo.getString("exchangeID"));
+                        order.setExchangeid(jo.getString("exchangeid"));
                         
                         logger.info("报单回报："+JSON.toJSONString(order));
                         Display.getDefault().syncExec(new Runnable() {

@@ -96,6 +96,7 @@ public class MainForm {
 	public  Tree userTree;
 	public  Tree instrumentUserTree;
 	public  Tree riskUserTree;
+	public  Tree systemTree;
 
 	private Shell shell;
 	
@@ -619,6 +620,19 @@ public class MainForm {
 				}*/
 			}
 		};
+		
+		ExpandItem expdItem4 = new ExpandItem(expandBar, SWT.NONE);
+		expdItem4.setHeight(150);
+		expdItem4.setText("系统设置"); // 系统设置
+		
+		systemTree = new Tree(expandBar, SWT.NONE);
+		expdItem4.setControl(systemTree);
+		
+		TreeItem treeSysItem1 = new TreeItem(systemTree, SWT.NONE);
+		treeSysItem1.setText("日初设置");
+
+		TreeItem treeSysItem2 = new TreeItem(systemTree, SWT.NONE);
+		treeSysItem2.setText("结算设置");
 
 		riskUserTree.addListener(SWT.Selection, tree2Selection);
 		//refreshUserTree(riskUserTree);

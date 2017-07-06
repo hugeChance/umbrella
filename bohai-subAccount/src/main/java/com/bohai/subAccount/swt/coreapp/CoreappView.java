@@ -172,7 +172,7 @@ public class CoreappView {
 
 			CoreappView window = new CoreappView();
 			window.loadSpringContext();
-			atomicInteger = new AtomicInteger(100);
+			atomicInteger = new AtomicInteger(200);
 			window.setMemory();
 			window.open();
 
@@ -1530,21 +1530,26 @@ public class CoreappView {
 
 		}
 
+		
 		CThostFtdcInputOrderActionField pInputOrderAction = new CThostFtdcInputOrderActionField();
 		pInputOrderAction.setBrokerID(mainAccount.getBrokerId());
 		pInputOrderAction.setInvestorID(mainAccount.getAccountNo());
 		// caoxx2 start orderSysID + exchangeID 撤单
-		// pInputOrderAction.setOrderRef(json.getString("orderRef"));
-		// pInputOrderAction.setFrontID(Integer.valueOf(json.getString("frontID")));
-		// pInputOrderAction.setSessionID(Integer.valueOf(json.getString("sessionID")));
+		 pInputOrderAction.setOrderRef(json.getString("orderRef"));
+		 pInputOrderAction.setFrontID(Integer.valueOf(json.getString("frontID")));
+		 pInputOrderAction.setSessionID(Integer.valueOf(json.getString("sessionID")));
 		// caoxx2 end
 		pInputOrderAction.setInstrumentID(json.getString("instrumentID"));
 		pInputOrderAction.setActionFlag(json.getString("actionFlag").toCharArray()[0]);
+		
 
 		// caoxx2 start orderSysID + exchangeID 撤单
 		pInputOrderAction.setOrderSysID(json.getString("orderSysID"));
 		pInputOrderAction.setExchangeID(json.getString("exchangeID"));
 		// caoxx2 end
+		// 补丁
+		///操作标志
+		pInputOrderAction.setActionFlag(THOST_FTDC_AF_Delete);
 
 		StringBuffer sb = new StringBuffer();
 		sb.append("reqOrderAction|");
