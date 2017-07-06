@@ -152,32 +152,32 @@ public class RiskManageView {
 		tradethread.start();
         
         //定时任务
-//		if (null != groupRule && groupRule.getCloseTime() != null) {
-//			String[] closeTime = groupRule.getCloseTime().split(",");
-//			Thread quartz = new Thread(new Runnable() {
-//				
-//				@Override
-//				public void run() {
-//					CronTriggerExample example = new CronTriggerExample(closeTime, RiskManageView.this);
-//			        try {
-//						example.run();
-//					} catch (Exception e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				}
-//			});
-//			quartz.setDaemon(true);
-//			quartz.start();
-//		}
+		if (null != groupRule && groupRule.getCloseTime() != null) {
+			String[] closeTime = groupRule.getCloseTime().split(",");
+			Thread quartz = new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					CronTriggerExample example = new CronTriggerExample(closeTime, RiskManageView.this);
+			        try {
+						example.run();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
+			quartz.setDaemon(true);
+			quartz.start();
+		}
 		
 		logger.info("===========================定时任务已开启=======================");
 		
-//		while (!shell.isDisposed()) {
-//			if (!display.readAndDispatch()) {
-//				display.sleep();
-//			}
-//		}
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) {
+				display.sleep();
+			}
+		}
 	}
 	
 	public void loadSpringContext(){
