@@ -88,7 +88,8 @@ public class RiskMainTradeReceiveThread implements Runnable {
 										UserPositionVO positionVO = (UserPositionVO) tableItem.getData();
 										if(positionVO.getUserName().equals(userName)){
 											
-											BigDecimal limit = positionVO.getSubTradingaccount().getUSER_CAPITAL().subtract(positionVO.getSubTradingaccount().getUSER_CAPITAL_YESTORDAY());
+											BigDecimal limit = positionVO.getSubTradingaccount().getUSER_CAPITAL().subtract(
+													positionVO.getSubTradingaccount().getUSER_CAPITAL_YESTORDAY()==null?new BigDecimal("0"):positionVO.getSubTradingaccount().getUSER_CAPITAL_YESTORDAY());
 											
 											//已亏损金额
 											limit = limit.add(closeWin).add(positionWin);
