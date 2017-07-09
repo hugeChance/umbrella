@@ -5,6 +5,7 @@ import org.eclipse.swt.SWT;
 
 import java.math.BigDecimal;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -79,8 +80,8 @@ public class RiskCapitalRateDialog extends Dialog {
         ClassPathXmlApplicationContext classPathXmlApplicationContext = new ClassPathXmlApplicationContext("applicationContext.xml");
         classPathXmlApplicationContext.start();
         logger.info("===================加载成功 !==================");*/
-		capitalRateService = (CapitalRateService) SpringContextUtil.getBean("capitalRateService");
-		capitalRateDetailService = (CapitalRateDetailService) SpringContextUtil.getBean("capitalRateDetailService");
+		capitalRateService = (CapitalRateService) SpringContextUtil.getBean("CapitalRateService");
+		capitalRateDetailService = (CapitalRateDetailService) SpringContextUtil.getBean("CapitalRateDetailService");
 		
 		userInfoMapper = (UserInfoMapper) SpringContextUtil.getBean("userInfoMapper");
 	}
@@ -147,7 +148,7 @@ public class RiskCapitalRateDialog extends Dialog {
 		label_4.setText("自有资金：");
 		
 		//自有资金=动态权益-配资资金1
-		double doublei = Double.valueOf(item.getText(1));
+		double doublei = Double.valueOf(item.getText(1) == null?"0":item.getText(1));
 		doublei = doublei - capitalRate.getHostCapital1().doubleValue();
 		Label label_5 = new Label(shell, SWT.NONE);
 		label_5.setBounds(77, 44, 96, 17);
@@ -189,10 +190,10 @@ public class RiskCapitalRateDialog extends Dialog {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				returnCheckFlg = 0;
-				double doublej = Double.valueOf(item.getText(1));
+				double doublej = Double.valueOf(item == null?"0":item.getText(1));
 				doublej = doublej - capitalRate.getHostCapital1().doubleValue();
 				// 出入金CHECK
-				if (checkCapital(item.getText(0),text.getText(),text_1.getText(),String.valueOf(doublej),"0") == 1){
+				if (item !=null && checkCapital(item.getText(0),text.getText(),text_1.getText(),String.valueOf(doublej),"0") == 1){
 					// 出入金操作
 					// 现在质押资金设了常量为0
 					setCapital(item.getText(0),text.getText(),text_1.getText(),capitalRate.getUserCapitalRate().toString(),text_2.getText(),text_3.getText());
@@ -273,13 +274,19 @@ public class RiskCapitalRateDialog extends Dialog {
 		CapitalRateDetail capitalRateDetail = new CapitalRateDetail();
 		CapitalRate capitalRate = new CapitalRate();
 		//入金
-		if( Double.valueOf(inCapital) > 0 ) {
+		
+		if( (!inCapital.equals("")) && Double.valueOf(inCapital) > 0 ) {
 			
 			capitalRateDetail.setUserName(userName);
-			capitalRateDetail.setInsertTime(new Date());
+//			capitalRateDetail.setInsertTime(new Date());
+			SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMdd HHmmss");  
+			java.util.Date date=new java.util.Date();  
+			String str=sdf.format(date); 
+			capitalRateDetail.setInsertTime(str);
 			capitalRateDetail.setHostCapital(new BigDecimal( hostInCapital));
 			capitalRateDetail.setUserCapital(new BigDecimal(inCapital));
 			tmpAdd = Double.valueOf(inCapital) + Double.valueOf(hostInCapital);
+			capitalRateDetail.setUserCapitalRate(new BigDecimal("0"));
 			//配资表明细 插入数据
 			try {
 				capitalRateDetailService.saveCapitalRateDetail(capitalRateDetail);
@@ -291,7 +298,7 @@ public class RiskCapitalRateDialog extends Dialog {
 			//配资表总览更新数据
 			capitalRate.setUserName(userName);
 			capitalRate.setHostCapital1(new BigDecimal( hostInCapital));
-			capitalRate.setUpdateTime(new Date());
+			capitalRate.setUpdateTime(str);
 			capitalRate.setUserCapital(new BigDecimal(inCapital));
 			try {
 				capitalRateService.addCapitalRate(capitalRate);
@@ -346,11 +353,14 @@ public class RiskCapitalRateDialog extends Dialog {
 		}
 		
 		//出金
-		if( Double.valueOf(outCapital) > 0 ) {
+		if( (!outCapital.equals("")) && Double.valueOf(outCapital) > 0 ) {
 			double tmpOutCapital = 0;
 			
 			capitalRateDetail.setUserName(userName);
-			capitalRateDetail.setInsertTime(new Date());
+			SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMdd HHmmss");  
+			java.util.Date date=new java.util.Date();  
+			String str=sdf.format(date); 
+			capitalRateDetail.setInsertTime(str);
 			capitalRateDetail.setHostCapital(new BigDecimal( hostOutCapital).multiply(new BigDecimal("-1")));
 			tmpOutCapital = Double.valueOf(outCapital) * -1;
 			capitalRateDetail.setUserCapital(new BigDecimal(tmpOutCapital));
@@ -371,7 +381,7 @@ public class RiskCapitalRateDialog extends Dialog {
 			//配资表总览更新数据
 			capitalRate.setUserName(userName);
 			capitalRate.setHostCapital1(new BigDecimal( hostOutCapital));
-			capitalRate.setUpdateTime(new Date());
+			capitalRate.setUpdateTime(str);
 			capitalRate.setUserCapital(new BigDecimal(outCapital));
 			try {
 				capitalRateService.distractCapitalRate(capitalRate);

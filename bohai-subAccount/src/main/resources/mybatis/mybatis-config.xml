@@ -95,6 +95,7 @@
         <mapper resource="mybatis/mapper/UserFrozenaccountMapper.xml"/>
         <mapper resource="mybatis/mapper/UseravailableindbMapper.xml"/>
         <mapper resource="mybatis/mapper/CapitalRateMapper.xml"/>
+        <mapper resource="mybatis/mapper/CapitalRateDetailMapper.xml"/>
 
     </mappers>
 

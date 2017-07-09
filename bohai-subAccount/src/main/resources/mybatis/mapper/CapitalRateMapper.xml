@@ -11,7 +11,7 @@
     <result column="USER_CAPITAL_RATE" property="userCapitalRate" jdbcType="DECIMAL" />
     <result column="USER_CAPITAL" property="userCapital" jdbcType="DECIMAL" />
     <result column="HOST_CAPITAL1" property="hostCapital1" jdbcType="DECIMAL" />
-    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="VARCHAR" />
     <result column="HOST_CAPITAL2" property="hostCapital2" jdbcType="DECIMAL" />
     <result column="HOST_CAPITAL_RATE" property="hostCapitalRate" jdbcType="DECIMAL" />
     <result column="USER_OUT_CAPITAL_RETAIN" property="userOutCapitalRetain" jdbcType="DECIMAL" />
@@ -57,7 +57,7 @@
       HOST_CAPITAL_RATE, USER_OUT_CAPITAL_RETAIN, 
       USER_CAPITAL_YESTORDAY)
     values (#{userName,jdbcType=VARCHAR}, #{userCapitalRate,jdbcType=DECIMAL}, #{userCapital,jdbcType=DECIMAL}, 
-      #{hostCapital1,jdbcType=DECIMAL}, #{updateTime,jdbcType=TIMESTAMP}, #{hostCapital2,jdbcType=DECIMAL}, 
+      #{hostCapital1,jdbcType=DECIMAL}, #{updateTime,jdbcType=VARCHAR}, #{hostCapital2,jdbcType=DECIMAL}, 
       #{hostCapitalRate,jdbcType=DECIMAL}, #{userOutCapitalRetain,jdbcType=DECIMAL}, 
       #{userCapitalYestorday,jdbcType=DECIMAL})
   </insert>
@@ -111,7 +111,7 @@
         #{hostCapital1,jdbcType=DECIMAL},
       </if>
       <if test="updateTime != null" >
-        #{updateTime,jdbcType=TIMESTAMP},
+        #{updateTime,jdbcType=VARCHAR},
       </if>
       <if test="hostCapital2 != null" >
         #{hostCapital2,jdbcType=DECIMAL},
@@ -145,7 +145,7 @@
         HOST_CAPITAL1 = #{hostCapital1,jdbcType=DECIMAL},
       </if>
       <if test="updateTime != null" >
-        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+        UPDATE_TIME = #{updateTime,jdbcType=VARCHAR},
       </if>
       <if test="hostCapital2 != null" >
         HOST_CAPITAL2 = #{hostCapital2,jdbcType=DECIMAL},
@@ -172,7 +172,7 @@
     set USER_CAPITAL_RATE = #{userCapitalRate,jdbcType=DECIMAL},
       USER_CAPITAL = #{userCapital,jdbcType=DECIMAL},
       HOST_CAPITAL1 = #{hostCapital1,jdbcType=DECIMAL},
-      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{updateTime,jdbcType=VARCHAR},
       HOST_CAPITAL2 = #{hostCapital2,jdbcType=DECIMAL},
       HOST_CAPITAL_RATE = #{hostCapitalRate,jdbcType=DECIMAL},
       USER_OUT_CAPITAL_RETAIN = #{userOutCapitalRetain,jdbcType=DECIMAL},
