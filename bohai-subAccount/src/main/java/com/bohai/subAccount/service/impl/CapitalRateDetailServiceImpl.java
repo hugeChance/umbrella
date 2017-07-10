@@ -15,7 +15,7 @@ import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.service.CapitalRateDetailService;
 import com.bohai.subAccount.service.CapitalRateService;
 
-@Service("CapitalRateDetail")
+@Service("CapitalRateDetailService")
 public class CapitalRateDetailServiceImpl implements CapitalRateDetailService {
 	
 	static Logger logger = Logger.getLogger(CapitalRateDetailServiceImpl.class);

@@ -243,7 +243,7 @@ public class Datecalculate {
 
 			//持仓盈亏
 			bigOpsition = bigOpsition.add(commonUtil.isNull(investorPositionsInfo.getPositionprofit()));
-			//平仓盈亏
+			//平仓盈亏O
 			bigClose = bigClose.add(commonUtil.isNull(investorPositionsInfo.getCloseprofit()));
 			
 		}

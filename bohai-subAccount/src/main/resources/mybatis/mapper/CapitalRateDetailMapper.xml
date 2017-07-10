@@ -11,7 +11,7 @@
     <result column="USER_CAPITAL_RATE" property="userCapitalRate" jdbcType="DECIMAL" />
     <result column="USER_CAPITAL" property="userCapital" jdbcType="DECIMAL" />
     <result column="HOST_CAPITAL" property="hostCapital" jdbcType="DECIMAL" />
-    <result column="INSERT_TIME" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="INSERT_TIME" property="insertTime" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     <!--
@@ -50,7 +50,7 @@
     insert into T_CAPITAL_RATE_DETAIL (USER_NAME, USER_CAPITAL_RATE, USER_CAPITAL, 
       HOST_CAPITAL, INSERT_TIME)
     values (#{userName,jdbcType=VARCHAR}, #{userCapitalRate,jdbcType=DECIMAL}, #{userCapital,jdbcType=DECIMAL}, 
-      #{hostCapital,jdbcType=DECIMAL}, #{insertTime,jdbcType=TIMESTAMP})
+      #{hostCapital,jdbcType=DECIMAL}, #{insertTime,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.bohai.subAccount.entity.CapitalRateDetail" >
     <!--
@@ -90,7 +90,7 @@
         #{hostCapital,jdbcType=DECIMAL},
       </if>
       <if test="insertTime != null" >
-        #{insertTime,jdbcType=TIMESTAMP},
+        #{insertTime,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
