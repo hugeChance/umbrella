@@ -522,7 +522,7 @@
     update T_INVESTOR_POSITION set CLOSEAMOUNT = #{closeamount,jdbcType=DECIMAL}
     ,CLOSEVOLUME = #{closevolume,jdbcType=DECIMAL}
     ,POSITION = #{position,jdbcType=DECIMAL}
-    ,COMMISSION = #{commission,jdbcType=DECIMAL},CLOSETIME = to_char(sysdate,'yyyymmddhh24miss')
+    ,COMMISSION = #{commission,jdbcType=DECIMAL},OPENTIME = to_char(sysdate,'yyyymmddhh24miss')
     where SUBUSERID = #{subuserid,jdbcType=VARCHAR} 
     and INSTRUMENTID = #{instrumentid,jdbcType=VARCHAR} 
     and POSIDIRECTION = #{posidirection,jdbcType=VARCHAR} 

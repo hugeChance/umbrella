@@ -96,6 +96,8 @@
         <mapper resource="mybatis/mapper/UseravailableindbMapper.xml"/>
         <mapper resource="mybatis/mapper/CapitalRateMapper.xml"/>
         <mapper resource="mybatis/mapper/CapitalRateDetailMapper.xml"/>
+        <mapper resource="mybatis/mapper/BuyDetailMapper.xml"/>
+        <mapper resource="mybatis/mapper/SellDetailMapper.xml"/>
 
     </mappers>
 
