@@ -1177,6 +1177,32 @@ public class CoreappView {
 				getCtpResponse().append(JSON.toJSONString(pInputOrder) + "\r\n");
 			}
 		});
+		
+		// 确定子账号
+		String subAccount = "";
+		// select SUBUSERID from T_INPUT_ORDER where FRONTID = FRONTID and
+		// SESSIONID = SESSIONID and ORDERREF = pTrade.getOrderRef()
+
+		try {
+			subAccount = inputOrderService.getSubUserID(frontID, sessionID, pInputOrder.getOrderRef());
+		} catch (FutureException e) {
+			//
+			e.printStackTrace();
+		}
+
+		logger.info("onRtnOrder确定子账号：" + subAccount);
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append("onRtnOrder|" + subAccount + "|error|");
+		SocketPrintOut(sb.toString());
+		// socketStr = ;
+		Display.getDefault().syncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				getTradeResponse().append(sb.toString() + "\r\n");
+			}
+		});
 	}
 
 	public void onRtnOrder(CThostFtdcOrderField pOrder) {
@@ -1599,7 +1625,7 @@ public class CoreappView {
 			// 最大委托量 < 已经委托量 + 当前委托量
 			if (userTradeRuleMemorySave != null) {
 				if (userTradeRuleMemorySave.getMaxEntrustCount() < userTradeRuleMemorySave.getRealEntrustCount()
-						+ json.getIntValue("volumeTotalOriginal")) {
+						+ json.getIntValue("volumeTotalOriginal")) { 
 					// 不能开仓 最大开仓量受限
 					StringBuffer sb = new StringBuffer();
 					sb.append("onRtnOrder|" + subAccount + "|error|不能委托  最大委托量受限");

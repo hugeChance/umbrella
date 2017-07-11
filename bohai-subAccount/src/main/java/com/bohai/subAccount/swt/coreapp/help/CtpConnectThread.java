@@ -154,9 +154,35 @@ public class CtpConnectThread implements Runnable{
                         JSONObject json2 = JSON.parseObject(params[2]);
                         CThostFtdcRspInfoField pRspInfo = new CThostFtdcRspInfoField();
                         
-                        BeanUtils.copyProperties(pInputOrder, json1);
+//                        BeanUtils.copyProperties(pInputOrder, json1);
+                        
                         BeanUtils.copyProperties(pRspInfo, json2);
                         
+                        pInputOrder.setBrokerID(json1.getString("brokerID"));
+                        pInputOrder.setBusinessUnit(json1.getString("businessUnit"));
+                        pInputOrder.setCombHedgeFlag(json1.getString("combHedgeFlag"));
+                        pInputOrder.setCombOffsetFlag(json1.getString("combOffsetFlag"));
+//                        pInputOrder.setContingentCondition(json1.getString("contingentCondition"));
+                        pInputOrder.setDirection(json1.getString("direction").charAt(0));
+                        pInputOrder.setForceCloseReason(json1.getString("forceCloseReason").charAt(0));
+                        pInputOrder.setGTDDate(json1.getString("gTDDate"));
+                        pInputOrder.setInstrumentID(json1.getString("instrumentID"));
+                        pInputOrder.setInvestorID(json1.getString("investorID"));
+//                        pInputOrder.setIsAutoSuspend(json1.getString("isAutoSuspend"));
+//                        pInputOrder.setIsSwapOrder(json1.getString("isSwapOrder"));
+//                        pInputOrder.setLimitPrice(json1.getString("limitPrice"));
+//                        pInputOrder.setMinVolume(json1.getString("minVolume"));
+                        pInputOrder.setOrderPriceType(json1.getString("orderPriceType").charAt(0));
+                        pInputOrder.setOrderRef(json1.getString("orderRef"));
+                        pInputOrder.setRequestID(Integer.valueOf(json1.getString("requestID")));
+                        pInputOrder.setStopPrice(Double.valueOf(json1.getString("stopPrice")));
+                        pInputOrder.setTimeCondition(json1.getString("timeCondition").charAt(0));
+                        pInputOrder.setUserForceClose(Integer.valueOf(json1.getString("userForceClose")));
+                        pInputOrder.setUserID(json1.getString("userID"));
+                        pInputOrder.setVolumeCondition(json1.getString("volumeCondition").charAt(0));
+                        pInputOrder.setVolumeTotalOriginal(Integer.valueOf(json1.getString("volumeTotalOriginal")));
+                        
+                       
                         coreappView.onErrRtnOrderInsert(pInputOrder, pRspInfo);
                         
                     }else if (params[0].equals("onRspQryTradingAccount")) {//请求查询资金账户响应

@@ -369,7 +369,19 @@ public class TraderView {
     public void createMarketTableViewer(Composite parent){
         
         marketTable = new Table(parent, SWT.BORDER | SWT.FULL_SELECTION);
-        TableCursor tableCursor = new TableCursor(marketTable, SWT.NONE);
+        marketTable.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mouseDown(MouseEvent e) {
+        		TableItem row = marketTable.getItem(new Point(e.x, e.y));
+        		if(row != null){
+                    //所在行
+                    combo.setText(row.getText());
+                    
+                }
+        	}
+        });
+        
+        /*TableCursor tableCursor = new TableCursor(marketTable, SWT.NONE);
         //选中事件
         tableCursor.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -393,7 +405,7 @@ public class TraderView {
                     
                 }
             }
-        });
+        });*/
         
         
         marketTable.setHeaderVisible(true);//设置表头
