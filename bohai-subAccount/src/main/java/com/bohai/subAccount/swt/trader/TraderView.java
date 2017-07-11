@@ -342,6 +342,7 @@ public class TraderView {
 		bottomForm.setLayout(new FillLayout(SWT.HORIZONTAL));
         
 		southFolder = new CTabFolder(bottomForm, SWT.NONE);
+		headForm.setWeights(new int[] {139, 189, 89});
 		createSouthFolder();
         
         
@@ -647,6 +648,55 @@ public class TraderView {
                         box.open();
                         return;
                     }
+                    int checkflg = 0;
+                    if (closeButton.getSelection()) {
+                    	
+                    	TableItem[] items = positionTable.getItems();
+                        //轮询持仓表，查看是否有反方向的持仓，如果有则判断数量，数量小于等于持仓数量就平仓
+                        if(items != null && items.length >0){
+                            for(TableItem item : items){
+                                if(StringUtils.isEmpty(item.getText())){
+                                    continue;
+                                }
+                                InvestorPosition position = (InvestorPosition) item.getData();
+                                
+                                
+                                if(position.getInstrumentid().equals(combo.getText())){
+                            		if(buyButton.getSelection()){
+                            			//卖开要买平
+                            			if(position.getPosidirection().equals("1")){
+                            				if(Integer.parseInt(position.getPosition().toString()) >= Integer.parseInt(volume.getText())) {
+                            					checkflg = 1;
+                            				}
+                            			}
+                            		}
+                            		
+                            		if(sellButton.getSelection()){
+                            			//买开要卖平
+                            			if(position.getPosidirection().equals("0")){
+                            				if(Integer.parseInt(position.getPosition().toString()) >= Integer.parseInt(volume.getText())) {
+                            					checkflg = 1;
+                            				}
+                            			}
+                            		}
+                            		
+                            		
+                            	}
+                            }
+                        }
+                    	
+                        if(checkflg == 0){
+                        	MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                            box.setMessage("平仓数量请确认！");
+                            box.setText(CommonConstant.MESSAGE_BOX_ERROR);
+                            box.open();
+                            return;
+                        }
+                    }
+                    
+                    
+                    
+                    
                 } catch (NumberFormatException e2) {
                     MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                     box.setMessage("下单失败");
