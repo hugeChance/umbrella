@@ -370,19 +370,19 @@ public class TraderView {
     public void createMarketTableViewer(Composite parent){
         
         marketTable = new Table(parent, SWT.BORDER | SWT.FULL_SELECTION);
-        marketTable.addMouseListener(new MouseAdapter() {
-        	@Override
-        	public void mouseDown(MouseEvent e) {
-        		TableItem row = marketTable.getItem(new Point(e.x, e.y));
-        		if(row != null){
-                    //所在行
-                    combo.setText(row.getText());
-                    
-                }
-        	}
-        });
+//        marketTable.addMouseListener(new MouseAdapter() {
+//        	@Override
+//        	public void mouseDown(MouseEvent e) {
+//        		TableItem row = marketTable.getItem(new Point(e.x, e.y));
+//        		if(row != null){
+//                    //所在行
+//                    combo.setText(row.getText());
+//                    
+//                }
+//        	}
+//        });
         
-        /*TableCursor tableCursor = new TableCursor(marketTable, SWT.NONE);
+        TableCursor tableCursor = new TableCursor(marketTable, SWT.NONE);
         //选中事件
         tableCursor.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -397,16 +397,20 @@ public class TraderView {
                     if(column == 3){
                         sellButton.setSelection(true);
                         buyButton.setSelection(false);
+                        priceText.setText(row.getText(4));
                     }else if(column == 4) {
                         buyButton.setSelection(true);
                         sellButton.setSelection(false);
+                        priceText.setText(row.getText(3));
+                    } else {
+                    	priceText.setText(row.getText(1));
                     }
                     
-                    priceText.setText(row.getText(1));
+                    
                     
                 }
             }
-        });*/
+        });
         
         
         marketTable.setHeaderVisible(true);//设置表头

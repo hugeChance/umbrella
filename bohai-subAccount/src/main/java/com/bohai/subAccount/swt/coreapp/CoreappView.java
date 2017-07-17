@@ -1193,7 +1193,7 @@ public class CoreappView {
 		logger.info("onRtnOrder确定子账号：" + subAccount);
 		
 		StringBuffer sb = new StringBuffer();
-		sb.append("onRtnOrder|" + subAccount + "|error|");
+		sb.append("onRtnOrder|" + subAccount + "|error|"+pRspInfo.getErrorMsg());
 		SocketPrintOut(sb.toString());
 		// socketStr = ;
 		Display.getDefault().syncExec(new Runnable() {
