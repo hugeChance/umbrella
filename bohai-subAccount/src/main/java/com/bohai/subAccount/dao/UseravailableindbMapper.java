@@ -2,6 +2,8 @@ package com.bohai.subAccount.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
+
 import com.bohai.subAccount.entity.Useravailableindb;
 
 public interface UseravailableindbMapper {
@@ -28,4 +30,11 @@ public interface UseravailableindbMapper {
      * @return
      */
     Useravailableindb selectByUserName(String userName);
+    
+    /**
+     * 删除所有数据
+     * @return 删除条数
+     */
+    @Delete("delete from T_USERAVAILABLEINDB")
+    void deleteAll();
 }

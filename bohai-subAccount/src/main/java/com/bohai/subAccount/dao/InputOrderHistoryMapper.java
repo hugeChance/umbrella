@@ -21,6 +21,6 @@ public interface InputOrderHistoryMapper {
      */
     int insertSelective(InputOrderHistory record);
     
-    @Insert("insert into t_input_order_history select t.*,to_char(sysdate,'yyyymmdd') from t_input_order t")
+    @Insert("insert into t_input_order_history select t.*,to_char(sysdate,'yyyymmdd hh24:mi:ss') from t_input_order t")
     int backup();
 }
