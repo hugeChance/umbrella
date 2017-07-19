@@ -64,6 +64,8 @@ import com.bohai.subAccount.service.UserContractService;
 import com.bohai.subAccount.service.UserInfoService;
 import com.bohai.subAccount.utils.SpringContextUtil;
 import com.bohai.subAccount.vo.UserContractTradeRule;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.DisposeEvent;
 
 public class MainForm {
     
@@ -621,6 +623,38 @@ public class MainForm {
 			}
 		};
 		
+		//caoxx add
+		Listener systemTreeSelection = new Listener() {
+			public void handleEvent(Event e) {
+				String string = "";
+				TreeItem selection = systemTree.getSelection()[0];
+		
+				
+				if("日初设置".equals(selection.getText())){
+					MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION
+							| SWT.OK | SWT.CANCEL);
+					box.setMessage("日初设置是否开始？");
+//					box.open();
+					if(box.open() == SWT.OK){
+						System.out.println("日初开始");
+					}
+				}else if ("结算设置".equals(selection.getText())) {
+					MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION
+							| SWT.OK | SWT.CANCEL);
+					box.setMessage("结算设置是否开始？");
+					if(box.open() == SWT.OK){
+						System.out.println("结算开始");
+					}
+                }
+				
+				
+			}
+		};
+		
+		
+		//caoxx add end
+		
+		
 		ExpandItem expdItem4 = new ExpandItem(expandBar, SWT.NONE);
 		expdItem4.setHeight(150);
 		expdItem4.setText("系统设置"); // 系统设置
@@ -628,11 +662,16 @@ public class MainForm {
 		systemTree = new Tree(expandBar, SWT.NONE);
 		expdItem4.setControl(systemTree);
 		
+		systemTree.addListener(SWT.Selection, systemTreeSelection);
 		TreeItem treeSysItem1 = new TreeItem(systemTree, SWT.NONE);
 		treeSysItem1.setText("日初设置");
 
 		TreeItem treeSysItem2 = new TreeItem(systemTree, SWT.NONE);
 		treeSysItem2.setText("结算设置");
+		
+		
+		
+		
 
 		riskUserTree.addListener(SWT.Selection, tree2Selection);
 		//refreshUserTree(riskUserTree);
