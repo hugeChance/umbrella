@@ -10,6 +10,7 @@ import com.bohai.subAccount.dao.InvestorPositionHistoryMapper;
 import com.bohai.subAccount.dao.InvestorPositionMapper;
 import com.bohai.subAccount.dao.OrderHistoryMapper;
 import com.bohai.subAccount.dao.OrderMapper;
+import com.bohai.subAccount.dao.SubTradingaccountHistoryMapper;
 import com.bohai.subAccount.dao.SubTradingaccountMapper;
 import com.bohai.subAccount.dao.TradeHistoryMapper;
 import com.bohai.subAccount.dao.TradeMapper;
@@ -51,6 +52,9 @@ public class ClearServiceImpl implements ClearService {
 	@Autowired
 	private UserFrozenaccountMapper userFrozenaccountMapper;
 
+	@Autowired
+	private SubTradingaccountHistoryMapper subTradingaccountHistoryMapper;
+
 	@Override
 	public void backUp() {
 
@@ -85,13 +89,27 @@ public class ClearServiceImpl implements ClearService {
 		
 		
 		
-		logger.debug("开始备份T_INVESTOR_POSITION表");
-		count = InvestorPositionHistoryMapper.backup();
-		logger.debug("T_INVESTOR_POSITION表已备份"+count+"条数据完成");
+		logger.debug("开始备份T_SUB_TRADINGACCOUNT表");
+		count = subTradingaccountHistoryMapper.backup();
+		logger.debug("T_TRADE表已备份"+count+"条数据完成");
 		
-		logger.debug("开始删除T_INVESTOR_POSITION表");
-		count = investorPositionMapper.deleteNoPosition();
-		logger.debug("T_INVESTOR_POSITION表已删除"+count+"条数据完成");
+		logger.debug("开始更新T_SUB_TRADINGACCOUNT表把冻结资金换成可用，把资金退还");
+		count = subTradingaccountMapper.updateCloseOper1();
+		logger.debug("T_SUB_TRADINGACCOUNT表已更新"+count+"条数据完成");
+		
+		logger.debug("开始更新T_SUB_TRADINGACCOUNT表把平仓盈亏手续费清空");
+		count = subTradingaccountMapper.updateCloseOper2();
+		logger.debug("T_SUB_TRADINGACCOUNT表已更新"+count+"条数据完成");
+		
+		
+		
+//		logger.debug("开始备份T_INVESTOR_POSITION表");
+//		count = InvestorPositionHistoryMapper.backup();
+//		logger.debug("T_INVESTOR_POSITION表已备份"+count+"条数据完成");
+//		
+//		logger.debug("开始删除T_INVESTOR_POSITION表");
+//		count = investorPositionMapper.deleteNoPosition();
+//		logger.debug("T_INVESTOR_POSITION表已删除"+count+"条数据完成");
 		
 	}
 

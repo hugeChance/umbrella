@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Update;
 
 import com.bohai.subAccount.entity.InputOrder;
 import com.bohai.subAccount.entity.SubTradingaccount;
@@ -47,4 +48,12 @@ public interface SubTradingaccountMapper {
      * @return 更新条数
      */
     int init();
+    
+    @Update("update T_SUB_TRADINGACCOUNT set AVAILABLE = AVAILABLE + FROZENMARGIN + FROZENCOMMISSION")
+    int updateCloseOper1();
+    
+    @Update("update T_SUB_TRADINGACCOUNT set FROZENMARGIN = '0',FROZENCOMMISSION = '0',CLOSEPROFIT = '0',COMMISSION = '0'")
+    int updateCloseOper2();
+    
+    
 }
