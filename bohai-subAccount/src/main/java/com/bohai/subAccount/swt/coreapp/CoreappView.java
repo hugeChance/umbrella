@@ -742,37 +742,118 @@ public class CoreappView {
 		trade.setSubuserid(subAccount);
 		trade.setFrontid(new BigDecimal(frontID));
 		trade.setSessionid(new BigDecimal(sessionID));
+		
+		
+		
+		
+		
+		
+		
 		if (pTrade.getOffsetFlag() == '0') {
+//			BuyDetail buyDetail = new BuyDetail();
 			BuyDetail buyDetail = new BuyDetail();
+			
+			buyDetail.setBrokerid(pTrade.getBrokerID());
+			buyDetail.setInvestorid(pTrade.getInvestorID());
+			buyDetail.setInstrumentid(pTrade.getInstrumentID());
+			buyDetail.setOrderref(pTrade.getOrderRef());
+			buyDetail.setUserid(pTrade.getUserID());
+			buyDetail.setExchangeid(pTrade.getExchangeID());
+			buyDetail.setTradeid(pTrade.getTradeID());
+			buyDetail.setDirection(String.valueOf(pTrade.getDirection()));
+			buyDetail.setOrdersysid(pTrade.getOrderSysID());
+			buyDetail.setParticipantid(pTrade.getParticipantID());
+			buyDetail.setClientid(pTrade.getClientID());
+			buyDetail.setTradingrole(String.valueOf(pTrade.getTradingRole()));
+			buyDetail.setExchangeinstid(pTrade.getExchangeInstID());
+			buyDetail.setOffsetflag(String.valueOf(pTrade.getOffsetFlag()));
+			buyDetail.setHedgeflag(String.valueOf(pTrade.getHedgeFlag()));
+			buyDetail.setPrice(new BigDecimal(String.valueOf(pTrade.getPrice())));
+			buyDetail.setVolume(Short.valueOf(String.valueOf(pTrade.getVolume())));
+			buyDetail.setTradedate(pTrade.getTradeDate());
+			buyDetail.setTradetime(pTrade.getTradeTime());
+			buyDetail.setTradetype(String.valueOf(pTrade.getTradeType()));
+			buyDetail.setPricesource(String.valueOf(pTrade.getPriceSource()));
+			buyDetail.setTraderid(pTrade.getTraderID());
+			buyDetail.setOrderlocalid(pTrade.getOrderLocalID());
+			buyDetail.setClearingpartid(pTrade.getClearingPartID());
+			buyDetail.setBusinessunit(pTrade.getBusinessUnit());
+			buyDetail.setSequenceno(Short.valueOf(String.valueOf(pTrade.getSequenceNo())));
+			buyDetail.setTradingday(pTrade.getTradingDay());
+			buyDetail.setSettlementid(Short.valueOf(String.valueOf(pTrade.getSettlementID())));
+			buyDetail.setBrokerorderseq(Short.valueOf(String.valueOf(pTrade.getBrokerOrderSeq())));
+			buyDetail.setTradesource(String.valueOf(pTrade.getTradeSource()));
+			buyDetail.setSubuserid(subAccount);
+			buyDetail.setFrontid(new BigDecimal(frontID));
+			buyDetail.setSessionid(new BigDecimal(sessionID));
+			
 			String tmpStrCombokey = "";
 
 			try {
-				BeanUtils.copyProperties(buyDetail, trade);
+				// TODO BeanUtils.copyProperties(buyDetail, trade);
+//				BeanUtils.copyProperties(buyDetail, trade);
 				tmpStrCombokey = trade.getTradedate() + trade.getExchangeid() + trade.getOrdersysid();
 				buyDetail.setCombokey(tmpStrCombokey);
 				buyDetail.setSellvolume(Short.valueOf("0"));
 				buyDetailService.saveBuyDetail(buyDetail);
 
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				logger.error("BeanUtils.copyProperties(buyDetail, trade); error", e1);
+
+				logger.error("开平仓对冲中的开仓操作错误！", e1);
 
 			}
 		}
 
 		if (pTrade.getOffsetFlag() == '1') {
 			SellDetail sellDetail = new SellDetail();
+			sellDetail.setBrokerid(pTrade.getBrokerID());
+			sellDetail.setInvestorid(pTrade.getInvestorID());
+			sellDetail.setInstrumentid(pTrade.getInstrumentID());
+			sellDetail.setOrderref(pTrade.getOrderRef());
+			sellDetail.setUserid(pTrade.getUserID());
+			sellDetail.setExchangeid(pTrade.getExchangeID());
+			sellDetail.setTradeid(pTrade.getTradeID());
+			sellDetail.setDirection(String.valueOf(pTrade.getDirection()));
+			sellDetail.setOrdersysid(pTrade.getOrderSysID());
+			sellDetail.setParticipantid(pTrade.getParticipantID());
+			sellDetail.setClientid(pTrade.getClientID());
+			sellDetail.setTradingrole(String.valueOf(pTrade.getTradingRole()));
+			sellDetail.setExchangeinstid(pTrade.getExchangeInstID());
+			sellDetail.setOffsetflag(String.valueOf(pTrade.getOffsetFlag()));
+			sellDetail.setHedgeflag(String.valueOf(pTrade.getHedgeFlag()));
+			sellDetail.setPrice(new BigDecimal(String.valueOf(pTrade.getPrice())));
+			sellDetail.setVolume(Short.valueOf(String.valueOf(pTrade.getVolume())));
+			sellDetail.setTradedate(pTrade.getTradeDate());
+			sellDetail.setTradetime(pTrade.getTradeTime());
+			sellDetail.setTradetype(String.valueOf(pTrade.getTradeType()));
+			sellDetail.setPricesource(String.valueOf(pTrade.getPriceSource()));
+			sellDetail.setTraderid(pTrade.getTraderID());
+			sellDetail.setOrderlocalid(pTrade.getOrderLocalID());
+			sellDetail.setClearingpartid(pTrade.getClearingPartID());
+			sellDetail.setBusinessunit(pTrade.getBusinessUnit());
+			sellDetail.setSequenceno(Short.valueOf(String.valueOf(pTrade.getSequenceNo())));
+			sellDetail.setTradingday(pTrade.getTradingDay());
+			sellDetail.setSettlementid(Short.valueOf(String.valueOf(pTrade.getSettlementID())));
+			sellDetail.setBrokerorderseq(Short.valueOf(String.valueOf(pTrade.getBrokerOrderSeq())));
+			sellDetail.setTradesource(String.valueOf(pTrade.getTradeSource()));
+			sellDetail.setSubuserid(subAccount);
+			sellDetail.setFrontid(new BigDecimal(frontID));
+			sellDetail.setSessionid(new BigDecimal(sessionID));
+			
+			
+			
 			String tmpStrCombokey = "";
 
 			try {
-				BeanUtils.copyProperties(sellDetail, trade);
+				// TODO BeanUtils.copyProperties(sellDetail, trade);
+//				BeanUtils.copyProperties(sellDetail, trade);
 				tmpStrCombokey = trade.getTradedate() + trade.getExchangeid() + trade.getOrdersysid();
 				sellDetail.setCombokey(tmpStrCombokey);
 				sellDetailService.saveSellDetail(sellDetail);
 
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
-				logger.error("BeanUtils.copyProperties(sellDetail, trade); error", e1);
+				logger.error("开平仓对冲中的平仓操作错误！", e1);
 
 			}
 		}

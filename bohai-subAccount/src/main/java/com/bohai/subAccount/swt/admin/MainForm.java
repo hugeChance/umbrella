@@ -696,6 +696,12 @@ public class MainForm {
 			public void handleEvent(Event e) {
 				String string = "";
 				TreeItem selection = systemTree.getSelection()[0];
+				 if ("日初设置".equals(selection.getText())) {
+                    
+                    tabItem_4.setText("日初设置");
+                    tabItem_4.setControl(null);
+                
+				 }
 		
 				
 				if("日初设置".equals(selection.getText())){
@@ -704,78 +710,75 @@ public class MainForm {
 					box.setMessage("日初设置是否开始？");
 //					box.open();
 					if(box.open() == SWT.OK){
-						System.out.println("日初开始");
 						
-						ClearService clearService = (ClearService) SpringContextUtil.getBean("clearService");
-		                clearService.init();
+						MessageBox boxrepeat = new MessageBox(shell, SWT.ICON_INFORMATION
+								| SWT.OK | SWT.CANCEL);
+						boxrepeat.setMessage("日初设置会清除当日数据是否开始？");
+						
+						if(boxrepeat.open() == SWT.OK){
+							System.out.println("日初开始");
+							
+							ClearService clearService = (ClearService) SpringContextUtil.getBean("clearService");
+			                clearService.init();
+			                
+			                
+			                MessageBox box2 = new MessageBox(shell, SWT.ICON_INFORMATION
+									| SWT.OK );
+							box2.setMessage("日初设置完成！");
+						}
 					}
 				}else if ("结算设置".equals(selection.getText())) {
+					if ("结算设置".equals(selection.getText())) {
+	                    
+	                    tabItem_4.setText("结算设置");
+	                    tabItem_4.setControl(null);
+	                
+					 }
 					MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION
 							| SWT.OK | SWT.CANCEL);
 					box.setMessage("结算设置是否开始？");
 					if(box.open() == SWT.OK){
-						System.out.println("结算开始");
-						
-						Thread thread = new Thread(new Runnable() {
+						MessageBox boxrepeat = new MessageBox(shell, SWT.ICON_INFORMATION
+								| SWT.OK | SWT.CANCEL);
+						boxrepeat.setMessage("结算设置是否开始？");
+						if(boxrepeat.open() == SWT.OK){
+							System.out.println("结算开始");
 							
-							@Override
-							public void run() {
-								try {
-									Socket socket = new Socket(ApplicationConfig.getProperty("tradeAddr"),3394);
-									PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(),"UTF-8"));
-									out.println("admin|closeAccount");
-									out.flush();
-									
-								} catch (Exception e) {
-									logger.error("建立socket通讯失败");
-								}
+							Thread thread = new Thread(new Runnable() {
 								
+								@Override
+								public void run() {
+									try {
+										Socket socket = new Socket(ApplicationConfig.getProperty("tradeAddr"),3394);
+										PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(),"UTF-8"));
+										out.println("admin|closeAccount");
+										out.flush();
+										
+									} catch (Exception e) {
+										logger.error("建立socket通讯失败");
+									}
+									
+								}
+							});
+			            	
+			            	thread.start();
+			            	
+			            	try {
+								Thread.sleep(10000);
+							} catch (InterruptedException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
 							}
-						});
-		            	
-		            	thread.start();
-		            	
-		            	try {
-							Thread.sleep(10000);
-						} catch (InterruptedException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+			            	
+			            	ClearService clearService = (ClearService) SpringContextUtil.getBean("clearService");
+//			                //原系统备份和删除 
+							clearService.backUp();
+							
+							MessageBox box3 = new MessageBox(shell, SWT.ICON_INFORMATION
+									| SWT.OK | SWT.CANCEL);
+							box3.setMessage("结算设置完成");
 						}
-//		            	// 1.把客户委托未成交的金额变成可用资金
-//		            	// 取得最后客户资金情况
-//		            	Map<String,Useravailableindb> map = new HashMap<String, Useravailableindb>();
-//		            	List<Useravailableindb> list = null;
-//		            	
-//		            	list = useravailableindbMapper.selectAll();
-//		            	for (Useravailableindb useravailableindb : list) {
-//		            		
-//							
-//						}
-//		            	
-		            	ClearService clearService = (ClearService) SpringContextUtil.getBean("clearService");
-//		                //原系统备份和删除 
-						clearService.backUp();
-		            	
-		            	//生成结算数据
-//		            	if (settlement() == 0 ){
-//		            		//结算正常
-//		            		MessageBox box2 = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
-//		            		box2.setMessage("结算完成");
-//		            		box2.setText(CommonConstant.MESSAGE_BOX_NOTICE);
-//		            		box2.open();
-//		            		
-//		            		
-//		            	} else {
-//		            		//结算异常
-//		            		
-//		            	}
 						
-						
-						
-						
-						
-						
-//						
 					}
                 }
 				
