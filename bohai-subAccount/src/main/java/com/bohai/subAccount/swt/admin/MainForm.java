@@ -26,6 +26,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
@@ -97,9 +98,6 @@ import com.bohai.subAccount.vo.SettlemenetPart4Body;
 import com.bohai.subAccount.vo.SettlemenetPart4Head;
 import com.bohai.subAccount.vo.SettlemenetTitleVO;
 import com.bohai.subAccount.vo.UserContractTradeRule;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.DisposeEvent;
-
 
 
 public class MainForm {
@@ -125,7 +123,10 @@ public class MainForm {
 	private Table riskUserTable;
 	//所有风控规则列表
 	private Table allRiskTable;
-
+	
+	//add COMPOSITE组件
+	private Composite composite;
+	private Button buttonComposite;
 	private TabFolder tabFolder;
 	private ExpandBar expandBar;
 	private ToolBar toolBar;
@@ -156,6 +157,10 @@ public class MainForm {
 	private UserAvailableInDbService userAvailableInDbService;
 	
 	private Map<String,UserContract> mapUserContractMemorySave;
+	
+	private Composite composite_button;
+	
+
 
 	/**
 	 * Launch the application.
@@ -253,6 +258,14 @@ public class MainForm {
 
 		tabFolder = new TabFolder(bottom, SWT.NONE);
 		createTabItem();
+		
+		//caoxx add Composite start
+//		composite = new TabFolder(bottom, SWT.NONE);
+		
+//	    Button btn = new Button(bottom, SWT.NONE);
+        composite_button = new Composite(tabFolder, SWT.NONE);
+        createButtonsViewer(composite_button);
+		//caoxx add Composite end
 
 		bottom.setWeights(new int[] { 165, 612 });
 		divider.setWeights(new int[] { 37, 501 });
@@ -278,6 +291,8 @@ public class MainForm {
 			}
 		}
 	}
+	
+	
 
 	private void createToolItem() {
 		
@@ -699,6 +714,7 @@ public class MainForm {
 				 if ("日初设置".equals(selection.getText())) {
                     
                     tabItem_4.setText("日初设置");
+                 
                     tabItem_4.setControl(null);
                 
 				 }
@@ -801,6 +817,7 @@ public class MainForm {
 		systemTree.addListener(SWT.Selection, systemTreeSelection);
 		TreeItem treeSysItem1 = new TreeItem(systemTree, SWT.NONE);
 		treeSysItem1.setText("日初设置");
+		treeSysItem1.setExpanded(true);
 
 		TreeItem treeSysItem2 = new TreeItem(systemTree, SWT.NONE);
 		treeSysItem2.setText("结算设置");
@@ -1986,6 +2003,14 @@ public class MainForm {
         
         refreshGroupRuleTable();
     }
+    
+    private void createButtonsViewer(Composite parent)
+	 {
+    	tabItem_4 = new TabItem(tabFolder, SWT.NONE);
+        tabItem_4.setText("日初设置");
+        buttonComposite = new Button(parent, SWT.BORDER | SWT.FULL_SELECTION);
+        buttonComposite.setText("XXXXXXXXXXXX");
+	 }
     
     public void createMainAccount(Composite parent){
         
