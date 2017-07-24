@@ -27,7 +27,7 @@ public class PositionsDetailServiceImpl implements PositionsDetailService {
 	
 
 	@Override
-	public int doFindPositionsDetail(String Subuserid, String Combokey, String Direction, String Instrumentid,
+	public long doFindPositionsDetail(String Subuserid, String Combokey, String Direction, String Instrumentid,
 			int Volume) throws FutureException {
 		logger.info("doFindPositionsDetail doFindPositionsDetail入參：Subuserid = "+Subuserid + ",Combokey = " + Combokey + ",Direction =" + Direction + ",Instrumentid = " + Instrumentid + ",Volume = " + Volume);
 		List<PositionsDetail> listPositionsDetail = null;
@@ -38,7 +38,7 @@ public class PositionsDetailServiceImpl implements PositionsDetailService {
 		} else {
 			Direction = "0";
 		}
-		int retVolume = Volume;
+		long retVolume = Volume;
 		
 		listPositionsDetail = positionsDetailMapper.findPositionsDetail(Subuserid, Direction, Instrumentid);
 		
@@ -51,7 +51,7 @@ public class PositionsDetailServiceImpl implements PositionsDetailService {
 				BuyDetail buyDetail = new BuyDetail();
 				buyDetail.setCombokey(positionsDetail.getCombokey());
 				buyDetail.setSellcombokey(Combokey);
-				buyDetail.setSellvolume(Short.valueOf(String.valueOf(retVolume)));
+				buyDetail.setSellvolume(Long.valueOf(String.valueOf(retVolume)));
 				//更新buyDetail表对应关系
 				buyDetailMapper.updateBuyDetail(buyDetail);
 				retVolume = 0;
@@ -76,12 +76,12 @@ public class PositionsDetailServiceImpl implements PositionsDetailService {
 	}
 
 	@Override
-	public void updateVolumn(String subuserid, String Combokey,int volume) {
+	public void updateVolumn(String subuserid, String Combokey,long volume) {
 		logger.info("updateVolumn updateVolumn入參：subuserid = "+subuserid + ",Combokey = " + Combokey + ",volume = " + volume);
 		PositionsDetail positionsDetail = new PositionsDetail();
 		positionsDetail.setCombokey(Combokey);
 		positionsDetail.setSubuserid(subuserid);
-		positionsDetail.setVolume(Short.valueOf(String.valueOf(volume)));
+		positionsDetail.setVolume(Long.valueOf(String.valueOf(volume)));
 		positionsDetailMapper.updatePositionsDetail(positionsDetail);
 	}
 

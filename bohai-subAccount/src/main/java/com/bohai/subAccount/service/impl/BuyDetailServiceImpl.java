@@ -61,17 +61,17 @@ public class BuyDetailServiceImpl implements BuyDetailService {
 		} else {
 			Direction = "0";
 		}
-		int retVolume = Volume;
+		long retVolume = Volume;
 		listBuyDetail = buyDetailMapper.findBuyDetail(Subuserid,Instrumentid,Direction);
 		
 		for (BuyDetail buyDetail : listBuyDetail) {
-			int nowVolume = 0;
+			long nowVolume = 0;
 			//buy 表中的余额比平仓数量大
 			nowVolume = buyDetail.getVolume() - buyDetail.getSellvolume();
 			if (nowVolume >= retVolume) {
 				buyDetail.setSellcombokey(Combokey);
 				nowVolume = buyDetail.getSellvolume() + retVolume;
-				buyDetail.setSellvolume(Short.valueOf(String.valueOf(nowVolume)));
+				buyDetail.setSellvolume(Long.valueOf(String.valueOf(nowVolume)));
 				updateBuySell(buyDetail);
 				break;
 			} else {
@@ -79,7 +79,7 @@ public class BuyDetailServiceImpl implements BuyDetailService {
 				retVolume = retVolume - nowVolume;
 				buyDetail.setSellcombokey(Combokey);
 				nowVolume = buyDetail.getSellvolume() + nowVolume;
-				buyDetail.setSellvolume(Short.valueOf(String.valueOf(nowVolume)));
+				buyDetail.setSellvolume(Long.valueOf(String.valueOf(nowVolume)));
 				updateBuySell(buyDetail);
 			}
 			
@@ -95,7 +95,7 @@ public class BuyDetailServiceImpl implements BuyDetailService {
 		BuyDetail buyDetail = new BuyDetail();
 		buyDetail.setCombokey(Combokey);
 		buyDetail.setSellcombokey(SellCombokey);
-		buyDetail.setSellvolume(Short.valueOf(String.valueOf(Volume)));
+		buyDetail.setSellvolume(Long.valueOf(String.valueOf(Volume)));
 		
 		
 		buyDetailMapper.updateBuyDetail(buyDetail);
