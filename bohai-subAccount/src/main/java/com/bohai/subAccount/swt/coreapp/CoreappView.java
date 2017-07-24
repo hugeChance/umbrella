@@ -778,10 +778,10 @@ public class CoreappView {
 			buyDetail.setOrderlocalid(pTrade.getOrderLocalID());
 			buyDetail.setClearingpartid(pTrade.getClearingPartID());
 			buyDetail.setBusinessunit(pTrade.getBusinessUnit());
-			buyDetail.setSequenceno(Short.valueOf(String.valueOf(pTrade.getSequenceNo())));
+			buyDetail.setSequenceno(Long.valueOf(String.valueOf(pTrade.getSequenceNo())));
 			buyDetail.setTradingday(pTrade.getTradingDay());
-			buyDetail.setSettlementid(Short.valueOf(String.valueOf(pTrade.getSettlementID())));
-			buyDetail.setBrokerorderseq(Short.valueOf(String.valueOf(pTrade.getBrokerOrderSeq())));
+			buyDetail.setSettlementid(Long.valueOf(String.valueOf(pTrade.getSettlementID())));
+			buyDetail.setBrokerorderseq(Long.valueOf(String.valueOf(pTrade.getBrokerOrderSeq())));
 			buyDetail.setTradesource(String.valueOf(pTrade.getTradeSource()));
 			buyDetail.setSubuserid(subAccount);
 			buyDetail.setFrontid(new BigDecimal(frontID));
@@ -794,7 +794,7 @@ public class CoreappView {
 //				BeanUtils.copyProperties(buyDetail, trade);
 				tmpStrCombokey = trade.getTradedate() + trade.getExchangeid() + trade.getOrdersysid();
 				buyDetail.setCombokey(tmpStrCombokey);
-				buyDetail.setSellvolume(Short.valueOf("0"));
+				buyDetail.setSellvolume(Long.valueOf("0"));
 				buyDetailService.saveBuyDetail(buyDetail);
 
 			} catch (Exception e1) {
@@ -804,7 +804,7 @@ public class CoreappView {
 			}
 		}
 
-		if (pTrade.getOffsetFlag() == '1') {
+		if (pTrade.getOffsetFlag() == '3') {
 			SellDetail sellDetail = new SellDetail();
 			sellDetail.setBrokerid(pTrade.getBrokerID());
 			sellDetail.setInvestorid(pTrade.getInvestorID());
@@ -822,7 +822,7 @@ public class CoreappView {
 			sellDetail.setOffsetflag(String.valueOf(pTrade.getOffsetFlag()));
 			sellDetail.setHedgeflag(String.valueOf(pTrade.getHedgeFlag()));
 			sellDetail.setPrice(new BigDecimal(String.valueOf(pTrade.getPrice())));
-			sellDetail.setVolume(Short.valueOf(String.valueOf(pTrade.getVolume())));
+			sellDetail.setVolume(Long.valueOf(String.valueOf(pTrade.getVolume())));
 			sellDetail.setTradedate(pTrade.getTradeDate());
 			sellDetail.setTradetime(pTrade.getTradeTime());
 			sellDetail.setTradetype(String.valueOf(pTrade.getTradeType()));
@@ -831,10 +831,10 @@ public class CoreappView {
 			sellDetail.setOrderlocalid(pTrade.getOrderLocalID());
 			sellDetail.setClearingpartid(pTrade.getClearingPartID());
 			sellDetail.setBusinessunit(pTrade.getBusinessUnit());
-			sellDetail.setSequenceno(Short.valueOf(String.valueOf(pTrade.getSequenceNo())));
+			sellDetail.setSequenceno(Long.valueOf(String.valueOf(pTrade.getSequenceNo())));
 			sellDetail.setTradingday(pTrade.getTradingDay());
-			sellDetail.setSettlementid(Short.valueOf(String.valueOf(pTrade.getSettlementID())));
-			sellDetail.setBrokerorderseq(Short.valueOf(String.valueOf(pTrade.getBrokerOrderSeq())));
+			sellDetail.setSettlementid(Long.valueOf(String.valueOf(pTrade.getSettlementID())));
+			sellDetail.setBrokerorderseq(Long.valueOf(String.valueOf(pTrade.getBrokerOrderSeq())));
 			sellDetail.setTradesource(String.valueOf(pTrade.getTradeSource()));
 			sellDetail.setSubuserid(subAccount);
 			sellDetail.setFrontid(new BigDecimal(frontID));
