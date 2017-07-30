@@ -26,7 +26,7 @@ public interface BuyDetailService {
 	 * @param userInfo
 	 * @throws FutureException
 	 */
-	public void doFindPositionsDetail(String  Subuserid,String Combokey,String Direction,String Instrumentid,int Volume) throws FutureException;
+	public void doFindPositionsDetail(String  Subuserid,String Combokey,String Direction,String Instrumentid,long Volume) throws FutureException;
 	
 	
 	public void updateBuyDetail(String Combokey,String SellCombokey,int Volume)throws FutureException;

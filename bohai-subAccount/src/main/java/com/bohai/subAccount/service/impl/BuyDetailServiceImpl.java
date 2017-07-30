@@ -52,7 +52,7 @@ public class BuyDetailServiceImpl implements BuyDetailService {
 
 	@Override
 	public void doFindPositionsDetail(String Subuserid, String Combokey, String Direction, String Instrumentid,
-			int Volume) throws FutureException {
+			long Volume) throws FutureException {
 		logger.info("doFindPositionsDetail doFindPositionsDetail入參：Subuserid = "+Subuserid + ",Combokey = " + Combokey + ",Direction = " + Direction + ",Instrumentid = " + Instrumentid + ",Volume = " + Volume);
 		List<BuyDetail> listBuyDetail = null;
 		//买开，卖平。卖开，买平。

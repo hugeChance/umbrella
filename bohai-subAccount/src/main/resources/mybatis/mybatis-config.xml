@@ -98,6 +98,7 @@
         <mapper resource="mybatis/mapper/CapitalRateDetailMapper.xml"/>
         <mapper resource="mybatis/mapper/BuyDetailMapper.xml"/>
         <mapper resource="mybatis/mapper/SellDetailMapper.xml"/>
+        <mapper resource="mybatis/mapper/PositionsDetailMapper.xml"/>
 
     </mappers>
 

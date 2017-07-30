@@ -96,8 +96,7 @@
   </update>
   
   <delete id="deleteAll">
-  	delete from T_POSITIONS_DETAIL;
-  
+  	delete from T_POSITIONS_DETAIL
   </delete>
   
   <insert id="insertTodayPositions">

@@ -292,13 +292,13 @@
   
   <select id="getUserByDate" resultMap="BaseResultMap" parameterType="java.lang.String">
   	select * from T_SELL_DETAIL
-    where TRADEDATE = #{strdate,jdbcType=VARCHAR} 
+    where TRADINGDAY = #{strdate,jdbcType=VARCHAR} 
     order by COMBOKEY asc
   </select>
   
-  <select id="getUserByDate2" resultMap="BaseResultMap" parameterType="java.lang.String">
+  <select id="getSellDetailForUser" resultMap="BaseResultMap" parameterType="java.lang.String">
   	select * from T_SELL_DETAIL
-    where TRADEDATE = #{1,jdbcType=VARCHAR} 
+    where TRADINGDAY = #{1,jdbcType=VARCHAR} 
     and SUBUSERID = #{0,jdbcType=VARCHAR} 
     order by COMBOKEY asc
   </select>

@@ -786,6 +786,9 @@ public class MainForm {
 								e1.printStackTrace();
 							}
 			            	
+			            	//生成结算单
+			            	settlement();
+			            	
 			            	ClearService clearService = (ClearService) SpringContextUtil.getBean("clearService");
 //			                //原系统备份和删除 
 							clearService.backUp();
@@ -919,6 +922,7 @@ public class MainForm {
             	SettlemenetPart2Body settlemenetPart2Body = new SettlemenetPart2Body();
             	SettlemenetPart3Body settlemenetPart3Body = new SettlemenetPart3Body();
             	SettlemenetPart4Body settlemenetPart4Body = new SettlemenetPart4Body();
+            	
             	
             	//查询成交表
             	try {

@@ -28,7 +28,7 @@ public class PositionsDetailServiceImpl implements PositionsDetailService {
 
 	@Override
 	public long doFindPositionsDetail(String Subuserid, String Combokey, String Direction, String Instrumentid,
-			int Volume) throws FutureException {
+			long Volume) throws FutureException {
 		logger.info("doFindPositionsDetail doFindPositionsDetail入參：Subuserid = "+Subuserid + ",Combokey = " + Combokey + ",Direction =" + Direction + ",Instrumentid = " + Instrumentid + ",Volume = " + Volume);
 		List<PositionsDetail> listPositionsDetail = null;
 		

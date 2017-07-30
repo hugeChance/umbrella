@@ -12,7 +12,7 @@ public interface PositionsDetailService {
 	 * @param 
 	 * @throws FutureException
 	 */
-	public long doFindPositionsDetail(String  Subuserid,String Combokey,String Direction,String Instrumentid,int Volume) throws FutureException;
+	public long doFindPositionsDetail(String  Subuserid,String Combokey,String Direction,String Instrumentid,long tmplong) throws FutureException;
 	
 	public void updateVolumn(String subuserid,String Combokey,long volume) throws FutureException;
 	

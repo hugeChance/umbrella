@@ -342,7 +342,7 @@
   
   <select id="getBuyDetailForComboKey" resultMap="BaseResultMap" parameterType="java.lang.String">
   	select * from T_BUY_DETAIL
-    where instr(SELLCOMBOKEY,#{0,jdbcType=VARCHAR}) &gt; 0 
+    where COMBOKEY = #{0,jdbcType=VARCHAR} 
     order by COMBOKEY asc 
   </select>
 </mapper>
