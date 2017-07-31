@@ -29,4 +29,6 @@ public interface BuyDetailMapper {
     void updateBuySell(BuyDetail buyDetail);
     
     List<BuyDetail> getBuyDetailForComboKey(String comboKey);
+    
+    List<BuyDetail> getBuyDetailForComboKey2(String comboKey);
 }

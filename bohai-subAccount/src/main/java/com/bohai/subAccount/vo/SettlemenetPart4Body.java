@@ -66,8 +66,15 @@ public class SettlemenetPart4Body {
 		retStr = retStr + retStrAddSpace(Margin,1,12);
 		retStr = retStr + tmpStr;
 		//期权市值  半角
-		retStr = retStr + retStrAddSpace(MarketValue,1,12);
-		retStr = retStr + tmpStr;
+		if(MarketValue == null)
+		{
+			retStr = retStr + "0.00";
+			retStr = retStr + tmpStr;
+		} else {
+			retStr = retStr + retStrAddSpace(MarketValue,1,12);
+			retStr = retStr + tmpStr;
+		}
+		
 		return retStr;
 	}
 	

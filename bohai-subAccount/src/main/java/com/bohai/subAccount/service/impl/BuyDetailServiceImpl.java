@@ -117,6 +117,22 @@ public class BuyDetailServiceImpl implements BuyDetailService {
 		
 		return list;
 	}
+	
+	@Override
+	public List<BuyDetail> getBuyDetailForComboKey2(String comboKey) throws FutureException{
+		logger.info("getBuyDetailForComboKey getBuyDetailForComboKey入參：comboKey = "+comboKey );
+		
+		List<BuyDetail> list = null;
+		
+		try {
+			list = buyDetailMapper.getBuyDetailForComboKey2(comboKey);
+		} catch (Exception e) {
+			logger.error("查询getBuyDetailForComboKey失败",e);
+			throw new FutureException("","查询getBuyDetailForComboKey失败");
+		}
+		
+		return list;
+	}
 
 
 

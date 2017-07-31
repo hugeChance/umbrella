@@ -78,6 +78,9 @@ public interface UserInfoMapper {
     @Select("select CAPITAL from t_user_info where user_name = #{0} ")
     String getUserInfoByUserName(String userName);
     
+    @Select("select user_name from t_user_info where USER_NO = #{0} ")
+    String getUserName(String userName);
+    
     List<Map<String, Object>> selectUserInfoByGroupId(UserInfo userInfo);
     
     /**

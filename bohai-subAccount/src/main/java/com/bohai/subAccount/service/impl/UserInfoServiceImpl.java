@@ -244,4 +244,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return balance_start;
 	}
 
+	@Override
+	public String getUserName(String userNo) throws FutureException {
+		logger.info("根据用户No查询用户名：userNo:"+userNo);
+		return userInfoMapper.getUserName(userNo);
+
+	}
+
 }

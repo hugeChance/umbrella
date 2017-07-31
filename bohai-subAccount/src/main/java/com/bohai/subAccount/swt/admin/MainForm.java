@@ -171,7 +171,7 @@ public class MainForm {
 		try {
 			MainForm window = new MainForm();
 			window.loadSpringContext();
-			window.setMemory();
+		    
 			window.open();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -182,13 +182,14 @@ public class MainForm {
     	mapUserContractMemorySave = new HashMap<String,UserContract>();
     	
     	List<UserContract> listUserContract;
+    	String userName = "";
 		try {
 			listUserContract = userContractService.queryUserContractByAll();
 			for (UserContract userContract2 : listUserContract) {
 				logger.info("setMemory="+JSON.toJSONString(userContract2));
-				
+				userName = userInfoMapper.getUserName(userContract2.getUserNo());
 //				listUserContractMemorySave.set
-				mapUserContractMemorySave.put(userContract2.getUserNo() + userContract2.getContractNo(), userContract2);
+				mapUserContractMemorySave.put(userName + userContract2.getContractNo(), userContract2);
 				
 				
 			}
@@ -221,6 +222,8 @@ public class MainForm {
         sellDetailService = (SellDetailService) SpringContextUtil.getBean("sellDetailService");
         buyDetailService = (BuyDetailService) SpringContextUtil.getBean("buyDetailService");
         positionsDetailService = (PositionsDetailService) SpringContextUtil.getBean("positionsDetailService");
+        
+        setMemory();
     }
 
 	/**
@@ -1003,7 +1006,7 @@ public class MainForm {
 					
 					for (SellDetail sellDetail : listSellDetail) {
 						//拿着平仓COMBOKEY去查开仓
-						List<BuyDetail> listBuyDetail = buyDetailService.getBuyDetailForComboKey(sellDetail.getCombokey());
+						List<BuyDetail> listBuyDetail = buyDetailService.getBuyDetailForComboKey2(sellDetail.getCombokey());
 						
 						if(listBuyDetail.size() > 0){
 							strB.append(settlemenetPart2Head.getRetPart2Head1());

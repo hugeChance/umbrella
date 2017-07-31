@@ -64,11 +64,23 @@ public class SettlemenetPart3Body {
 		retStr = retStr + retStrAddSpace(SH,2,12);
 		retStr = retStr + tmpStr;
 		//多头期权市值
-		retStr = retStr + retStrAddSpace(MarketValueLong,1,18);
-		retStr = retStr + tmpStr;
+		if(MarketValueLong == null) {
+			retStr = retStr + "0.00";
+			retStr = retStr + tmpStr;
+		} else {
+			retStr = retStr + retStrAddSpace(MarketValueLong,1,18);
+			retStr = retStr + tmpStr;
+		}
+		
 		//空头期权市值
-		retStr = retStr + retStrAddSpace(MarketValueShort,1,19);
-		retStr = retStr + tmpStr;
+		if(MarketValueShort == null) {
+			retStr = retStr + "0.00";
+			retStr = retStr + tmpStr;
+		} else {
+			retStr = retStr + retStrAddSpace(MarketValueShort,1,19);
+			retStr = retStr + tmpStr;
+		}
+		
 		
 		return retStr;
 	}

@@ -57,8 +57,14 @@ public class SettlemenetPart1Body {
 		retStr = retStr + retStrAddSpace(Fee,1,10);
 		retStr = retStr + tmpStr;
 		//权利金收支  半角
-		retStr = retStr + retStrAddSpace(Premium,1,21);
-		retStr = retStr + tmpStr;
+		if(Premium == null){
+			retStr = retStr + "0.00";
+			retStr = retStr + tmpStr;
+		} else {
+			retStr = retStr + retStrAddSpace(Premium,1,21);
+			retStr = retStr + tmpStr;
+		}
+		
 		//成交序号  半角
 		retStr = retStr + retStrAddSpace(TransNo,1,12);
 		retStr = retStr + tmpStr;

@@ -60,8 +60,14 @@ public class SettlemenetPart2Body {
 		retStr = retStr + retStrAddSpace(Realized,1,12);
 		retStr = retStr + tmpStr;
 		//权利金收支
-		retStr = retStr + retStrAddSpace(Premium,1,21);
-		retStr = retStr + tmpStr;
+		if(Premium ==null){
+			retStr = retStr + "0.00";
+			retStr = retStr + tmpStr;
+		} else {
+			retStr = retStr + retStrAddSpace(Premium,1,21);
+			retStr = retStr + tmpStr;
+		}
+		
 		
 		return retStr;
 	}

@@ -34,6 +34,8 @@ public interface BuyDetailService {
 	void updateBuySell(BuyDetail buyDetail)throws FutureException;
 	
 	List<BuyDetail> getBuyDetailForComboKey(String comboKey) throws FutureException;
+	
+	List<BuyDetail> getBuyDetailForComboKey2(String comboKey) throws FutureException;
 
 	
 }
