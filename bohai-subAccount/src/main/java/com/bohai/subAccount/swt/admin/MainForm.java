@@ -899,8 +899,10 @@ public class MainForm {
             	settlemenetTitleVO.setMTM(String.valueOf(useravailableindb.getPositionwin()));
             	settlemenetTitleVO.setRealized(String.valueOf(useravailableindb.getClosewin()));
             	//风险度=客户保证金占用/客户权益*100%；
-            	BigDecimal risk_DegreeBDec = useravailableindb.getMargin().divide(balanceBDec);
-            	settlemenetTitleVO.setRisk_Degree(String.valueOf(risk_DegreeBDec));
+//            	BigDecimal risk_DegreeBDec = useravailableindb.getMargin().divide(balanceBDec);
+            	double dbltmp = useravailableindb.getMargin().doubleValue() / balanceBDec.doubleValue();
+            	dbltmp = Math.round(dbltmp);
+            	settlemenetTitleVO.setRisk_Degree(String.valueOf(dbltmp));
             	//应追加资金
             	BigDecimal margin_CallDBec = useravailableindb.getAvailable().add(useravailableindb.getFrozenavailable());
             	
@@ -1135,7 +1137,7 @@ public class MainForm {
 	            			{
 	            				//买
 	            				settlemenetPart3Body.setLongPos(investorPosition.getPosition().toString());
-		            			settlemenetPart3Body.setAvgBuyPrice(investorPosition.getPositioncost().toString());
+		            			settlemenetPart3Body.setAvgBuyPrice(investorPosition.getPositioncost() ==null? "":investorPosition.getPositioncost().toString());
 		            			settlemenetPart3Body.setShortPos("0");
 		            			settlemenetPart3Body.setAvgSellPrice("0");
 
@@ -1144,7 +1146,7 @@ public class MainForm {
 	            				settlemenetPart3Body.setLongPos("0");
 		            			settlemenetPart3Body.setAvgBuyPrice("0");
 		            			settlemenetPart3Body.setShortPos(investorPosition.getPosition().toString());
-		            			settlemenetPart3Body.setAvgSellPrice(investorPosition.getPositioncost().toString());
+		            			settlemenetPart3Body.setAvgSellPrice(investorPosition.getPositioncost() ==null? "":investorPosition.getPositioncost().toString());
 		            			
 	            			}
 	            			
@@ -1153,7 +1155,12 @@ public class MainForm {
 	            			settlemenetPart3Body.setPrev(futureMarket.getPreSettlementPrice().toString());
 	            			settlemenetPart3Body.setSttlToday(futureMarket.getSettlementPrice());
 	            			double mTM = 0;
-	            			mTM = investorPosition.getPositioncost().doubleValue() - Double.valueOf(futureMarket.getSettlementPrice()) ;
+	            			if(investorPosition.getPositioncost() == null){
+	            				mTM = Double.valueOf(futureMarket.getSettlementPrice()) ;
+	            			} else {
+	            				mTM = investorPosition.getPositioncost().doubleValue() - Double.valueOf(futureMarket.getSettlementPrice()) ;
+	            			}
+	            			
 	            			mTM = mTM * investorPosition.getPosition().doubleValue();
 	            			settlemenetPart3Body.setMTM(String.valueOf(mTM));
 	            			settlemenetPart3Body.setMarginOccupied(investorPosition.getUsemargin().toString());
