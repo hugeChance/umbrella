@@ -21,9 +21,9 @@ public interface FutureMarketMapper {
      */
     int insertSelective(FutureMarket record);
     
-    @Select("select * from t_future_market where instrument = #{0} "
+    @Select("select * from t_future_market where INSTRUMENT_ID = #{0} "
             + "and settlement_price is not null "
             + "and trading_day = to_char(sysdate,'yyyymmdd') "
-            + "and rowrum = 1 ")
+            + "and rownum = 1 ")
     FutureMarket selectByInstrument(String instrument);
 }
