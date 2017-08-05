@@ -759,7 +759,7 @@ public class MainForm {
 					if(box.open() == SWT.OK){
 						MessageBox boxrepeat = new MessageBox(shell, SWT.ICON_INFORMATION
 								| SWT.OK | SWT.CANCEL);
-						boxrepeat.setMessage("结算设置是否开始？");
+						boxrepeat.setMessage("结算设置开始再次确认？请耐心等待10秒钟！");
 						if(boxrepeat.open() == SWT.OK){
 							System.out.println("结算开始");
 							
@@ -928,7 +928,7 @@ public class MainForm {
             	SettlemenetPart3Body settlemenetPart3Body = new SettlemenetPart3Body();
             	SettlemenetPart4Body settlemenetPart4Body = new SettlemenetPart4Body();
             	
-            	
+            
             	//查询成交表
             	try {
 					List<Trade> listTrade = tradeService.getUserByUserName2(useravailableindb.getUsername());
@@ -939,6 +939,7 @@ public class MainForm {
 //						fileLineWrite(settlemenetPart1Head.getRetPart1Head1());
 						strB.append(settlemenetPart1Head.getRetPart1Head1());
 						strB.append("\r\n");
+			
 						for (Trade trade : listTrade) {
 							//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 							//|成交日期| 交易所 |       品种       |      合约      |买/卖|   投/保    |  成交价  | 手数 |   成交额   |       开平       |  手续费  |  平仓盈亏  |     权利金收支      |  成交序号  |
@@ -1003,18 +1004,22 @@ public class MainForm {
             	//由COREAPP 增加新功能当平仓时写入平仓表
             	//select COMBOKEY from T_SELL_DETAIL where SUBUSERID = '11111' and TRADEDATE = '20170611'
             	//先查询平仓明细表
+        
             	try {
 					List<SellDetail> listSellDetail = sellDetailService.getSellDetailForUser(useravailableindb.getUsername(),dateString);
+					
+					if(listSellDetail.size() > 0){
+						strB.append(settlemenetPart2Head.getRetPart2Head1());
+						strB.append("\r\n");
+					
+					}
+						
 					
 					for (SellDetail sellDetail : listSellDetail) {
 						//拿着平仓COMBOKEY去查开仓
 						List<BuyDetail> listBuyDetail = buyDetailService.getBuyDetailForComboKey2(sellDetail.getCombokey());
 						
-						if(listBuyDetail.size() > 0){
-							strB.append(settlemenetPart2Head.getRetPart2Head1());
-							strB.append("\r\n");
-						}
-							
+						
 						for (BuyDetail buyDetail : listBuyDetail) {
 							//输出平仓明细
 							settlemenetPart2Body.setCloseDate(sellDetail.getTradedate());
@@ -1056,17 +1061,20 @@ public class MainForm {
             	//由COREAPP 增加新功能当平仓时写入平仓表
             	//select * from T_POSITIONS_DETAIL where SUBUSERID = '1111111'
             	//取得最新客户持仓表的信息
+            
             	try {
 					List<PositionsDetail> listPositionsDetail = positionsDetailService.getPositionsForUser(useravailableindb.getUsername(),dateString);
 					
+					if(listPositionsDetail.size() > 0){
+						strB.append(settlemenetPart4Head.getRetPart4Head1());
+						strB.append("\r\n");
+						
+					}
 					for (PositionsDetail positionsDetail : listPositionsDetail) {
 						
 						List<BuyDetail> listBuyDetail = buyDetailService.getBuyDetailForComboKey(positionsDetail.getCombokey());
 						
-						if(listBuyDetail.size() > 0){
-							strB.append(settlemenetPart4Head.getRetPart4Head1());
-							strB.append("\r\n");
-						}
+						
 						for (BuyDetail buyDetail : listBuyDetail) {
 							//输出平仓明细
 							settlemenetPart4Body.setExchange(buyDetail.getExchangeid());
@@ -1115,7 +1123,7 @@ public class MainForm {
 					e1.printStackTrace();
 				}
             	
-            	
+            
             	//查询持仓汇总表
             	List<InvestorPosition> listInvestorPosition = new ArrayList<InvestorPosition>();
             	try {
@@ -1125,6 +1133,7 @@ public class MainForm {
 //						fileLineWrite(settlemenetPart3Head.getRetPart3Head1());	
 						strB.append(settlemenetPart3Head.getRetPart3Head1());
 						strB.append("\r\n");
+						
 	            		for (InvestorPosition investorPosition : listInvestorPosition) {
 		            			//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 		            			//|       品种       |      合约      |    买持     |    买均价   |     卖持     |    卖均价    |  昨结算  |  今结算  |持仓盯市盈亏|  保证金占用   |  投/保     |   多头期权市值   |   空头期权市值    |
@@ -1149,26 +1158,28 @@ public class MainForm {
 		            			settlemenetPart3Body.setAvgSellPrice(investorPosition.getPositioncost() ==null? "":investorPosition.getPositioncost().toString());
 		            			
 	            			}
+	            			//caoxx tempupdate start
+//	            			FutureMarket futureMarket = this.futureMarketService.queryFutureMarketByInstrument(investorPosition.getInstrumentid());
+//	            			
+//	            			settlemenetPart3Body.setPrev(futureMarket.getPreSettlementPrice().toString());
+//	            			settlemenetPart3Body.setSttlToday(futureMarket.getSettlementPrice());
+//	            			double mTM = 0;
+//	            			if(investorPosition.getPositioncost() == null){
+//	            				mTM = Double.valueOf(futureMarket.getSettlementPrice()) ;
+//	            			} else {
+//	            				mTM = investorPosition.getPositioncost().doubleValue() - Double.valueOf(futureMarket.getSettlementPrice()) ;
+//	            			}
+//	            			
+//	            			mTM = mTM * investorPosition.getPosition().doubleValue();
+//	            			settlemenetPart3Body.setMTM(String.valueOf(mTM));
+//	            			settlemenetPart3Body.setMarginOccupied(investorPosition.getUsemargin().toString());
+//	            			settlemenetPart3Body.setSH("投");
+//	            			settlemenetPart3Body.setMarketValueLong("0.00");
+//	            			settlemenetPart3Body.setMarketValueShort("0.00");
+////	            			fileLineWrite(directiory.getPath(),useravailableindb.getUsername(),settlemenetPart3Body.getRetStr());
+//	            			strB.append(settlemenetPart3Body.getRetStr());
+	            			//caoxx tempupdate
 	            			
-	            			FutureMarket futureMarket = this.futureMarketService.queryFutureMarketByInstrument(investorPosition.getInstrumentid());
-	            			
-	            			settlemenetPart3Body.setPrev(futureMarket.getPreSettlementPrice().toString());
-	            			settlemenetPart3Body.setSttlToday(futureMarket.getSettlementPrice());
-	            			double mTM = 0;
-	            			if(investorPosition.getPositioncost() == null){
-	            				mTM = Double.valueOf(futureMarket.getSettlementPrice()) ;
-	            			} else {
-	            				mTM = investorPosition.getPositioncost().doubleValue() - Double.valueOf(futureMarket.getSettlementPrice()) ;
-	            			}
-	            			
-	            			mTM = mTM * investorPosition.getPosition().doubleValue();
-	            			settlemenetPart3Body.setMTM(String.valueOf(mTM));
-	            			settlemenetPart3Body.setMarginOccupied(investorPosition.getUsemargin().toString());
-	            			settlemenetPart3Body.setSH("投");
-	            			settlemenetPart3Body.setMarketValueLong("0.00");
-	            			settlemenetPart3Body.setMarketValueShort("0.00");
-//	            			fileLineWrite(directiory.getPath(),useravailableindb.getUsername(),settlemenetPart3Body.getRetStr());
-	            			strB.append(settlemenetPart3Body.getRetStr());
 							strB.append("\r\n");
 							}
             		}
