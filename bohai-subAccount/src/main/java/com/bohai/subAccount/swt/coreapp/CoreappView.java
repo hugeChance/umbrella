@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,9 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.crypto.*;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -52,13 +51,13 @@ import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.bohai.subAccount.constant.ErrorConstant;
+import com.bohai.subAccount.dao.FutureMarketMapper;
 import com.bohai.subAccount.dao.UseravailableindbMapper;
 import com.bohai.subAccount.entity.BuyDetail;
 import com.bohai.subAccount.entity.InputOrder;
 import com.bohai.subAccount.entity.InvestorPosition;
 import com.bohai.subAccount.entity.MainAccount;
 import com.bohai.subAccount.entity.Order;
-import com.bohai.subAccount.entity.PositionsDetail;
 import com.bohai.subAccount.entity.SellDetail;
 import com.bohai.subAccount.entity.SubTradingaccount;
 import com.bohai.subAccount.entity.Trade;
@@ -135,6 +134,8 @@ public class CoreappView {
 
 	private UserFrozenaccountService userFrozenaccountService;
 	private UseravailableindbMapper useravailableindbMapper;
+
+	private FutureMarketMapper futureMarketMapper;
 
 	private BuyDetailService buyDetailService;
 	private SellDetailService sellDetailService;
@@ -392,22 +393,23 @@ public class CoreappView {
 		shell.open();
 		shell.layout();
 
-//		// license 安装
-//
-//		VerifyLicense vLicense = new VerifyLicense();
-//		// 获取参数
-//		vLicense.setParam("param.properties");
-//		// 生成证书
-//		if (vLicense.verify()) {
-//
-//		} else {
-//			// LISENCE FAILED
-//			MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
-//			box.setMessage("认证失败");
-//			box.setText("错误");
-//			box.open();
-//			shell.close();
-//		}
+		// // license 安装
+		//
+		// VerifyLicense vLicense = new VerifyLicense();
+		// // 获取参数
+		// vLicense.setParam("param.properties");
+		// // 生成证书
+		// if (vLicense.verify()) {
+		//
+		// } else {
+		// // LISENCE FAILED
+		// MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL |
+		// SWT.YES);
+		// box.setMessage("认证失败");
+		// box.setText("错误");
+		// box.open();
+		// shell.close();
+		// }
 
 		// 查询主账号
 		List<MainAccount> listmainAccount = findMainAcc();
@@ -495,6 +497,33 @@ public class CoreappView {
 		serverThread.setDaemon(true);
 		serverThread.start();
 
+		// 数据库DUAL
+		Thread t = new Thread(  
+                new Thread(){  
+                    @Override  
+                    public void run() {  
+                      
+                        while(true){  
+                            try {
+                            	
+                            	futureMarketMapper.selectdual();
+                            	
+                                Thread.sleep(300000);  
+                            } catch (InterruptedException e) {  
+                                e.printStackTrace();  
+                            }  
+                            Date date=new Date();
+                            DateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            String time=format.format(date);
+                            System.out.println("select 2 from dual =" + time);  
+
+                        }                         
+                          
+                    }  
+                }  
+        );  
+        t.start();   
+
 		// TEST
 
 		// CTPApi.reqQryExchange(pQryExchange, nRequestID)
@@ -559,6 +588,9 @@ public class CoreappView {
 		sellDetailService = (SellDetailService) SpringContextUtil.getBean("sellDetailService");
 
 		positionsDetailService = (PositionsDetailService) SpringContextUtil.getBean("positionsDetailService");
+
+		futureMarketMapper = (FutureMarketMapper) SpringContextUtil.getBean("futureMarketMapper");
+
 		// groupInfoService = (GroupInfoService)
 		// SpringContextUtil.getBean("groupInfoService");
 		// mainAccountService = (MainAccountService)
@@ -742,17 +774,11 @@ public class CoreappView {
 		trade.setSubuserid(subAccount);
 		trade.setFrontid(new BigDecimal(frontID));
 		trade.setSessionid(new BigDecimal(sessionID));
-		
-		
-		
-		
-		
-		
-		
+
 		if (pTrade.getOffsetFlag() == '0') {
-//			BuyDetail buyDetail = new BuyDetail();
+			// BuyDetail buyDetail = new BuyDetail();
 			BuyDetail buyDetail = new BuyDetail();
-			
+
 			buyDetail.setBrokerid(pTrade.getBrokerID());
 			buyDetail.setInvestorid(pTrade.getInvestorID());
 			buyDetail.setInstrumentid(pTrade.getInstrumentID());
@@ -786,12 +812,12 @@ public class CoreappView {
 			buyDetail.setSubuserid(subAccount);
 			buyDetail.setFrontid(new BigDecimal(frontID));
 			buyDetail.setSessionid(new BigDecimal(sessionID));
-			
+
 			String tmpStrCombokey = "";
 
 			try {
 				// TODO BeanUtils.copyProperties(buyDetail, trade);
-//				BeanUtils.copyProperties(buyDetail, trade);
+				// BeanUtils.copyProperties(buyDetail, trade);
 				tmpStrCombokey = trade.getTradedate() + trade.getExchangeid() + trade.getOrdersysid();
 				buyDetail.setCombokey(tmpStrCombokey);
 				buyDetail.setSellvolume(Long.valueOf("0"));
@@ -839,14 +865,12 @@ public class CoreappView {
 			sellDetail.setSubuserid(subAccount);
 			sellDetail.setFrontid(new BigDecimal(frontID));
 			sellDetail.setSessionid(new BigDecimal(sessionID));
-			
-			
-			
+
 			String tmpStrCombokey = "";
 
 			try {
 				// TODO BeanUtils.copyProperties(sellDetail, trade);
-//				BeanUtils.copyProperties(sellDetail, trade);
+				// BeanUtils.copyProperties(sellDetail, trade);
 				tmpStrCombokey = trade.getTradedate() + trade.getExchangeid() + trade.getOrdersysid();
 				sellDetail.setCombokey(tmpStrCombokey);
 				sellDetailService.saveSellDetail(sellDetail);
@@ -1258,7 +1282,7 @@ public class CoreappView {
 				getCtpResponse().append(JSON.toJSONString(pInputOrder) + "\r\n");
 			}
 		});
-		
+
 		// 确定子账号
 		String subAccount = "";
 		// select SUBUSERID from T_INPUT_ORDER where FRONTID = FRONTID and
@@ -1272,9 +1296,9 @@ public class CoreappView {
 		}
 
 		logger.info("onRtnOrder确定子账号：" + subAccount);
-		
+
 		StringBuffer sb = new StringBuffer();
-		sb.append("onRtnOrder|" + subAccount + "|error|"+pRspInfo.getErrorMsg());
+		sb.append("onRtnOrder|" + subAccount + "|error|" + pRspInfo.getErrorMsg());
 		SocketPrintOut(sb.toString());
 		// socketStr = ;
 		Display.getDefault().syncExec(new Runnable() {
@@ -1637,25 +1661,23 @@ public class CoreappView {
 
 		}
 
-		
 		CThostFtdcInputOrderActionField pInputOrderAction = new CThostFtdcInputOrderActionField();
 		pInputOrderAction.setBrokerID(mainAccount.getBrokerId());
 		pInputOrderAction.setInvestorID(mainAccount.getAccountNo());
 		// caoxx2 start orderSysID + exchangeID 撤单
-		 pInputOrderAction.setOrderRef(json.getString("orderRef"));
-		 pInputOrderAction.setFrontID(Integer.valueOf(json.getString("frontID")));
-		 pInputOrderAction.setSessionID(Integer.valueOf(json.getString("sessionID")));
+		pInputOrderAction.setOrderRef(json.getString("orderRef"));
+		pInputOrderAction.setFrontID(Integer.valueOf(json.getString("frontID")));
+		pInputOrderAction.setSessionID(Integer.valueOf(json.getString("sessionID")));
 		// caoxx2 end
 		pInputOrderAction.setInstrumentID(json.getString("instrumentID"));
 		pInputOrderAction.setActionFlag(json.getString("actionFlag").toCharArray()[0]);
-		
 
 		// caoxx2 start orderSysID + exchangeID 撤单
 		pInputOrderAction.setOrderSysID(json.getString("orderSysID"));
 		pInputOrderAction.setExchangeID(json.getString("exchangeID"));
 		// caoxx2 end
 		// 补丁
-		///操作标志
+		/// 操作标志
 		pInputOrderAction.setActionFlag(THOST_FTDC_AF_Delete);
 
 		StringBuffer sb = new StringBuffer();
@@ -1706,7 +1728,7 @@ public class CoreappView {
 			// 最大委托量 < 已经委托量 + 当前委托量
 			if (userTradeRuleMemorySave != null) {
 				if (userTradeRuleMemorySave.getMaxEntrustCount() < userTradeRuleMemorySave.getRealEntrustCount()
-						+ json.getIntValue("volumeTotalOriginal")) { 
+						+ json.getIntValue("volumeTotalOriginal")) {
 					// 不能开仓 最大开仓量受限
 					StringBuffer sb = new StringBuffer();
 					sb.append("onRtnOrder|" + subAccount + "|error|不能委托  最大委托量受限");
@@ -2081,7 +2103,7 @@ public class CoreappView {
 		// 结算单准备生成，先把
 		logger.info("mapAvailableMemorySave导出");
 		String userName = "";
-		//清空结算用资金表
+		// 清空结算用资金表
 		useravailableindbMapper.deleteAll();
 
 		for (Map.Entry<String, UserAvailableMemorySave> entry : mapAvailableMemorySave.entrySet()) {
@@ -2133,8 +2155,7 @@ public class CoreappView {
 				long tmplong = sellDetail.getVolume();
 				try {
 					retInt = positionsDetailService.doFindPositionsDetail(sellDetail.getSubuserid(),
-							sellDetail.getCombokey(), sellDetail.getDirection(), sellDetail.getInstrumentid(),
-							tmplong);
+							sellDetail.getCombokey(), sellDetail.getDirection(), sellDetail.getInstrumentid(), tmplong);
 
 				} catch (Exception e) {
 
@@ -2180,8 +2201,7 @@ public class CoreappView {
 		}
 
 		logger.info("把今日持仓表重新计算一遍。完成！");
-		
-		
+
 	}
 
 	public void subLogin(String subAccount, String password) {

@@ -26,4 +26,7 @@ public interface FutureMarketMapper {
             + "and trading_day = to_char(sysdate,'yyyymmdd') "
             + "and rownum = 1 ")
     FutureMarket selectByInstrument(String instrument);
+    
+    @Select("select 2 from dual")
+    int selectdual();
 }
