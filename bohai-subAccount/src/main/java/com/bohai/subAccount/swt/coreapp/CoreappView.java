@@ -516,6 +516,8 @@ public class CoreappView {
                             DateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             String time=format.format(date);
                             System.out.println("select 2 from dual =" + time);  
+                            logger.info("select 2 from dual =");
+                            logger.info(time);
 
                         }                         
                           
