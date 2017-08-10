@@ -1571,6 +1571,17 @@ public class CoreappView {
 			atomicInteger.getAndSet(Integer.parseInt(pRspUserLogin.getMaxOrderRef()));
 			this.nRequestID = nRequestID;
 			CTPerrID = pRspInfo.getErrorID();
+			
+			//确认账单
+			CThostFtdcSettlementInfoConfirmField settlementInfoConfirmField = new CThostFtdcSettlementInfoConfirmField();
+			settlementInfoConfirmField.setBrokerID(mainAccount.getBrokerId());
+			settlementInfoConfirmField.setInvestorID(mainAccount.getAccountNo());
+
+			nRequestID = nRequestID + 1;
+			outFirst.println("reqSettlementInfoConfirm|" + JSON.toJSONString(settlementInfoConfirmField) + "|" + nRequestID);
+			outFirst.flush();
+			
+			
 		} catch (NumberFormatException e) {
 			logger.error("主账户登入失败！", e);
 			Display.getDefault().syncExec(new Runnable() {
@@ -1911,6 +1922,10 @@ public class CoreappView {
 
 			}
 
+		} else {
+			//平仓操作 
+			//上期所平今指令和平仓指令确认
+			
 		}
 
 		InputOrder inputOrder = new InputOrder();
