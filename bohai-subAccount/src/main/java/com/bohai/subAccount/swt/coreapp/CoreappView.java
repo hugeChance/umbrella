@@ -85,6 +85,7 @@ import com.bohai.subAccount.service.UserLoginService;
 import com.bohai.subAccount.swt.coreapp.help.CtpConnectThread;
 import com.bohai.subAccount.utils.ApplicationConfig;
 import com.bohai.subAccount.utils.SpringContextUtil;
+import com.bohai.subAccount.vo.HoldContractVo;
 import com.bohai.subAccount.vo.UserAvailableMemorySave;
 import com.bohai.subAccount.vo.UserFlgMemorySave;
 import com.bohai.subAccount.vo.UserTradeRuleMemorySave;
@@ -162,6 +163,8 @@ public class CoreappView {
 	private Map<String, UserTradeRuleMemorySave> mapTradeRuleMemorySave;
 
 	private Map<String, UserAvailableMemorySave> mapAvailableMemorySave;
+	
+	private Map<String, HoldContractVo> mapHoldContractMemorySave;
 
 	/**
 	 * Launch the application.
@@ -197,6 +200,7 @@ public class CoreappView {
 		mapUserFlgMemorySave = new HashMap<String, UserFlgMemorySave>();
 		mapTradeRuleMemorySave = new HashMap<String, UserTradeRuleMemorySave>();
 		mapAvailableMemorySave = new HashMap<String, UserAvailableMemorySave>();
+		mapHoldContractMemorySave = new HashMap<String, HoldContractVo>();
 		SubTradingaccount subTradingaccount = new SubTradingaccount();
 		try {
 			List<UserContract> listUserContract = userContractService.queryUserContractByAll();
