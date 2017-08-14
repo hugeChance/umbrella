@@ -86,6 +86,21 @@ public class InputOrderServiceImpl implements InputOrderService {
 		}
 		return retStr;
 	}
+
+	@Override
+	public InputOrder getSubUserInfo(int frontID, int sessionID, String orderRef) throws FutureException {
+		logger.info("InputOrder getUserByUserName入參：frontID = "+frontID+"|"+ sessionID + "|" +orderRef);
+		
+		InputOrder inputOrder = null;
+		try {
+			inputOrder = inputOrderMapper.getSubUserInfo(frontID,sessionID,orderRef);
+		} catch (Exception e) {
+			logger.error("查询InputOrder失败",e);
+			throw new FutureException("","查询InputOrder失败");
+		}
+		
+		return inputOrder;
+	}
 	
 
 }

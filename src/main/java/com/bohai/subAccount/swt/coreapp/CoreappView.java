@@ -1523,6 +1523,17 @@ public class CoreappView {
 		try {
 			subAccount = inputOrderService.getSubUserID(pInputOrderAction.getFrontID(),
 					pInputOrderAction.getSessionID(), pInputOrderAction.getOrderRef());
+			String s = pRspInfo.getErrorMsg();
+			InputOrder inputOrderTemp = new InputOrder();
+			if(s.equals(""))
+			{
+				//正常撤单的场合
+				inputOrderTemp = inputOrderService.getSubUserInfo(pInputOrderAction.getFrontID(),
+						pInputOrderAction.getSessionID(), pInputOrderAction.getOrderRef());
+			}
+			
+			
+			
 		} catch (FutureException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
