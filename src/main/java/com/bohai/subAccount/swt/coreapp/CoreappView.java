@@ -94,6 +94,11 @@ import com.bohai.subAccount.vo.UserTradeRuleMemorySave;
 public class CoreappView {
 
 	static Logger logger = Logger.getLogger(CoreappView.class);
+	public static final char THOST_FTDC_OF_Close = (char)'1';
+	//平昨
+	public static final char THOST_FTDC_OF_CloseYesterday = (char)'4';
+	//平今
+	public static final char THOST_FTDC_OF_CloseToday = (char)'3';
 
 	// aaaaaaaaaaaa
 	
@@ -2201,10 +2206,10 @@ public class CoreappView {
 		} else {
 			if(pingcangFLg.equals("1")){
 				//平今
-				inputOrder.setComboffsetflag("1");
+				inputOrder.setComboffsetflag(String.valueOf(THOST_FTDC_OF_CloseToday));
 			} else {
 				//平昨
-				inputOrder.setComboffsetflag("3");
+				inputOrder.setComboffsetflag(String.valueOf(THOST_FTDC_OF_Close));
 			}
 		}
 		
@@ -2258,10 +2263,10 @@ public class CoreappView {
 		} else {
 			if(pingcangFLg.equals("1")){
 				//平今
-				inputOrderField.setCombOffsetFlag("1");
+				inputOrderField.setCombOffsetFlag(String.valueOf(THOST_FTDC_OF_CloseToday));
 			} else {
 				//平昨
-				inputOrderField.setCombOffsetFlag("3");
+				inputOrderField.setCombOffsetFlag(String.valueOf(THOST_FTDC_OF_Close));
 			}
 		}
 //		inputOrderField.setCombOffsetFlag(json.getString("combOffsetFlag"));
