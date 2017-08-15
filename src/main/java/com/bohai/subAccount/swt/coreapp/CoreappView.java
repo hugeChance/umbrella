@@ -95,6 +95,8 @@ public class CoreappView {
 
 	static Logger logger = Logger.getLogger(CoreappView.class);
 
+	// aaaaaaaaaaaa
+	
 	private MainAccountService mainAccountService;
 
 	int nRequestID = 0;
