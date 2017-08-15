@@ -1,6 +1,7 @@
 package com.bohai.subAccount.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.bohai.subAccount.entity.InputOrder;
 import com.bohai.subAccount.entity.UserInfo;
@@ -51,7 +52,7 @@ public interface InputOrderService {
 	 * @param id
 	 * @throws FutureException
 	 */
-	public InputOrder getSubUserInfo(int frontID,int sessionID,String orderRef) throws FutureException;
+	public InputOrder getSubUserInfo(Map<String,Object> map) throws FutureException;
 	
 	
 }

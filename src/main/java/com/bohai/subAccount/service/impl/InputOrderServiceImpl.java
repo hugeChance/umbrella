@@ -1,6 +1,7 @@
 package com.bohai.subAccount.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,15 +89,15 @@ public class InputOrderServiceImpl implements InputOrderService {
 	}
 
 	@Override
-	public InputOrder getSubUserInfo(int frontID, int sessionID, String orderRef) throws FutureException {
-		logger.info("InputOrder getUserByUserName入參：frontID = "+frontID+"|"+ sessionID + "|" +orderRef);
+	public InputOrder getSubUserInfo(Map<String,Object> map) throws FutureException {
+		logger.info("InputOrder getSubUserInfo入參：frontID = "+map.get("subuserid")+"|"+ map.get("subuserid") + "|" +map.get("subuserid"));
 		
 		InputOrder inputOrder = null;
 		try {
-			inputOrder = inputOrderMapper.getSubUserInfo(frontID,sessionID,orderRef);
+			inputOrder = inputOrderMapper.getSubUserInfo(map);
 		} catch (Exception e) {
-			logger.error("查询InputOrder失败",e);
-			throw new FutureException("","查询InputOrder失败");
+			logger.error("查询getSubUserInfo失败",e);
+			throw new FutureException("","查询getSubUserInfo失败");
 		}
 		
 		return inputOrder;

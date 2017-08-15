@@ -1432,6 +1432,52 @@ public class CoreappView {
 			e.printStackTrace();
 		}
 
+	    // String.valueOf(pOrder.getOrderStatus()).equals("5") 撤单解冻
+		if(String.valueOf(pOrder.getOrderStatus()).equals("5")) {
+			InputOrder inputOrderTemp  = new InputOrder();
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("frontID", order.getFrontid());
+			map.put("sessionID", order.getSessionid());
+			map.put("orderRef", order.getOrderref());
+			try {
+				inputOrderTemp = inputOrderService.getSubUserInfo(map);
+			} catch (FutureException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			if(inputOrderTemp.getComboffsetflag().equals("3")){
+				//正常撤昨仓单 把单还回去
+				String comboKey = "";
+			    if(inputOrderTemp.getDirection().equals("0"))
+			    {
+			    	//买开卖平
+			    	comboKey =inputOrderTemp.getInstrumentid() + "|1";
+			    } else {
+			    	//卖开买平
+			    	comboKey =inputOrderTemp.getInstrumentid() + "|0";
+			    }
+				PositionsDetail2 positionsDetail2 = mapHoldContractMemorySave.get(comboKey);
+				PositionsDetail2 positionsDetail2now = new PositionsDetail2();
+				if(positionsDetail2 == null){
+				     //这个合约没有老仓
+				} else {
+				     //数量还回去
+					long pingcangnum = 0;
+					 positionsDetail2now.setInstrumentid(positionsDetail2.getInstrumentid());
+					 positionsDetail2now.setDirection(positionsDetail2.getDirection());
+					 pingcangnum = positionsDetail2.getVolume() + inputOrderTemp.getVolumetotaloriginal();
+					 positionsDetail2now.setVolume(pingcangnum);
+					 mapHoldContractMemorySave.put(comboKey, positionsDetail2now);
+				}
+			}
+			
+			
+					    
+				
+		}
+		
+		
 		// 撤单解冻资金 T_USER_FROZENACCOUNT 中查询FROZENMARGIN，FROZENCOMMISSION
 		if (String.valueOf(pOrder.getOrderStatus()).equals("5") && pOrder.getCombOffsetFlag().equals("0")) {
 			// T_USER_FROZENACCOUNT subAccount pOrder.getFrontID()
@@ -1523,14 +1569,8 @@ public class CoreappView {
 		try {
 			subAccount = inputOrderService.getSubUserID(pInputOrderAction.getFrontID(),
 					pInputOrderAction.getSessionID(), pInputOrderAction.getOrderRef());
-			String s = pRspInfo.getErrorMsg();
-			InputOrder inputOrderTemp = new InputOrder();
-			if(s.equals(""))
-			{
-				//正常撤单的场合
-				inputOrderTemp = inputOrderService.getSubUserInfo(pInputOrderAction.getFrontID(),
-						pInputOrderAction.getSessionID(), pInputOrderAction.getOrderRef());
-			}
+			
+			
 			
 			
 			

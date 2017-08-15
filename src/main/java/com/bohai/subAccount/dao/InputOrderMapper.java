@@ -1,6 +1,7 @@
 package com.bohai.subAccount.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Select;
@@ -34,7 +35,7 @@ public interface InputOrderMapper {
     @Select("select SUBUSERID from T_INPUT_ORDER where FRONTID = #{0} and SESSIONID = #{1} and ORDERREF = #{2}"  )
     String getSubUserID(int frontID,int sessionID,String orderRef);
     
-    InputOrder getSubUserInfo(int frontID,int sessionID,String orderRef);
+    InputOrder getSubUserInfo(Map<String,Object> map);
     
     /**
      * 删除所有数据
