@@ -58,6 +58,7 @@ import com.bohai.subAccount.entity.InputOrder;
 import com.bohai.subAccount.entity.InvestorPosition;
 import com.bohai.subAccount.entity.MainAccount;
 import com.bohai.subAccount.entity.Order;
+import com.bohai.subAccount.entity.PositionsDetail;
 import com.bohai.subAccount.entity.PositionsDetail2;
 import com.bohai.subAccount.entity.SellDetail;
 import com.bohai.subAccount.entity.SubTradingaccount;
@@ -173,6 +174,10 @@ public class CoreappView {
 	private Map<String, UserAvailableMemorySave> mapAvailableMemorySave;
 	
 	private Map<String, PositionsDetail2> mapHoldContractMemorySave;
+	
+	private Map<String, PositionsDetail> mapSubHoldContractSave;
+	
+	private Map<String, PositionsDetail> mapSubNoTradeContractSave;
 
 	/**
 	 * Launch the application.
