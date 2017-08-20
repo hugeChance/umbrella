@@ -116,4 +116,8 @@
 	select SUBUSERID,COMBOKEY,INSTRUMENTID,DIRECTION,nvl(VOLUME,0) - nvl(SELLVOLUME,0) from T_BUY_DETAIL where nvl(VOLUME,0) != nvl(SELLVOLUME,0) 
   
   </insert>
+  
+  <select id="findUserPositionsDetail" resultMap="BaseResultMap">
+  select SUBUSERID,'' as COMBOKEY,INSTRUMENTID,DIRECTION,sum(VOLUME)as VOLUME  from T_POSITIONS_DETAIL
+  </select>
 </mapper>

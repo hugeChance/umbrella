@@ -2,6 +2,8 @@ package com.bohai.subAccount.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Select;
+
 import com.bohai.subAccount.entity.PositionsDetail;
 import com.bohai.subAccount.entity.PositionsDetail2;
 
@@ -31,6 +33,8 @@ public interface PositionsDetailMapper {
     List<PositionsDetail> getPositionsForUser (String subuserid, String dataString);
     
     List<PositionsDetail2> findGroupByPositionsDetail();
+    
+    List<PositionsDetail> findUserPositionsDetail();
     
     
 }

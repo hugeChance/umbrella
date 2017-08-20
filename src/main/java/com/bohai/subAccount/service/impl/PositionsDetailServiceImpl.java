@@ -131,6 +131,21 @@ public class PositionsDetailServiceImpl implements PositionsDetailService {
 		return list;
 	}
 
+	@Override
+	public List<PositionsDetail> findUserPositionsDetail() throws FutureException {
+		logger.info("findUserPositionsDetail");
+		List<PositionsDetail> list = null;
+		
+		try {
+			list = positionsDetailMapper.findUserPositionsDetail();
+		} catch (Exception e) {
+			logger.error("查询findUserPositionsDetail失败",e);
+			throw new FutureException("","查询findUserPositionsDetail失败");
+		}
+		
+		return list;
+	}
+
 	
 
 	

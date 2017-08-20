@@ -24,4 +24,6 @@ public interface PositionsDetailService {
 	public List<PositionsDetail> getPositionsForUser(String subuserid,String dataString) throws FutureException;
 	
 	public List<PositionsDetail2> findGroupByPositionsDetail() throws FutureException;
+	
+	public List<PositionsDetail> findUserPositionsDetail() throws FutureException;
 }

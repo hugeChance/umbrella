@@ -96,7 +96,6 @@ public class RiskCapitalRateDialog extends Dialog {
 		try {
 			capitalRate = capitalRateService.getUserByUserName(item.getText(0));
 		} catch (FutureException e) {
-
 			logger.debug("查数据库得到 自有资金 配置比例失败！");
 		}
 		
