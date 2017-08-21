@@ -1184,6 +1184,24 @@ public class CoreappView {
 				}
 				
 			} 
+			
+			//计算平仓量的也要还回去
+			
+			combokey = "";
+			combokey = subAccount + "|" + pTrade.getInstrumentID() + "|" + String.valueOf(pTrade.getDirection());
+			oldpositionsDetail = new PositionsDetail();
+			oldpositionsDetail = mapSubNoTradeContractSave.get(combokey);
+			newpositionsDetail = new PositionsDetail();
+			if(oldpositionsDetail != null){
+			
+				newpositionsDetail.setCombokey("");
+				newpositionsDetail.setSubuserid(subAccount);
+				newpositionsDetail.setInstrumentid(pTrade.getInstrumentID());
+				newpositionsDetail.setDirection(String.valueOf(pTrade.getDirection()));
+				newpositionsDetail.setVolume(oldpositionsDetail.getVolume() - pTrade.getVolume());
+				mapSubNoTradeContractSave.put(combokey, newpositionsDetail);
+			} 
+			
 		}
 
 		logger.info("成交step3补丁");
@@ -1427,7 +1445,7 @@ public class CoreappView {
 				newpositionsDetail.setSubuserid(subAccount);
 				newpositionsDetail.setInstrumentid(pInputOrder.getInstrumentID());
 				newpositionsDetail.setDirection(String.valueOf(pInputOrder.getDirection()));
-				newpositionsDetail.setVolume(oldpositionsDetail.getVolume() - Long.valueOf(pInputOrder.getVolumeCondition()));
+				newpositionsDetail.setVolume(oldpositionsDetail.getVolume() - pInputOrder.getVolumeTotalOriginal());
 			} 
 			mapSubNoTradeContractSave.put(combokey, newpositionsDetail);
 		}
@@ -1591,7 +1609,7 @@ public class CoreappView {
 					newpositionsDetail.setSubuserid(subAccount);
 					newpositionsDetail.setInstrumentid(pOrder.getInstrumentID());
 					newpositionsDetail.setDirection(String.valueOf(pOrder.getDirection()));
-					newpositionsDetail.setVolume(oldpositionsDetail.getVolume() - Long.valueOf(pOrder.getVolumeCondition()));
+					newpositionsDetail.setVolume(oldpositionsDetail.getVolume() - pOrder.getVolumeTotalOriginal());
 					mapSubNoTradeContractSave.put(combokey, newpositionsDetail);
 				} 
 			}
@@ -1617,7 +1635,7 @@ public class CoreappView {
 				newpositionsDetail.setSubuserid(subAccount);
 				newpositionsDetail.setInstrumentid(pOrder.getInstrumentID());
 				newpositionsDetail.setDirection(String.valueOf(pOrder.getDirection()));
-				newpositionsDetail.setVolume(oldpositionsDetail.getVolume() - Long.valueOf(pOrder.getVolumeCondition()));
+				newpositionsDetail.setVolume(oldpositionsDetail.getVolume() - pOrder.getVolumeTotalOriginal());
 				
 				mapSubNoTradeContractSave.put(combokey, newpositionsDetail);
 				
@@ -2044,7 +2062,7 @@ public class CoreappView {
 				oldPositionsDetail = mapSubHoldContractSave.get(combokey);
 				
 				if(oldPositionsDetail != null) {
-					if(oldPositionsDetail.getVolume() > Long.valueOf(json.getIntValue("volumeTotalOriginal"))){
+					if(oldPositionsDetail.getVolume() >= Long.valueOf(json.getIntValue("volumeTotalOriginal"))){
 						//正常
 						oldNoTradePositionsDetail = mapSubNoTradeContractSave.get(combokeyNoTrade);
 						long tmpVolume = 0;
@@ -2053,7 +2071,7 @@ public class CoreappView {
 						} else {
 							tmpVolume = 0;
 						}
-						if(oldPositionsDetail.getVolume() - tmpVolume > Long.valueOf(json.getIntValue("volumeTotalOriginal"))){
+						if(oldPositionsDetail.getVolume() - tmpVolume >= Long.valueOf(json.getIntValue("volumeTotalOriginal"))){
 							//正常
 							// 增加未成交数
 							

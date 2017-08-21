@@ -118,6 +118,6 @@
   </insert>
   
   <select id="findUserPositionsDetail" resultMap="BaseResultMap">
-  select SUBUSERID,'' as COMBOKEY,INSTRUMENTID,DIRECTION,sum(VOLUME)as VOLUME  from T_POSITIONS_DETAIL
+  select SUBUSERID,'' as COMBOKEY,INSTRUMENTID,DIRECTION,sum(VOLUME)as VOLUME  from T_POSITIONS_DETAIL group by SUBUSERID,INSTRUMENTID,DIRECTION
   </select>
 </mapper>
