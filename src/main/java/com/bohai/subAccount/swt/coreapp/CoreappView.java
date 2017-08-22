@@ -1432,23 +1432,23 @@ public class CoreappView {
 		});
 		
 		//如果是委托平仓错误的时候 要减去委托的数量
-		if(!pInputOrder.getCombOffsetFlag().equals("0")){
-			logger.info("如果是委托平仓错误的时候 要减去委托的数量");
-			String combokey = "";
-			combokey = subAccount + "|" + pInputOrder.getInstrumentID() + "|" + String.valueOf(pInputOrder.getDirection());
-			PositionsDetail oldpositionsDetail = new PositionsDetail();
-			oldpositionsDetail = mapSubNoTradeContractSave.get(combokey);
-			PositionsDetail newpositionsDetail = new PositionsDetail();
-			if(oldpositionsDetail != null){
-			
-				newpositionsDetail.setCombokey("");
-				newpositionsDetail.setSubuserid(subAccount);
-				newpositionsDetail.setInstrumentid(pInputOrder.getInstrumentID());
-				newpositionsDetail.setDirection(String.valueOf(pInputOrder.getDirection()));
-				newpositionsDetail.setVolume(oldpositionsDetail.getVolume() - pInputOrder.getVolumeTotalOriginal());
-			} 
-			mapSubNoTradeContractSave.put(combokey, newpositionsDetail);
-		}
+//		if(!pInputOrder.getCombOffsetFlag().equals("0")){
+//			logger.info("如果是委托平仓错误的时候 要减去委托的数量");
+//			String combokey = "";
+//			combokey = subAccount + "|" + pInputOrder.getInstrumentID() + "|" + String.valueOf(pInputOrder.getDirection());
+//			PositionsDetail oldpositionsDetail = new PositionsDetail();
+//			oldpositionsDetail = mapSubNoTradeContractSave.get(combokey);
+//			PositionsDetail newpositionsDetail = new PositionsDetail();
+//			if(oldpositionsDetail != null){
+//			
+//				newpositionsDetail.setCombokey("");
+//				newpositionsDetail.setSubuserid(subAccount);
+//				newpositionsDetail.setInstrumentid(pInputOrder.getInstrumentID());
+//				newpositionsDetail.setDirection(String.valueOf(pInputOrder.getDirection()));
+//				newpositionsDetail.setVolume(oldpositionsDetail.getVolume() - pInputOrder.getVolumeTotalOriginal());
+//			} 
+//			mapSubNoTradeContractSave.put(combokey, newpositionsDetail);
+//		}
 		
 		
 	}
@@ -1554,6 +1554,28 @@ public class CoreappView {
 			e.printStackTrace();
 		}
 		
+		//CTP 错误返回
+		if(String.valueOf(pOrder.getOrderStatus()).equals("4")) {
+			if(!pOrder.getCombOffsetFlag().equals("0")) {
+				logger.info("如果是委托平仓错误的时候 要减去委托的数量");
+				
+				String combokey = "";
+				combokey = subAccount + "|" + pOrder.getInstrumentID() + "|" + String.valueOf(pOrder.getDirection());
+				PositionsDetail oldpositionsDetail = new PositionsDetail();
+				oldpositionsDetail = mapSubNoTradeContractSave.get(combokey);
+				PositionsDetail newpositionsDetail = new PositionsDetail();
+				if(oldpositionsDetail != null){
+				
+					newpositionsDetail.setCombokey("");
+					newpositionsDetail.setSubuserid(subAccount);
+					newpositionsDetail.setInstrumentid(pOrder.getInstrumentID());
+					newpositionsDetail.setDirection(String.valueOf(pOrder.getDirection()));
+					newpositionsDetail.setVolume(oldpositionsDetail.getVolume() - pOrder.getVolumeTotalOriginal());
+				} 
+				mapSubNoTradeContractSave.put(combokey, newpositionsDetail);
+			}
+
+		}
 		
 
 	    // String.valueOf(pOrder.getOrderStatus()).equals("5") 撤单解冻
