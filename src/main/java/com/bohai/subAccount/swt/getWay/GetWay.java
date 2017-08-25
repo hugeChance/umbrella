@@ -28,6 +28,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import com.bohai.subAccount.constant.CommonConstant;
 import com.bohai.subAccount.entity.MainAccount;
 import com.bohai.subAccount.exception.FutureException;
+import com.bohai.subAccount.service.FutureMarketService;
 import com.bohai.subAccount.service.MainAccountService;
 import com.bohai.subAccount.utils.DateFormatterUtil;
 import com.bohai.subAccount.utils.SpringContextUtil;
@@ -43,6 +44,7 @@ public class GetWay {
     private Composite composite;
     private MainAccountService mainAccountService;
     private MainAccount mainAccount;
+    private FutureMarketService marketService;
     
     private Socket server;
     
@@ -68,6 +70,7 @@ public class GetWay {
         ClassPathXmlApplicationContext classPathXmlApplicationContext = new ClassPathXmlApplicationContext("applicationContext.xml");
         classPathXmlApplicationContext.start();
         mainAccountService = (MainAccountService) SpringContextUtil.getBean("mainAccountService");
+        marketService = (FutureMarketService) SpringContextUtil.getBean("futureMarketService");
         logger.info("===================加载成功 !==================");
 	}
 
@@ -101,7 +104,7 @@ public class GetWay {
 		}
   		
         //获取行情
-        Thread marketReceiveThread = new Thread(new MarketReceiveThread(this));
+        Thread marketReceiveThread = new Thread(new MarketReceiveThread(this,marketService));
         marketReceiveThread.setDaemon(true);
         marketReceiveThread.start();
         

@@ -6,9 +6,8 @@ import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Text;
 import org.hraink.futures.jctp.md.JCTPMdApi;
 
+import com.bohai.subAccount.service.FutureMarketService;
 import com.bohai.subAccount.utils.ApplicationConfig;
-import com.future.market.service.FutureMarketService;
-import com.future.market.utils.SpringContextUtil;
 
 public class MarketReceiveThread implements Runnable{
 	
@@ -24,9 +23,11 @@ public class MarketReceiveThread implements Runnable{
 	public static MyMdSpi mdSpi;
 	
 	private GetWay getWay;
+	private FutureMarketService marketService;
 	
-	public MarketReceiveThread(GetWay getWay) {
+	public MarketReceiveThread(GetWay getWay,FutureMarketService marketService) {
 		this.getWay = getWay;
+		this.marketService = marketService;
 	}
 
 	@Override
@@ -35,9 +36,9 @@ public class MarketReceiveThread implements Runnable{
 		mdApi = JCTPMdApi.createFtdcTraderApi();
 		
 		//行情service
-		//FutureMarketService marketService = (FutureMarketService) SpringContextUtil.getBean("futureMarketService");
 		
-		mdSpi = new MyMdSpi(mdApi,getWay);
+		
+		mdSpi = new MyMdSpi(mdApi,getWay,marketService);
 		//注册spi
 		mdApi.registerSpi(mdSpi);
 		//注册前置机地址

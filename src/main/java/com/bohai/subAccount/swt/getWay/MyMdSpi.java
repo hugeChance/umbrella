@@ -20,9 +20,9 @@ import org.hraink.futures.jctp.util.FileUtil;
 import com.alibaba.fastjson.JSON;
 import com.bohai.subAccount.entity.UserContract;
 import com.bohai.subAccount.exception.FutureException;
+import com.bohai.subAccount.service.FutureMarketService;
 import com.bohai.subAccount.service.UserContractService;
 import com.bohai.subAccount.utils.SpringContextUtil;
-import com.future.market.service.FutureMarketService;
 
 public class MyMdSpi extends JCTPMdSpi {
 	
@@ -40,9 +40,10 @@ public class MyMdSpi extends JCTPMdSpi {
 		this.mdApi = mdApi;
 	}
 	
-	public MyMdSpi(JCTPMdApi mdApi, GetWay getWay) {
+	public MyMdSpi(JCTPMdApi mdApi, GetWay getWay,FutureMarketService futureMarketService) {
 		this.mdApi = mdApi;
 		this.getWay = getWay;
+		this.futureMarketService = futureMarketService;
 	}
 	
 	public MyMdSpi(JCTPMdApi mdApi,FutureMarketService futureMarketService) {
