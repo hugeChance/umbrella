@@ -37,7 +37,7 @@ public class UserAccountVO {
 	private BigDecimal USER_CAPITAL_RATE;
 	private BigDecimal USER_CAPITAL;
 	private BigDecimal HOST_CAPITAL1;
-	private Date UPDATE_TIME;
+	private String UPDATE_TIME;
 	private BigDecimal HOST_CAPITAL2;
 	private BigDecimal HOST_CAPITAL_RATE;
 	private BigDecimal USER_OUT_CAPITAL_RETAIN;
@@ -235,10 +235,10 @@ public class UserAccountVO {
 	public void setHOST_CAPITAL1(BigDecimal hOST_CAPITAL1) {
 		HOST_CAPITAL1 = hOST_CAPITAL1;
 	}
-	public Date getUPDATE_TIME() {
+	public String getUPDATE_TIME() {
 		return UPDATE_TIME;
 	}
-	public void setUPDATE_TIME(Date uPDATE_TIME) {
+	public void setUPDATE_TIME(String uPDATE_TIME) {
 		UPDATE_TIME = uPDATE_TIME;
 	}
 	public BigDecimal getHOST_CAPITAL2() {
