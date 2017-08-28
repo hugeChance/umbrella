@@ -1555,7 +1555,7 @@ public class CoreappView {
 		}
 		
 		//CTP 错误返回
-		if(String.valueOf(pOrder.getOrderStatus()).equals("4")) {
+		if(String.valueOf(pOrder.getOrderStatus()).equals("4") || String.valueOf(pOrder.getOrderStatus()).equals("a")) {
 			if(!pOrder.getCombOffsetFlag().equals("0")) {
 				logger.info("如果是委托平仓错误的时候 要减去委托的数量");
 				
