@@ -1457,6 +1457,17 @@ public class CoreappView {
 		// 交易系统返回的报单状态，每次报单状态发生变化时被调用。一次报单过程中会被调用数次：交易系统将报 单向交易所提交时（上述流程 8 中的第 2
 		// 个过程），交易所撤销或接受该报单时，该报单成交时。
 		// 8.2， 交易核心向交易前置发送了第一个报单回报后，立即产生向交易所申请该报单插入的申请报文，该报文 被报盘管理订阅。
+		
+		// pOrder.getOrderStatus 状态
+		// 'b' 尚未触发 预埋单等尚未到触发条件下单条件，客户端还未执行下单动作
+		// 'a' 未知
+		// '0' 全部成交 已全部成交
+		// '1' 部分成交还在队列中 部分成交，剩余部分等待成交
+		// '2' 部分成交还在队列中 部分成交，剩余部分已撤单
+		// '3' 未成交还在队列中 报单已发往交易所正在等待成交
+		// '4' 未成交还在队列中 报单未发往交易所
+		// '5' 撤单 已全部撤单
+		
 		logger.info("报单");
 		logger.info(JSON.toJSONString(pOrder));
 
@@ -1555,7 +1566,7 @@ public class CoreappView {
 		}
 		
 		//CTP 错误返回
-		if(String.valueOf(pOrder.getOrderStatus()).equals("4") || String.valueOf(pOrder.getOrderStatus()).equals("a")) {
+		if(String.valueOf(pOrder.getOrderStatus()).equals("4") ) {
 			if(!pOrder.getCombOffsetFlag().equals("0")) {
 				logger.info("如果是委托平仓错误的时候 要减去委托的数量");
 				
