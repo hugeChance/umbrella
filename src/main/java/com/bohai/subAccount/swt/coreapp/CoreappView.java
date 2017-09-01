@@ -1468,6 +1468,27 @@ public class CoreappView {
 		// '4' 未成交还在队列中 报单未发往交易所
 		// '5' 撤单 已全部撤单
 		
+		///全部成交
+//		#define TSHFE_FTDC_OST_AllTraded '0'
+//		///部分成交还在队列中
+//		#define TSHFE_FTDC_OST_PartTradedQueueing '1'
+//		///部分成交不在队列中
+//		#define TSHFE_FTDC_OST_PartTradedNotQueueing '2'
+//		///未成交还在队列中
+//		#define TSHFE_FTDC_OST_NoTradeQueueing '3'
+//		///未成交不在队列中
+//		#define TSHFE_FTDC_OST_NoTradeNotQueueing '4'
+//		///撤单
+//		#define TSHFE_FTDC_OST_Canceled '5'
+//		///未知
+//		#define TSHFE_FTDC_OST_Unknown 'a'
+//		///尚未触发
+//		#define TSHFE_FTDC_OST_NotTouched 'b'
+//		///已触发
+//		#define TSHFE_FTDC_OST_Touched 'c'
+//		///错单//自定义添加
+//		#define TSHFE_FTDC_OST_Error 'e'
+		
 		logger.info("报单");
 		logger.info(JSON.toJSONString(pOrder));
 
