@@ -235,7 +235,7 @@ public class MainForm {
 
 		shell.setSize(800, 600);
 		shell.setMinimumSize(800, 600);
-		shell.setText("赫城资管");
+		shell.setText("交易资管");
 
 		Rectangle bounds = Display.getDefault().getPrimaryMonitor().getBounds();
 		Rectangle rect = shell.getBounds();
@@ -874,7 +874,7 @@ public class MainForm {
             for (Useravailableindb useravailableindb : listUseravailableindb) {
             	StringBuffer strB = new StringBuffer();
             	SettlemenetTitleVO settlemenetTitleVO = new SettlemenetTitleVO();
-            	settlemenetTitleVO.setCompanyName("赫城软件");
+            	settlemenetTitleVO.setCompanyName("交易软件");
             	settlemenetTitleVO.setUserName(useravailableindb.getUsername());
             	settlemenetTitleVO.setTodayDate(String.valueOf(new Date()));
             	//期初结存
@@ -1389,13 +1389,13 @@ public class MainForm {
 
 				MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION
 						| SWT.OK);
-				box.setMessage("赫城资管系统 V2.0");
+				box.setMessage("交易资管系统 V2.0");
 				box.open();
 			}
 		});
 
 		MenuItem menuItem4_2 = new MenuItem(menu_4, SWT.NONE);
-		menuItem4_2.setText("赫城科技：56994733");
+		menuItem4_2.setText("联系电话：13916702735");
 		menuItem4_2.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				// MessageDialog.openInformation(shell, "test", "test");

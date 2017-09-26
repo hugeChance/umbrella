@@ -506,7 +506,7 @@ public class AdminViewMain {
             for (Useravailableindb useravailableindb : listUseravailableindb) {
             	StringBuffer strB = new StringBuffer();
             	SettlemenetTitleVO settlemenetTitleVO = new SettlemenetTitleVO();
-            	settlemenetTitleVO.setCompanyName("赫城软件");
+            	settlemenetTitleVO.setCompanyName("交易软件");
             	settlemenetTitleVO.setUserName(useravailableindb.getUsername());
             	settlemenetTitleVO.setTodayDate(String.valueOf(new Date()));
             	//期初结存
