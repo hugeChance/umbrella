@@ -101,8 +101,6 @@ public class CoreappView {
 	//平今
 	public static final char THOST_FTDC_OF_CloseToday = (char)'3';
 
-	// aaaaaaaaaaaa
-	
 	private MainAccountService mainAccountService;
 
 	int nRequestID = 0;
@@ -548,7 +546,34 @@ public class CoreappView {
 		serverThread.start();
 
 		// 数据库DUAL
-		Thread t = new Thread(  
+//		Thread t = new Thread(  
+//                new Thread(){  
+//                    @Override  
+//                    public void run() {  
+//                      
+//                        while(true){  
+//                            try {
+//                            	
+//                            	futureMarketMapper.selectdual();
+//                            	
+//                                Thread.sleep(300000);  
+//                            } catch (InterruptedException e) {  
+//                                e.printStackTrace();  
+//                            }  
+//                            Date date=new Date();
+//                            DateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//                            String time=format.format(date);
+//                            System.out.println("select 2 from dual =" + time);  
+//                            logger.info("select 2 from dual =");
+//                            logger.info(time);
+//
+//                        }                         
+//                          
+//                    }  
+//                }  
+//        );  
+		
+		Thread t =  
                 new Thread(){  
                     @Override  
                     public void run() {  
@@ -572,9 +597,10 @@ public class CoreappView {
                         }                         
                           
                     }  
-                }  
-        );  
-        t.start();   
+                }  ;
+         
+        t.setDaemon(true);
+        t.start();
 
 		// TEST
 

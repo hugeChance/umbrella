@@ -92,7 +92,6 @@ public class RiskManageView {
 	static final String TRADE_IP = ApplicationConfig.getProperty("tradeAddr");
 	
 	protected Shell shell;
-	private Table mainAccountTable;
 	private Table subAccountTable;
 	private MainAccountService mainAccountService;
 	private UserInfoService userInfoService;
@@ -227,13 +226,13 @@ public class RiskManageView {
         });
 		
 		shell.setSize(548, 305);
-		shell.setText("风控");
+		shell.setText("风控后台");
 		shell.setLayout(new BorderLayout(0, 0));
 		
-		createMainAccountTable(shell);
+//		createMainAccountTable(shell);
 
 		//主账户信息取得
-		getMainAccountInfo();
+//		getMainAccountInfo();
 		
 		createSubAccoutTable(shell);
 		
@@ -296,28 +295,25 @@ public class RiskManageView {
 	}
 	
 	//主账户信息取得
-	public void getMainAccountInfo() {
-		mainAccountTable.setLayoutData(BorderLayout.NORTH);
-		mainAccountTable.setHeaderVisible(true);
-		mainAccountTable.setLinesVisible(true);
-		
-		//查询用户组
-		List<MainAccount> mainAccountInfos = null;
-		try {
-			mainAccountInfos = mainAccountService.getMainAccount();
-		} catch (FutureException e1) {
-			logger.error(e1.getMessage());
-		}
-		if(mainAccountInfos != null){
-			
-			for (MainAccount mainAccount : mainAccountInfos) {
-				TableItem mainAccountTableItem = new TableItem(mainAccountTable, SWT.NONE);
-				mainAccountTableItem.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-				mainAccountTableItem.setText(0, mainAccount.getAccountNo());
-			}
-		}
-
-	}
+//	public void getMainAccountInfo() {
+//		
+//		//查询用户组
+//		List<MainAccount> mainAccountInfos = null;
+//		try {
+//			mainAccountInfos = mainAccountService.getMainAccount();
+//		} catch (FutureException e1) {
+//			logger.error(e1.getMessage());
+//		}
+//		if(mainAccountInfos != null){
+//			
+//			for (MainAccount mainAccount : mainAccountInfos) {
+//				TableItem mainAccountTableItem = new TableItem(mainAccountTable, SWT.NONE);
+//				mainAccountTableItem.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
+//				mainAccountTableItem.setText(0, mainAccount.getAccountNo());
+//			}
+//		}
+//
+//	}
 	
 	//子账户信息取得
 	//@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -401,20 +397,13 @@ public class RiskManageView {
 	}
 	
 	public void createMainAccountTable(Composite parent){
-		
-		mainAccountTable = new Table(parent, SWT.BORDER | SWT.FULL_SELECTION);
-		mainAccountTable.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		TableLayout tLayout = new TableLayout();//专用于表格的布局
-		mainAccountTable.setLayout(tLayout);
+		TableLayout tLayout = new TableLayout();
 		
 		tLayout.addColumnData(new ColumnWeightData(60));
-		new TableColumn(mainAccountTable, SWT.NONE).setText("主账号");
 		
 		tLayout.addColumnData(new ColumnWeightData(60));
-		new TableColumn(mainAccountTable, SWT.NONE).setText("动态权益");
 		
 		tLayout.addColumnData(new ColumnWeightData(60));
-		new TableColumn(mainAccountTable, SWT.NONE).setText("可用资金");
 		
 	}
 	
@@ -422,61 +411,61 @@ public class RiskManageView {
 		
 		subAccountTable = new Table(parent, SWT.BORDER | SWT.FULL_SELECTION);
 		subAccountTable.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
-		subAccountTable.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				TableItem item = subAccountTable.getItem(new Point(e.x, e.y));
-				if(item == null){
-					return;
-				}
-				RiskControlDialog riskControlDialog = new RiskControlDialog(shell, SWT.CLOSE, item,RiskManageView.this,userContracts);
-				riskControlDialog.open();
-			}
-			
-			@Override
-			public void mouseDown(MouseEvent e) {
-			    
-			    TableItem item = subAccountTable.getItem(new Point(e.x, e.y));
-                if(item == null){
-                    return;
-                }
-                
-			    //创建菜单
-                Menu menu = new  Menu(subAccountTable);
-                subAccountTable.setMenu(menu);
-			    
-			    
-				if(e.button == 3) {
-				    
-				    MenuItem removeItem = new MenuItem(menu, SWT.NONE);
-                    removeItem.setText("调整平仓比例");
-                    removeItem.addSelectionListener(new SelectionAdapter() {
-                        
-                        @Override
-                        public void widgetSelected(SelectionEvent e) {
-                            ForceCloseDialog closeDialog = new ForceCloseDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, item, RiskManageView.this);
-                            closeDialog.open();
-                        }
-                        
-                    });
-                    
-                    MenuItem addItem = new MenuItem(menu, SWT.NONE);
-                    addItem.setText("出入金");
-                    addItem.addSelectionListener(new SelectionAdapter() {
-                        
-                        @Override
-                        public void widgetSelected(SelectionEvent e) {
-                            
-                            RiskCapitalRateDialog riskCapitalRateDialog = new RiskCapitalRateDialog(shell, SWT.CLOSE, item,RiskManageView.this);
-                            riskCapitalRateDialog.open();
-                        }
-                        
-                    });
-                    
-				}
-			}
-			
-		});
+//		subAccountTable.addMouseListener(new MouseAdapter() {
+////			@Override
+////			public void mouseDoubleClick(MouseEvent e) {
+////				TableItem item = subAccountTable.getItem(new Point(e.x, e.y));
+////				if(item == null){
+////					return;
+////				}
+////				RiskControlDialog riskControlDialog = new RiskControlDialog(shell, SWT.CLOSE, item,RiskManageView.this,userContracts);
+////				riskControlDialog.open();
+////			}
+//			
+//			@Override
+//			public void mouseDown(MouseEvent e) {
+//			    
+//			    TableItem item = subAccountTable.getItem(new Point(e.x, e.y));
+//                if(item == null){
+//                    return;
+//                }
+//                
+//			    //创建菜单
+//                Menu menu = new  Menu(subAccountTable);
+//                subAccountTable.setMenu(menu);
+//			    
+//			    
+//				if(e.button == 3) {
+//				    
+//				    MenuItem removeItem = new MenuItem(menu, SWT.NONE);
+//                    removeItem.setText("调整平仓比例");
+//                    removeItem.addSelectionListener(new SelectionAdapter() {
+//                        
+//                        @Override
+//                        public void widgetSelected(SelectionEvent e) {
+//                            ForceCloseDialog closeDialog = new ForceCloseDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, item, RiskManageView.this);
+//                            closeDialog.open();
+//                        }
+//                        
+//                    });
+//                    
+//                    MenuItem addItem = new MenuItem(menu, SWT.NONE);
+//                    addItem.setText("出入金");
+//                    addItem.addSelectionListener(new SelectionAdapter() {
+//                        
+//                        @Override
+//                        public void widgetSelected(SelectionEvent e) {
+//                            
+//                            RiskCapitalRateDialog riskCapitalRateDialog = new RiskCapitalRateDialog(shell, SWT.CLOSE, item,RiskManageView.this);
+//                            riskCapitalRateDialog.open();
+//                        }
+//                        
+//                    });
+//                    
+//				}
+//			}
+//			
+//		});
 		TableLayout tLayout = new TableLayout();//专用于表格的布局
 		subAccountTable.setLayout(tLayout);
 		

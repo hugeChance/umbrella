@@ -69,6 +69,10 @@ public class CtpConnectThread implements Runnable{
                         
                         BeanUtils.copyProperties(pOrder, json);
                         
+                        pOrder.setStatusMsg(json.getString("statusMsg"));
+                        
+                        
+                        
                         coreappView.onRtnOrder(pOrder);
                     }else if (params[0].equals("onRtnTrade")) {
                         JSONObject json = JSON.parseObject(params[1]);
