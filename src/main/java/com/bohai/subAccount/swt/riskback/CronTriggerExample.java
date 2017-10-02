@@ -40,9 +40,9 @@ public class CronTriggerExample {
 
 	private String[] strTime;
 	
-	private RiskManageView riskManageView;
+	private RiskManageBackView riskManageView;
 
-	public CronTriggerExample(String[] strTime, RiskManageView riskManageView) {
+	public CronTriggerExample(String[] strTime, RiskManageBackView riskManageView) {
 		this.strTime = strTime;
 		this.riskManageView = riskManageView;
 	}

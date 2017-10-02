@@ -31,14 +31,14 @@ public class ForceCloseDialog extends Dialog {
     private Text forceLimitText;
 
     private TableItem tableItem;
-    private RiskManageView view;
+    private RiskFrontView view;
     
     /**
      * Create the dialog.
      * @param parent
      * @param style
      */
-    public ForceCloseDialog(Shell parent, int style, TableItem item, RiskManageView view) {
+    public ForceCloseDialog(Shell parent, int style, TableItem item, RiskFrontView view) {
         super(parent, style);
         setText("强平设置");
         this.tableItem = item;

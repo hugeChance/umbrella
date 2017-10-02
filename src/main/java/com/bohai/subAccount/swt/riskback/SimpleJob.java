@@ -73,7 +73,7 @@ public class SimpleJob implements Job {
     	_log.debug("------------触发定时任务--------------");
     	
     	try {
-			RiskManageView riskManageView = (RiskManageView) context.getJobDetail().getJobDataMap().get("risk");
+			RiskManageBackView riskManageView = (RiskManageBackView) context.getJobDetail().getJobDataMap().get("risk");
 			Display.getDefault().syncExec(new Runnable() {
 				
 				@Override

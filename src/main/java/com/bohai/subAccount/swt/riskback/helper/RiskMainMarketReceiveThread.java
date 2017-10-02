@@ -30,7 +30,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.bohai.subAccount.entity.CloseRule;
 import com.bohai.subAccount.entity.InvestorPosition;
 import com.bohai.subAccount.entity.UserContract;
-import com.bohai.subAccount.swt.riskback.RiskManageView;
+import com.bohai.subAccount.swt.riskback.RiskManageBackView;
 import com.bohai.subAccount.utils.Datecalculate;
 import com.bohai.subAccount.vo.UserPositionVO;
 
@@ -40,7 +40,7 @@ public class RiskMainMarketReceiveThread implements Runnable {
 
 	private Table table;
 	
-	private RiskManageView riskView;
+	private RiskManageBackView riskView;
 	
     private Datecalculate dateCalcuate = new Datecalculate();
 	
@@ -53,7 +53,7 @@ public class RiskMainMarketReceiveThread implements Runnable {
 	//合约信息
 	private List<UserContract> userContractInfos;
 	
-	public RiskMainMarketReceiveThread(RiskManageView riskView, Table table, List<UserContract> userContractInfos,
+	public RiskMainMarketReceiveThread(RiskManageBackView riskView, Table table, List<UserContract> userContractInfos,
 			List<CloseRule> closeRules) {
 		this.riskView = riskView;
 		this.table = table;

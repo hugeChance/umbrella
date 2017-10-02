@@ -80,9 +80,9 @@ import com.bohai.subAccount.vo.UserPositionVO;
 
 import swing2swt.layout.BorderLayout;
 
-public class RiskManageView {
+public class RiskFrontView {
 	
-    private static Logger logger = Logger.getLogger(RiskManageView.class);
+    private static Logger logger = Logger.getLogger(RiskFrontView.class);
     
 	//static final String MARKET_IP = "10.0.0.204";
 	static final String MARKET_IP = ApplicationConfig.getProperty("marketAddr");
@@ -117,7 +117,7 @@ public class RiskManageView {
 	 */
 	public static void main(String[] args) {
 		try {
-			RiskManageView window = new RiskManageView();
+			RiskFrontView window = new RiskFrontView();
 			window.loadSpringContext();
 			window.open();
 		} catch (Exception e) {
@@ -158,7 +158,7 @@ public class RiskManageView {
 				
 				@Override
 				public void run() {
-					CronTriggerExample example = new CronTriggerExample(closeTime, RiskManageView.this);
+					CronTriggerExample example = new CronTriggerExample(closeTime, RiskFrontView.this);
 			        try {
 						example.run();
 					} catch (Exception e) {
@@ -429,7 +429,7 @@ public class RiskManageView {
 				if(item == null){
 					return;
 				}
-				RiskControlDialog riskControlDialog = new RiskControlDialog(shell, SWT.CLOSE, item,RiskManageView.this,userContracts);
+				RiskControlDialog riskControlDialog = new RiskControlDialog(shell, SWT.CLOSE, item,RiskFrontView.this,userContracts);
 				riskControlDialog.open();
 			}
 			
@@ -454,7 +454,7 @@ public class RiskManageView {
                         
                         @Override
                         public void widgetSelected(SelectionEvent e) {
-                            ForceCloseDialog closeDialog = new ForceCloseDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, item, RiskManageView.this);
+                            ForceCloseDialog closeDialog = new ForceCloseDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, item, RiskFrontView.this);
                             closeDialog.open();
                         }
                         
@@ -467,7 +467,7 @@ public class RiskManageView {
                         @Override
                         public void widgetSelected(SelectionEvent e) {
                             
-                            RiskCapitalRateDialog riskCapitalRateDialog = new RiskCapitalRateDialog(shell, SWT.CLOSE, item,RiskManageView.this);
+                            RiskCapitalRateDialog riskCapitalRateDialog = new RiskCapitalRateDialog(shell, SWT.CLOSE, item,RiskFrontView.this);
                             riskCapitalRateDialog.open();
                         }
                         

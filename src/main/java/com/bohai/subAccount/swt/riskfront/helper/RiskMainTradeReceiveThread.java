@@ -18,20 +18,20 @@ import com.bohai.subAccount.entity.InvestorPosition;
 //import com.bohai.subAccount.entity.InvestorPosition2;
 import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.service.InvestorPositionService;
-import com.bohai.subAccount.swt.riskfront.RiskManageView;
+import com.bohai.subAccount.swt.riskfront.RiskFrontView;
 import com.bohai.subAccount.vo.UserPositionVO;
 
 public class RiskMainTradeReceiveThread implements Runnable {
 	
 	static Logger logger = Logger.getLogger(RiskMainTradeReceiveThread.class);
 	
-	private RiskManageView riskManageView;
+	private RiskFrontView riskManageView;
 	
 	private Table table;
 	
 	private InvestorPositionService investorPositionService;
 	
-	public RiskMainTradeReceiveThread(RiskManageView riskManageView, Table table, InvestorPositionService investorPositionService) {
+	public RiskMainTradeReceiveThread(RiskFrontView riskManageView, Table table, InvestorPositionService investorPositionService) {
 		this.riskManageView = riskManageView;
 		this.investorPositionService = investorPositionService;
 		this.table = table;

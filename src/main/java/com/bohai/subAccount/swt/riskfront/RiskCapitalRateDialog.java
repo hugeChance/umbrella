@@ -48,7 +48,7 @@ public class RiskCapitalRateDialog extends Dialog {
 	private int returnCheckFlg = 0;
 	private TradeService tradeService;
 	
-	private RiskManageView manageView;
+	private RiskFrontView manageView;
 	
 	private CapitalRateService capitalRateService;
 	private CapitalRateDetailService capitalRateDetailService;
@@ -66,7 +66,7 @@ public class RiskCapitalRateDialog extends Dialog {
 	 * @param parent
 	 * @param style
 	 */
-	public RiskCapitalRateDialog(Shell parent, int style,TableItem item,RiskManageView manageView) {
+	public RiskCapitalRateDialog(Shell parent, int style,TableItem item,RiskFrontView manageView) {
 		super(parent, style);
 		setText("交易员出入金");
 		loadSpringContext();
