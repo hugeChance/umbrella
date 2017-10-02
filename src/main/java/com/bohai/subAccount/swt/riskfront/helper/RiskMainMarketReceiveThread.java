@@ -167,22 +167,22 @@ public class RiskMainMarketReceiveThread implements Runnable {
 								
 							}
 							
-							try {
-								PrintWriter out = new PrintWriter(new OutputStreamWriter(riskView.getTradeSocket().getOutputStream(),"UTF-8"));
-								StringBuffer sb = new StringBuffer();
-								sb.append("risk|");
-								sb.append(userName.trim() + "|");
-								sb.append("CCYK|" + totalPositionWin);
-				                logger.info("持仓盈亏参数：" + sb.toString());
-								out.println(sb.toString());
-				                out.flush();
-							} catch (UnsupportedEncodingException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+//							try {
+//								PrintWriter out = new PrintWriter(new OutputStreamWriter(riskView.getTradeSocket().getOutputStream(),"UTF-8"));
+//								StringBuffer sb = new StringBuffer();
+//								sb.append("risk|");
+//								sb.append(userName.trim() + "|");
+//								sb.append("CCYK|" + totalPositionWin);
+//				                logger.info("持仓盈亏参数：" + sb.toString());
+//								out.println(sb.toString());
+//				                out.flush();
+//							} catch (UnsupportedEncodingException e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							} catch (IOException e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							}
 							
 						}
 					});

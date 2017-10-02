@@ -151,27 +151,27 @@ public class RiskFrontView {
 		tradethread.setDaemon(true);
 		tradethread.start();
         
-        //定时任务
-		if (null != groupRule && groupRule.getCloseTime() != null) {
-			String[] closeTime = groupRule.getCloseTime().split(",");
-			Thread quartz = new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					CronTriggerExample example = new CronTriggerExample(closeTime, RiskFrontView.this);
-			        try {
-						example.run();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			});
-			quartz.setDaemon(true);
-			quartz.start();
-		}
+//        //定时任务
+//		if (null != groupRule && groupRule.getCloseTime() != null) {
+//			String[] closeTime = groupRule.getCloseTime().split(",");
+//			Thread quartz = new Thread(new Runnable() {
+//				
+//				@Override
+//				public void run() {
+//					CronTriggerExample example = new CronTriggerExample(closeTime, RiskFrontView.this);
+//			        try {
+//						example.run();
+//					} catch (Exception e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
+//			});
+//			quartz.setDaemon(true);
+//			quartz.start();
+//		}
 		
-		logger.info("===========================定时任务已开启=======================");
+//		logger.info("===========================定时任务已开启=======================");
 		
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
@@ -199,21 +199,21 @@ public class RiskFrontView {
 	 */
 	protected void createContents() {
 		shell = new Shell();
-		shell.addDisposeListener(new DisposeListener() {
-			public void widgetDisposed(DisposeEvent e) {
-				SchedulerFactory sf = new StdSchedulerFactory();
-				try {
-					Scheduler sched = sf.getScheduler();
-					sched.shutdown();
-					logger.debug("关闭定时任务");
-				} catch (SchedulerException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				
-				logger.info("退出");
-			}
-		});
+//		shell.addDisposeListener(new DisposeListener() {
+////			public void widgetDisposed(DisposeEvent e) {
+////				SchedulerFactory sf = new StdSchedulerFactory();
+////				try {
+////					Scheduler sched = sf.getScheduler();
+////					sched.shutdown();
+////					logger.debug("关闭定时任务");
+////				} catch (SchedulerException e1) {
+////					// TODO Auto-generated catch block
+////					e1.printStackTrace();
+////				}
+////				
+////				logger.info("退出");
+////			}
+//		});
 		
 		shell.addShellListener(new ShellAdapter() {
             public void shellClosed(ShellEvent e) {
