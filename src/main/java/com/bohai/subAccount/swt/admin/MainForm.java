@@ -887,6 +887,7 @@ public class MainForm {
             	settlemenetTitleVO.setBalance_Start(tmpStr);
             	//期末结存 计算
             	//客户权益=上日结存+出入金-手续费+平仓盈亏（逐日盯市）+持仓盈亏（逐日盯市）；
+//            	BigDecimal balanceBDec = useravailableindb.getAvailable().add(useravailableindb.getFrozenavailable()).add(useravailableindb.getMargin()) ;
             	BigDecimal balanceBDec = useravailableindb.getAvailable().add(useravailableindb.getFrozenavailable()).add(useravailableindb.getMargin()) ;
             	settlemenetTitleVO.setBalance_End(String.valueOf(balanceBDec));
             	settlemenetTitleVO.setClient_Equity(String.valueOf(balanceBDec));

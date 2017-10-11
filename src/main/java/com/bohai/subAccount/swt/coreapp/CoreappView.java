@@ -1457,6 +1457,113 @@ public class CoreappView {
 			}
 		});
 		
+		//  20171011 CTP资金不足补丁
+		if(atomicInteger.get() > 1){
+		UserFrozenaccount userFrozenaccount = new UserFrozenaccount();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("subAccount", subAccount);
+		map.put("frontID", frontID);
+		map.put("sessionID", sessionID);
+		map.put("orderRef", pInputOrder.getOrderRef());
+		// caoxx 20170306 modify
+		map.put("volume", pInputOrder.getVolumeTotalOriginal());
+		logger.info("！！！！！userFrozenaccountService撤单解冻onRtnOrder：" + JSON.toJSONString(map));
+		try {
+			userFrozenaccount = userFrozenaccountService.getUserByUnfrozen(map);
+			if (userFrozenaccount == null) {
+				return;
+			}
+		} catch (FutureException e) {
+			//
+			e.printStackTrace();
+		}
+		map = new HashMap<String, Object>();
+		map.put("subAccount", subAccount);
+		map.put("volume", pInputOrder.getVolumeTotalOriginal());
+		map.put("frozenmargin", userFrozenaccount.getFrozenmargin());
+		map.put("frozencommission", userFrozenaccount.getFrozencommission());
+		// T_SUB_TRADINGACCOUNT 冻结资金减去，可用资金加上
+		logger.info("！！！！！updateUnfrozen撤单解冻onRtnOrder：" + JSON.toJSONString(map));
+		try {
+			subTradingaccountService.updateUnfrozen(map);
+		} catch (FutureException e) {
+			//
+			e.printStackTrace();
+		}
+
+		// 解冻资金做可用计算
+		UserAvailableMemorySave userAvailableMemorySave = mapAvailableMemorySave.get(subAccount);
+		logger.info("解冻资金做可用计算CANCEL:" + JSON.toJSONString(userAvailableMemorySave));
+		double tempdb = userFrozenaccount.getFrozenmargin().doubleValue()
+				+ userFrozenaccount.getFrozencommission().doubleValue();
+		tempdb = Double.valueOf(userAvailableMemorySave.getFrozenAvailable()) - tempdb;
+		userAvailableMemorySave.setFrozenAvailable(String.valueOf(tempdb));
+		availableMap(subAccount, userAvailableMemorySave);
+		
+		
+		
+		
+		
+		InputOrder inputOrderTemp  = new InputOrder();
+		map = new HashMap<String, Object>();
+		map.put("frontID", frontID);
+		map.put("sessionID", sessionID);
+		map.put("orderRef", pInputOrder.getOrderRef());
+		try {
+			inputOrderTemp = inputOrderService.getSubUserInfo(map);
+		} catch (FutureException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if(inputOrderTemp.getComboffsetflag().equals("3")){
+			//正常撤昨仓单 把单还回去
+			String comboKey = "";
+		    if(inputOrderTemp.getDirection().equals("0"))
+		    {
+		    	//买开卖平
+		    	comboKey =inputOrderTemp.getInstrumentid() + "|1";
+		    } else {
+		    	//卖开买平
+		    	comboKey =inputOrderTemp.getInstrumentid() + "|0";
+		    }
+			PositionsDetail2 positionsDetail2 = mapHoldContractMemorySave.get(comboKey);
+			PositionsDetail2 positionsDetail2now = new PositionsDetail2();
+			if(positionsDetail2 == null){
+			     //这个合约没有老仓
+			} else {
+			     //数量还回去
+				long pingcangnum = 0;
+				 positionsDetail2now.setInstrumentid(positionsDetail2.getInstrumentid());
+				 positionsDetail2now.setDirection(positionsDetail2.getDirection());
+				 pingcangnum = positionsDetail2.getVolume() + inputOrderTemp.getVolumetotaloriginal();
+				 positionsDetail2now.setVolume(pingcangnum);
+				 mapHoldContractMemorySave.put(comboKey, positionsDetail2now);
+			}
+		}
+		
+		//计算平仓量的也要还回去
+		if(!pInputOrder.getCombOffsetFlag().equals("0")){
+			String combokey = "";
+			combokey = subAccount + "|" + pInputOrder.getInstrumentID() + "|" + String.valueOf(pInputOrder.getDirection());
+			PositionsDetail oldpositionsDetail = new PositionsDetail();
+			oldpositionsDetail = mapSubNoTradeContractSave.get(combokey);
+			PositionsDetail newpositionsDetail = new PositionsDetail();
+			if(oldpositionsDetail != null){
+			
+				newpositionsDetail.setCombokey("");
+				newpositionsDetail.setSubuserid(subAccount);
+				newpositionsDetail.setInstrumentid(pInputOrder.getInstrumentID());
+				newpositionsDetail.setDirection(String.valueOf(pInputOrder.getDirection()));
+				newpositionsDetail.setVolume(oldpositionsDetail.getVolume() - pInputOrder.getVolumeTotalOriginal());
+				mapSubNoTradeContractSave.put(combokey, newpositionsDetail);
+			} 
+		}
+		}
+		
+		//  20171011 CTP资金不足补丁
+		
+		
 		//如果是委托平仓错误的时候 要减去委托的数量
 //		if(!pInputOrder.getCombOffsetFlag().equals("0")){
 //			logger.info("如果是委托平仓错误的时候 要减去委托的数量");

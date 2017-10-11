@@ -55,12 +55,12 @@ public class ApplicationConfig {
 			
 			//行情前置机
 			if(StringUtils.isEmpty(getProperty("marketFrontAddr"))){
-				setProperty("marketFrontAddr", "tcp://180.169.116.119:41213");
+				setProperty("marketFrontAddr", "tcp://218.202.237.33:10012");
 			}
 			
 			//交易前置机
 			if(StringUtils.isEmpty(getProperty("tradeFrontAddr"))){
-				setProperty("tradeFrontAddr", "tcp://180.169.116.119:41205");
+				setProperty("tradeFrontAddr", "tcp://218.202.237.33:10002");
 			}
 			
 			//默认手数
