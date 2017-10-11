@@ -30,7 +30,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.bohai.subAccount.entity.CloseRule;
 import com.bohai.subAccount.entity.InvestorPosition;
 import com.bohai.subAccount.entity.UserContract;
-import com.bohai.subAccount.swt.riskfront.RiskManageView;
+import com.bohai.subAccount.swt.riskfront.RiskFrontView;
 import com.bohai.subAccount.utils.Datecalculate;
 import com.bohai.subAccount.vo.UserPositionVO;
 
@@ -40,7 +40,7 @@ public class RiskMainMarketReceiveThread implements Runnable {
 
 	private Table table;
 	
-	private RiskManageView riskView;
+	private RiskFrontView riskView;
 	
     private Datecalculate dateCalcuate = new Datecalculate();
 	
@@ -53,7 +53,7 @@ public class RiskMainMarketReceiveThread implements Runnable {
 	//合约信息
 	private List<UserContract> userContractInfos;
 	
-	public RiskMainMarketReceiveThread(RiskManageView riskView, Table table, List<UserContract> userContractInfos,
+	public RiskMainMarketReceiveThread(RiskFrontView riskView, Table table, List<UserContract> userContractInfos,
 			List<CloseRule> closeRules) {
 		this.riskView = riskView;
 		this.table = table;
@@ -167,22 +167,22 @@ public class RiskMainMarketReceiveThread implements Runnable {
 								
 							}
 							
-							try {
-								PrintWriter out = new PrintWriter(new OutputStreamWriter(riskView.getTradeSocket().getOutputStream(),"UTF-8"));
-								StringBuffer sb = new StringBuffer();
-								sb.append("risk|");
-								sb.append(userName.trim() + "|");
-								sb.append("CCYK|" + totalPositionWin);
-				                logger.info("持仓盈亏参数：" + sb.toString());
-								out.println(sb.toString());
-				                out.flush();
-							} catch (UnsupportedEncodingException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+//							try {
+//								PrintWriter out = new PrintWriter(new OutputStreamWriter(riskView.getTradeSocket().getOutputStream(),"UTF-8"));
+//								StringBuffer sb = new StringBuffer();
+//								sb.append("risk|");
+//								sb.append(userName.trim() + "|");
+//								sb.append("CCYK|" + totalPositionWin);
+//				                logger.info("持仓盈亏参数：" + sb.toString());
+//								out.println(sb.toString());
+//				                out.flush();
+//							} catch (UnsupportedEncodingException e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							} catch (IOException e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							}
 							
 						}
 					});

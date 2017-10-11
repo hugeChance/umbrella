@@ -18,24 +18,26 @@ import com.bohai.subAccount.entity.InvestorPosition;
 //import com.bohai.subAccount.entity.InvestorPosition2;
 import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.service.InvestorPositionService;
-import com.bohai.subAccount.swt.riskfront.RiskManageView;
+import com.bohai.subAccount.swt.riskfront.RiskFrontView;
 import com.bohai.subAccount.vo.UserPositionVO;
 
 public class RiskMainTradeReceiveThread implements Runnable {
 	
 	static Logger logger = Logger.getLogger(RiskMainTradeReceiveThread.class);
 	
-	private RiskManageView riskManageView;
+	private RiskFrontView riskManageView;
 	
 	private Table table;
 	
 	private InvestorPositionService investorPositionService;
 	
-	public RiskMainTradeReceiveThread(RiskManageView riskManageView, Table table, InvestorPositionService investorPositionService) {
+	public RiskMainTradeReceiveThread(RiskFrontView riskManageView, Table table, InvestorPositionService investorPositionService) {
 		this.riskManageView = riskManageView;
 		this.investorPositionService = investorPositionService;
 		this.table = table;
 	}
+
+
 
 	@Override
 	public void run() {
@@ -83,42 +85,42 @@ public class RiskMainTradeReceiveThread implements Runnable {
 									
 									//自有资金强平
 									TableItem[] items =  riskManageView.getSubAccountTable().getItems();
-									for(TableItem tableItem : items){
-										
-										UserPositionVO positionVO = (UserPositionVO) tableItem.getData();
-										if(positionVO.getUserName().equals(userName)){
-											
-											BigDecimal limit = positionVO.getSubTradingaccount().getUSER_CAPITAL().subtract(
-													positionVO.getSubTradingaccount().getUSER_CAPITAL_YESTORDAY()==null?new BigDecimal("0"):positionVO.getSubTradingaccount().getUSER_CAPITAL_YESTORDAY());
-											
-											//已亏损金额
-											limit = limit.add(closeWin).add(positionWin);
-											
-											//强平比例
-											String closeRate = tableItem.getText(5);
-											if(!StringUtils.isEmpty(closeRate)){
-												BigDecimal closeRateBig = new BigDecimal(closeRate);
-												//允许亏损的最大值 = 自有资金*强平比例
-												BigDecimal closeAmountBig = closeRateBig.multiply(positionVO.getSubTradingaccount().getUSER_CAPITAL());
-												
-												if(closeAmountBig.compareTo(limit) <= 0){
-													riskManageView.forceCloseByUserName(userName);
-												}
-											}
-											//强平金额
-											String closeAmount = tableItem.getText(6);
-											if(!StringUtils.isEmpty(closeAmount)){
-												BigDecimal closeAmountBig = new BigDecimal(closeAmount);
-												
-												//允许亏损的最大金额 <= 已亏损金额 ，则强平 
-												if( closeAmountBig.compareTo(limit) <= 0){
-													riskManageView.forceCloseByUserName(userName);
-												}
-											}
-											break;
-										}
-										
-									}
+//									for(TableItem tableItem : items){
+//										
+//										UserPositionVO positionVO = (UserPositionVO) tableItem.getData();
+//										if(positionVO.getUserName().equals(userName)){
+//											
+//											BigDecimal limit = positionVO.getSubTradingaccount().getUSER_CAPITAL().subtract(
+//													positionVO.getSubTradingaccount().getUSER_CAPITAL_YESTORDAY()==null?new BigDecimal("0"):positionVO.getSubTradingaccount().getUSER_CAPITAL_YESTORDAY());
+//											
+//											//已亏损金额
+//											limit = limit.add(closeWin).add(positionWin);
+//											
+//											//强平比例
+//											String closeRate = tableItem.getText(5);
+//											if(!StringUtils.isEmpty(closeRate)){
+//												BigDecimal closeRateBig = new BigDecimal(closeRate);
+//												//允许亏损的最大值 = 自有资金*强平比例
+//												BigDecimal closeAmountBig = closeRateBig.multiply(positionVO.getSubTradingaccount().getUSER_CAPITAL());
+//												
+//												if(closeAmountBig.compareTo(limit) <= 0){
+//													riskManageView.forceCloseByUserName(userName);
+//												}
+//											}
+//											//强平金额
+//											String closeAmount = tableItem.getText(6);
+//											if(!StringUtils.isEmpty(closeAmount)){
+//												BigDecimal closeAmountBig = new BigDecimal(closeAmount);
+//												
+//												//允许亏损的最大金额 <= 已亏损金额 ，则强平 
+//												if( closeAmountBig.compareTo(limit) <= 0){
+//													riskManageView.forceCloseByUserName(userName);
+//												}
+//											}
+//											break;
+//										}
+//										
+//									}
 										
 										
 									    

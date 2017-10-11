@@ -80,9 +80,9 @@ import com.bohai.subAccount.vo.UserPositionVO;
 
 import swing2swt.layout.BorderLayout;
 
-public class RiskManageView {
+public class RiskFrontView {
 	
-    private static Logger logger = Logger.getLogger(RiskManageView.class);
+    private static Logger logger = Logger.getLogger(RiskFrontView.class);
     
 	//static final String MARKET_IP = "10.0.0.204";
 	static final String MARKET_IP = ApplicationConfig.getProperty("marketAddr");
@@ -117,7 +117,7 @@ public class RiskManageView {
 	 */
 	public static void main(String[] args) {
 		try {
-			RiskManageView window = new RiskManageView();
+			RiskFrontView window = new RiskFrontView();
 			window.loadSpringContext();
 			window.open();
 		} catch (Exception e) {
@@ -151,27 +151,27 @@ public class RiskManageView {
 		tradethread.setDaemon(true);
 		tradethread.start();
         
-        //定时任务
-		if (null != groupRule && groupRule.getCloseTime() != null) {
-			String[] closeTime = groupRule.getCloseTime().split(",");
-			Thread quartz = new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					CronTriggerExample example = new CronTriggerExample(closeTime, RiskManageView.this);
-			        try {
-						example.run();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			});
-			quartz.setDaemon(true);
-			quartz.start();
-		}
+//        //定时任务
+//		if (null != groupRule && groupRule.getCloseTime() != null) {
+//			String[] closeTime = groupRule.getCloseTime().split(",");
+//			Thread quartz = new Thread(new Runnable() {
+//				
+//				@Override
+//				public void run() {
+//					CronTriggerExample example = new CronTriggerExample(closeTime, RiskFrontView.this);
+//			        try {
+//						example.run();
+//					} catch (Exception e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
+//			});
+//			quartz.setDaemon(true);
+//			quartz.start();
+//		}
 		
-		logger.info("===========================定时任务已开启=======================");
+//		logger.info("===========================定时任务已开启=======================");
 		
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
@@ -199,21 +199,21 @@ public class RiskManageView {
 	 */
 	protected void createContents() {
 		shell = new Shell();
-		shell.addDisposeListener(new DisposeListener() {
-			public void widgetDisposed(DisposeEvent e) {
-				SchedulerFactory sf = new StdSchedulerFactory();
-				try {
-					Scheduler sched = sf.getScheduler();
-					sched.shutdown();
-					logger.debug("关闭定时任务");
-				} catch (SchedulerException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				
-				logger.info("退出");
-			}
-		});
+//		shell.addDisposeListener(new DisposeListener() {
+////			public void widgetDisposed(DisposeEvent e) {
+////				SchedulerFactory sf = new StdSchedulerFactory();
+////				try {
+////					Scheduler sched = sf.getScheduler();
+////					sched.shutdown();
+////					logger.debug("关闭定时任务");
+////				} catch (SchedulerException e1) {
+////					// TODO Auto-generated catch block
+////					e1.printStackTrace();
+////				}
+////				
+////				logger.info("退出");
+////			}
+//		});
 		
 		shell.addShellListener(new ShellAdapter() {
             public void shellClosed(ShellEvent e) {
@@ -429,7 +429,7 @@ public class RiskManageView {
 				if(item == null){
 					return;
 				}
-				RiskControlDialog riskControlDialog = new RiskControlDialog(shell, SWT.CLOSE, item,RiskManageView.this,userContracts);
+				RiskControlDialog riskControlDialog = new RiskControlDialog(shell, SWT.CLOSE, item,RiskFrontView.this,userContracts);
 				riskControlDialog.open();
 			}
 			
@@ -454,7 +454,7 @@ public class RiskManageView {
                         
                         @Override
                         public void widgetSelected(SelectionEvent e) {
-                            ForceCloseDialog closeDialog = new ForceCloseDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, item, RiskManageView.this);
+                            ForceCloseDialog closeDialog = new ForceCloseDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, item, RiskFrontView.this);
                             closeDialog.open();
                         }
                         
@@ -467,7 +467,7 @@ public class RiskManageView {
                         @Override
                         public void widgetSelected(SelectionEvent e) {
                             
-                            RiskCapitalRateDialog riskCapitalRateDialog = new RiskCapitalRateDialog(shell, SWT.CLOSE, item,RiskManageView.this);
+                            RiskCapitalRateDialog riskCapitalRateDialog = new RiskCapitalRateDialog(shell, SWT.CLOSE, item,RiskFrontView.this);
                             riskCapitalRateDialog.open();
                         }
                         

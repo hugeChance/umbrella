@@ -8,7 +8,7 @@ import org.springframework.util.StringUtils;
 
 import com.bohai.subAccount.entity.InvestorPosition;
 import com.bohai.subAccount.swt.riskfront.RiskControlDialog;
-import com.bohai.subAccount.swt.riskfront.RiskManageView;
+import com.bohai.subAccount.swt.riskfront.RiskFrontView;
 import com.bohai.subAccount.vo.UserPositionVO;
 
 /**
@@ -23,9 +23,9 @@ public class PositionThread implements Runnable {
 	
 	private String userName;
 	
-	private RiskManageView manageView;
+	private RiskFrontView manageView;
 	
-	public PositionThread(String userName, RiskControlDialog dialog, RiskManageView manageView) {
+	public PositionThread(String userName, RiskControlDialog dialog, RiskFrontView manageView) {
 		this.userName = userName;
 		this.dialog = dialog;
 		this.manageView = manageView;

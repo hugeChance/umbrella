@@ -80,9 +80,9 @@ import com.bohai.subAccount.vo.UserPositionVO;
 
 import swing2swt.layout.BorderLayout;
 
-public class RiskManageView {
+public class RiskManageBackView {
 	
-    private static Logger logger = Logger.getLogger(RiskManageView.class);
+    private static Logger logger = Logger.getLogger(RiskManageBackView.class);
     
 	//static final String MARKET_IP = "10.0.0.204";
 	static final String MARKET_IP = ApplicationConfig.getProperty("marketAddr");
@@ -116,7 +116,7 @@ public class RiskManageView {
 	 */
 	public static void main(String[] args) {
 		try {
-			RiskManageView window = new RiskManageView();
+			RiskManageBackView window = new RiskManageBackView();
 			window.loadSpringContext();
 			window.open();
 		} catch (Exception e) {
@@ -157,7 +157,7 @@ public class RiskManageView {
 				
 				@Override
 				public void run() {
-					CronTriggerExample example = new CronTriggerExample(closeTime, RiskManageView.this);
+					CronTriggerExample example = new CronTriggerExample(closeTime, RiskManageBackView.this);
 			        try {
 						example.run();
 					} catch (Exception e) {

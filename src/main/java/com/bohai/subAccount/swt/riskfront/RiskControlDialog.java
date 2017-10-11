@@ -95,14 +95,14 @@ public class RiskControlDialog extends Dialog {
     //用户名
     private Label accountValue;
     
-    private RiskManageView manageView;
+    private RiskFrontView manageView;
 
 	/**
 	 * Create the dialog.
 	 * @param parent
 	 * @param style
 	 */
-	public RiskControlDialog(Shell parent, int style, TableItem item,RiskManageView manageView,List<UserContract> userContracts) {
+	public RiskControlDialog(Shell parent, int style, TableItem item,RiskFrontView manageView,List<UserContract> userContracts) {
 		super(parent, style);
 		setText("风险控制");
 		loadSpringContext();
