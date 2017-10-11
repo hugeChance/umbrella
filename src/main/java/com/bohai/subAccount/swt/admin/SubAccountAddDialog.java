@@ -270,7 +270,9 @@ public class SubAccountAddDialog extends Dialog {
 	                capitalRate.setUserName(username.getText());
 	                capitalRate.setUserCapital(new BigDecimal(limit.getText()));
 	                //配资资金
-	                capitalRate.setHostCapital1(new BigDecimal(text.getText()));
+	                if(!StringUtils.isEmpty(text.getText())){
+	                    capitalRate.setHostCapital1(new BigDecimal(text.getText()));
+	                }
 	                CapitalRateMapper capitalRateMapper = (CapitalRateMapper) SpringContextUtil.getBean("capitalRateMapper");
 	                capitalRateMapper.insert(capitalRate);
 	                
@@ -292,11 +294,13 @@ public class SubAccountAddDialog extends Dialog {
 					box.setMessage(e1.getMessage());
 					box.setText("警告");
 					box.open();
+					return;
 				} catch (Exception e2) {
 				    MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL|SWT.YES);
                     box.setMessage(e2.getMessage());
                     box.setText("警告");
                     box.open();
+                    return;
                 }
 				
 			}
