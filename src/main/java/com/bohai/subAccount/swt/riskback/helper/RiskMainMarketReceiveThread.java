@@ -107,12 +107,6 @@ public class RiskMainMarketReceiveThread implements Runnable {
 					//合约编号
 					String instrumentID = json.getString("instrumentID");
 					
-					//合约信息
-					UserContract contract = this.getContractByContractNo(instrumentID);
-					
-					//用户名
-					String userName = contract.getUserName();
-					
 					Display.getDefault().syncExec(new Runnable() {
 						@Override
 						public void run() {
@@ -121,10 +115,18 @@ public class RiskMainMarketReceiveThread implements Runnable {
 								return;
 							}
 							
-							BigDecimal totalPositionWin = new BigDecimal("0");
+							
 							//循环子账户表格，找到当前合约对应的用户
 							for (TableItem item : table.getItems()) {
-								if(userName.equals(item.getText())){
+								
+								String userName = item.getText();
+								
+								//查询用户合约信息
+								UserContract contract = getContractByContractNo(instrumentID,userName);
+								
+								BigDecimal totalPositionWin = new BigDecimal("0");
+								//多人做同一个合约  不判断用户
+								//if(userName.equals(item.getText())){
 									
 									UserPositionVO positionVO = (UserPositionVO) item.getData();
 									//有持仓的情况下计算总持仓盈亏
@@ -162,28 +164,28 @@ public class RiskMainMarketReceiveThread implements Runnable {
 									
 									//持仓盈亏添加到表单
 									item.setText(3,totalPositionWin.toString());
-									break;
-								}
+									
+								//}
+									
+									
+									try {
+										PrintWriter out = new PrintWriter(new OutputStreamWriter(riskView.getTradeSocket().getOutputStream(),"UTF-8"));
+										StringBuffer sb = new StringBuffer();
+										sb.append("risk|");
+										sb.append(item.getText().trim() + "|");
+										sb.append("CCYK|" + totalPositionWin);
+						                logger.info("持仓盈亏参数：" + sb.toString());
+										out.println(sb.toString());
+						                out.flush();
+									} catch (UnsupportedEncodingException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									} catch (IOException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
 								
 							}
-							
-							try {
-								PrintWriter out = new PrintWriter(new OutputStreamWriter(riskView.getTradeSocket().getOutputStream(),"UTF-8"));
-								StringBuffer sb = new StringBuffer();
-								sb.append("risk|");
-								sb.append(userName.trim() + "|");
-								sb.append("CCYK|" + totalPositionWin);
-				                logger.info("持仓盈亏参数：" + sb.toString());
-								out.println(sb.toString());
-				                out.flush();
-							} catch (UnsupportedEncodingException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							
 						}
 					});
 					
@@ -274,7 +276,7 @@ public class RiskMainMarketReceiveThread implements Runnable {
      * @param contractNo
      * @return
      */
-    public UserContract getContractByContractNo(String contractNo){
+    public UserContract getContractByContractNo(String contractNo ,String userName){
         
         //logger.debug("查询"+contractNo+"合约属性");
         
@@ -282,7 +284,7 @@ public class RiskMainMarketReceiveThread implements Runnable {
         
         if(this.userContractInfos != null){
             for(UserContract contract : userContractInfos){
-                if(contractNo.equals(contract.getContractNo())){
+                if(contractNo.equals(contract.getContractNo()) && userName.equals(contract.getUserName())){
                     userContract = contract;
                     break;
                 }

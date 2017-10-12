@@ -107,11 +107,6 @@ public class RiskMainMarketReceiveThread implements Runnable {
 					//合约编号
 					String instrumentID = json.getString("instrumentID");
 					
-					//合约信息
-					UserContract contract = this.getContractByContractNo(instrumentID);
-					
-					//用户名
-					String userName = contract.getUserName();
 					
 					Display.getDefault().syncExec(new Runnable() {
 						@Override
@@ -121,10 +116,17 @@ public class RiskMainMarketReceiveThread implements Runnable {
 								return;
 							}
 							
-							BigDecimal totalPositionWin = new BigDecimal("0");
 							//循环子账户表格，找到当前合约对应的用户
 							for (TableItem item : table.getItems()) {
-								if(userName.equals(item.getText())){
+								
+								String userName = item.getText();
+								
+								//查询用户合约信息
+								UserContract contract = getContractByContractNo(instrumentID,userName);
+								
+								BigDecimal totalPositionWin = new BigDecimal("0");
+								
+								//if(userName.equals(item.getText())){
 									
 									UserPositionVO positionVO = (UserPositionVO) item.getData();
 									//有持仓的情况下计算总持仓盈亏
@@ -162,8 +164,7 @@ public class RiskMainMarketReceiveThread implements Runnable {
 									
 									//持仓盈亏添加到表单
 									item.setText(3,totalPositionWin.toString());
-									break;
-								}
+								//}
 								
 							}
 							
@@ -274,7 +275,7 @@ public class RiskMainMarketReceiveThread implements Runnable {
      * @param contractNo
      * @return
      */
-    public UserContract getContractByContractNo(String contractNo){
+	public UserContract getContractByContractNo(String contractNo ,String userName){
         
         //logger.debug("查询"+contractNo+"合约属性");
         
@@ -282,7 +283,7 @@ public class RiskMainMarketReceiveThread implements Runnable {
         
         if(this.userContractInfos != null){
             for(UserContract contract : userContractInfos){
-                if(contractNo.equals(contract.getContractNo())){
+                if(contractNo.equals(contract.getContractNo()) && userName.equals(contract.getUserName())){
                     userContract = contract;
                     break;
                 }
