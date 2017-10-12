@@ -272,7 +272,9 @@ public class SubAccountAddDialog extends Dialog {
 	                //配资资金
 	                if(!StringUtils.isEmpty(text.getText())){
 	                    capitalRate.setHostCapital1(new BigDecimal(text.getText()));
-	                }
+	                }else {
+	                    capitalRate.setHostCapital1(new BigDecimal("0"));
+                    }
 	                CapitalRateMapper capitalRateMapper = (CapitalRateMapper) SpringContextUtil.getBean("capitalRateMapper");
 	                capitalRateMapper.insert(capitalRate);
 	                
