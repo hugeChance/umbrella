@@ -189,7 +189,7 @@ public class RuleAddDialog extends Dialog {
 		openChargeRate.setBounds(385, 90, 84, 23);
 		
 		Label closeCurrLabel = new Label(shell, SWT.NONE);
-		closeCurrLabel.setText("平今手续费：");
+		closeCurrLabel.setText("平仓手续费：");
 		closeCurrLabel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		closeCurrLabel.setAlignment(SWT.RIGHT);
 		closeCurrLabel.setBounds(20, 134, 105, 23);
@@ -199,7 +199,7 @@ public class RuleAddDialog extends Dialog {
 		closeCurrCharge.setBounds(131, 134, 84, 23);
 		
 		Label closeCurrChargeRateLabel = new Label(shell, SWT.NONE);
-		closeCurrChargeRateLabel.setText("平今手续费%：");
+		closeCurrChargeRateLabel.setText("平仓手续费%：");
 		closeCurrChargeRateLabel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		closeCurrChargeRateLabel.setAlignment(SWT.RIGHT);
 		closeCurrChargeRateLabel.setBounds(256, 134, 116, 23);

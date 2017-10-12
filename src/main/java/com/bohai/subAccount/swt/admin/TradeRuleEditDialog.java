@@ -161,7 +161,7 @@ public class TradeRuleEditDialog extends Dialog {
 		openChargeRate.setBounds(386, 82, 84, 23);
 		
 		Label closeCurrLabel = new Label(shell, SWT.NONE);
-		closeCurrLabel.setText("平今手续费：");
+		closeCurrLabel.setText("平仓手续费：");
 		closeCurrLabel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		closeCurrLabel.setAlignment(SWT.RIGHT);
 		closeCurrLabel.setBounds(21, 126, 105, 23);
@@ -171,7 +171,7 @@ public class TradeRuleEditDialog extends Dialog {
 		closeCurrCharge.setBounds(132, 126, 84, 23);
 		
 		Label closeCurrChargeRateLabel = new Label(shell, SWT.NONE);
-		closeCurrChargeRateLabel.setText("平今手续费%：");
+		closeCurrChargeRateLabel.setText("平仓手续费%：");
 		closeCurrChargeRateLabel.setFont(SWTResourceManager.getFont("微软雅黑", 12, SWT.NORMAL));
 		closeCurrChargeRateLabel.setAlignment(SWT.RIGHT);
 		closeCurrChargeRateLabel.setBounds(257, 126, 116, 23);
@@ -220,8 +220,8 @@ public class TradeRuleEditDialog extends Dialog {
 */			
 			openCharge.setText(StringUtils.isEmpty(rule.getOpenCharge())?"":rule.getOpenCharge().toString());//开仓手续费
 			openChargeRate.setText(StringUtils.isEmpty(rule.getOpenChargeRate())?"":rule.getOpenChargeRate().toString());//开仓手续费比例
-			closeCurrCharge.setText(StringUtils.isEmpty(rule.getCloseCurrCharge())?"":rule.getCloseCurrCharge().toString());//平今手续费
-			closeCurrChargeRate.setText(StringUtils.isEmpty(rule.getCloseCurrChargeRate())?"":rule.getCloseCurrChargeRate().toString());//平今手续费比例
+			closeCurrCharge.setText(StringUtils.isEmpty(rule.getCloseCurrCharge())?"":rule.getCloseCurrCharge().toString());//平仓手续费
+			closeCurrChargeRate.setText(StringUtils.isEmpty(rule.getCloseCurrChargeRate())?"":rule.getCloseCurrChargeRate().toString());//平仓手续费比例
 			margin.setText(StringUtils.isEmpty(rule.getMargin())?"":rule.getMargin().toString());//保证金比例
 			unit.setText(StringUtils.isEmpty(rule.getContractUnit())?"":rule.getContractUnit().toString());//合约单位
 			tickSize.setText(StringUtils.isEmpty(rule.getTickSize())?"":rule.getTickSize().toString());

@@ -966,10 +966,10 @@ public class AdminViewMain {
         new TableColumn(ruleTable, SWT.NONE).setText("开仓手续费%");
         
         tLayout.addColumnData(new ColumnWeightData(45));
-        new TableColumn(ruleTable, SWT.NONE).setText("平今手续费值");
+        new TableColumn(ruleTable, SWT.NONE).setText("平仓手续费值");
         
         tLayout.addColumnData(new ColumnWeightData(45));
-        new TableColumn(ruleTable, SWT.NONE).setText("平今手续费%");
+        new TableColumn(ruleTable, SWT.NONE).setText("平仓手续费%");
         
         tLayout.addColumnData(new ColumnWeightData(40));
         new TableColumn(ruleTable, SWT.NONE).setText("保证金比例");

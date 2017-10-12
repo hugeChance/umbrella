@@ -2286,11 +2286,11 @@ public class MainForm {
         tableColumn5.setWidth(100);
         
         TableColumn tableColumn6 = new TableColumn(instrumentTable, SWT.NONE);
-        tableColumn6.setText("平今手续费值");
+        tableColumn6.setText("平仓手续费值");
         tableColumn6.setWidth(100);
         
         TableColumn tableColumn7 = new TableColumn(instrumentTable, SWT.NONE);
-        tableColumn7.setText("平今手续费%");
+        tableColumn7.setText("平仓手续费%");
         tableColumn7.setWidth(100);
         
         TableColumn tableColumn8 = new TableColumn(instrumentTable, SWT.NONE);
@@ -2426,11 +2426,11 @@ public class MainForm {
         tableColumn5.setWidth(100);
         
         TableColumn tableColumn6 = new TableColumn(allUserInstrumentTable, SWT.NONE);
-        tableColumn6.setText("平今手续费值");
+        tableColumn6.setText("平仓手续费值");
         tableColumn6.setWidth(100);
         
         TableColumn tableColumn7 = new TableColumn(allUserInstrumentTable, SWT.NONE);
-        tableColumn7.setText("平今手续费%");
+        tableColumn7.setText("平仓手续费%");
         tableColumn7.setWidth(100);
         
         TableColumn tableColumn8 = new TableColumn(allUserInstrumentTable, SWT.NONE);
