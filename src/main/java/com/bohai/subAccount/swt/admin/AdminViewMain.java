@@ -518,14 +518,15 @@ public class AdminViewMain {
 				}
             	settlemenetTitleVO.setBalance_Start(tmpStr);
             	//期末结存 计算
-            	//客户权益=上日结存+出入金-手续费+平仓盈亏（逐日盯市）+持仓盈亏（逐日盯市）；
-            	BigDecimal balanceBDec = useravailableindb.getAvailable().add(useravailableindb.getFrozenavailable()).add(useravailableindb.getMargin()) ;
+            	//客户权益=上日结存+出入金-手续费+平仓盈亏（逐日盯市）+持仓盈亏（逐日盯市）；20171012
+//            	BigDecimal balanceBDec = useravailableindb.getAvailable().add(useravailableindb.getFrozenavailable()).add(useravailableindb.getMargin()) ;
+            	BigDecimal balanceBDec = useravailableindb.getAvailable().add(useravailableindb.getClosewin()).add(useravailableindb.getPositionwin()).subtract(useravailableindb.getCommission());
             	settlemenetTitleVO.setBalance_End(String.valueOf(balanceBDec));
             	settlemenetTitleVO.setClient_Equity(String.valueOf(balanceBDec));
             	settlemenetTitleVO.setCommission(String.valueOf(useravailableindb.getCommission()));
             	settlemenetTitleVO.setDeposit(String.valueOf(useravailableindb.getInoutmoney()));
             	//可用资金
-            	BigDecimal fund_availBDec = useravailableindb.getAvailable().add(useravailableindb.getFrozenavailable());
+            	BigDecimal fund_availBDec = balanceBDec.add(useravailableindb.getFrozenavailable());
             	settlemenetTitleVO.setFund_availible(String.valueOf(fund_availBDec));
             	settlemenetTitleVO.setMargin(String.valueOf(useravailableindb.getMargin()));
             	settlemenetTitleVO.setMTM(String.valueOf(useravailableindb.getPositionwin()));
@@ -575,7 +576,7 @@ public class AdminViewMain {
 							//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 							//|20170512|上期所  |铝                |     al1706     |买   |投          | 13840.000|     1|    69200.00|开                |      3.00|        0.00|                 0.00|98274       |
 							userContract = mapUserContractMemorySave.get(useravailableindb.getUsername() + trade.getInstrumentid());
-							settlemenetPart1Body.setDate(settlemenetTitleVO.getTodayDate());
+							settlemenetPart1Body.setDate(getStringDateShort());
 							settlemenetPart1Body.setExchange(trade.getExchangeid());
 							settlemenetPart1Body.setProduct(trade.getInstrumentid());
 							settlemenetPart1Body.setInstrument(trade.getInstrumentid());
@@ -1221,6 +1222,18 @@ public class AdminViewMain {
             }
         }
     }
+    
+    /**
+     * 获取现在时间
+     * 
+     * @return 返回短时间字符串格式yyyy-MM-dd
+     */
+    public static String getStringDateShort() {
+     Date currentTime = new Date();
+     SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+     String dateString = formatter.format(currentTime);
+     return dateString;
+  }
     
     /**
      * 刷新交易组规则

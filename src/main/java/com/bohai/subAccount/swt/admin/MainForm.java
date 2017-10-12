@@ -1141,7 +1141,7 @@ public class MainForm {
 		            			//|      Product     |   Instrument   |  Long Pos.  |Avg Buy Price|  Short Pos.  |Avg Sell Price|Prev. Sttl|Sttl Today|  MTM P/L   |Margin Occupied|    S/H     |Market Value(Long)|Market Value(Short)|
 		            			//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 		            			//|        铝        |     al1706     |            1|    13840.000|             0|         0.000| 13765.000| 13790.000|     -250.00|        6895.00|投          |              0.00|               0.00|
-	            			settlemenetPart3Body.setProduct(investorPosition.getInstrumentid());
+	            			settlemenetPart3Body.setProduct(getStringDateShort());
 	            			settlemenetPart3Body.setInstrument(investorPosition.getInstrumentid());
 	            			if(investorPosition.getPosidirection().equals("0"))
 	            			{
@@ -1199,6 +1199,17 @@ public class MainForm {
     	return 0;
     }
 	
+	/**
+     * 获取现在时间
+     * 
+     * @return 返回短时间字符串格式yyyy-MM-dd
+     */
+    public static String getStringDateShort() {
+     Date currentTime = new Date();
+     SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+     String dateString = formatter.format(currentTime);
+     return dateString;
+  }
 	/**
      * 创建主账户表格
      * @param parent
