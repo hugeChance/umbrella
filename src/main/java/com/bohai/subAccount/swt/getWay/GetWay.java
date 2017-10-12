@@ -5,7 +5,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,6 +29,7 @@ import org.eclipse.swt.widgets.Text;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.bohai.subAccount.constant.CommonConstant;
+import com.bohai.subAccount.dao.FutureMarketMapper;
 import com.bohai.subAccount.entity.MainAccount;
 import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.service.FutureMarketService;
@@ -45,6 +49,7 @@ public class GetWay {
     private MainAccountService mainAccountService;
     private MainAccount mainAccount;
     private FutureMarketService marketService;
+    private FutureMarketMapper futureMarketMapper;
     
     private Socket server;
     
@@ -71,6 +76,8 @@ public class GetWay {
         classPathXmlApplicationContext.start();
         mainAccountService = (MainAccountService) SpringContextUtil.getBean("mainAccountService");
         marketService = (FutureMarketService) SpringContextUtil.getBean("futureMarketService");
+        futureMarketMapper = (FutureMarketMapper) SpringContextUtil.getBean("futureMarketMapper");
+
         logger.info("===================加载成功 !==================");
 	}
 
@@ -117,6 +124,31 @@ public class GetWay {
         Thread heartBeatThread = new Thread(new GetWayHeartBeatThread(this));
         heartBeatThread.setDaemon(true);
         heartBeatThread.start();
+        
+        //数据库重连
+        Thread t =  new Thread(){  
+                    @Override  
+                    public void run() {  
+                        while(true){
+                            try {
+                            	futureMarketMapper.selectdual();
+                            	
+                                Thread.sleep(300000);  
+                            } catch (InterruptedException e) {  
+                                e.printStackTrace();  
+                            }  
+                            Date date=new Date();
+                            DateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            String time=format.format(date);
+                            System.out.println("select 2 from dual =" + time);  
+                            logger.info("select 2 from dual =");
+                            logger.info(time);
+                        }                         
+                    }  
+                }  ;
+         
+        t.setDaemon(true);
+        t.start();
         
         while (!shell.isDisposed()) {
             if (!display.readAndDispatch()) {
