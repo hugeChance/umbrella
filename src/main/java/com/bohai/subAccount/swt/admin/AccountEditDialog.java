@@ -33,7 +33,7 @@ public class AccountEditDialog extends Dialog {
 	private Combo combo;
 	
 	private MainAccount mainAccount;
-	private AdminViewMain mainView;
+	private oldAdminViewMain mainView;
 	private MainForm mainForm;
 
 	/**
@@ -41,7 +41,7 @@ public class AccountEditDialog extends Dialog {
 	 * @param parent
 	 * @param style
 	 */
-	public AccountEditDialog(Shell parent, int style, MainAccount mainAccount, AdminViewMain mainView) {
+	public AccountEditDialog(Shell parent, int style, MainAccount mainAccount, oldAdminViewMain mainView) {
 		super(parent, style);
 		setText("更新主账户");
 		this.mainAccount = mainAccount;

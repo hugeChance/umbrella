@@ -35,7 +35,7 @@ public class ContractTradeRuleEditDialog extends Dialog {
 	
 	private Text openCount;
 	
-	private AdminViewMain mainView;
+	private oldAdminViewMain mainView;
 	private MainForm mainForm;
 	
 	private TableItem tableItem;
@@ -45,7 +45,7 @@ public class ContractTradeRuleEditDialog extends Dialog {
 	 * @param parent
 	 * @param style
 	 */
-	public ContractTradeRuleEditDialog(Shell parent, int style, AdminViewMain mainView) {
+	public ContractTradeRuleEditDialog(Shell parent, int style, oldAdminViewMain mainView) {
 		super(parent, style);
 		setText("添加合约交易限制");
 		this.mainView = mainView;

@@ -90,9 +90,9 @@ import com.bohai.subAccount.vo.UserContractTradeRule;
 
 import swing2swt.layout.BorderLayout;
 
-public class AdminViewMain {
+public class oldAdminViewMain {
 
-    static Logger logger = Logger.getLogger(AdminViewMain.class);
+    static Logger logger = Logger.getLogger(oldAdminViewMain.class);
     
     public static Shell shell;
     private Table mainAccountTable;
@@ -125,7 +125,7 @@ public class AdminViewMain {
     public static void main(String[] args) {
         
         try {
-            AdminViewMain window = new AdminViewMain();
+            oldAdminViewMain window = new oldAdminViewMain();
             window.loadSpringContext();
             window.setMemory();
             window.open();
@@ -853,7 +853,7 @@ public class AdminViewMain {
                 TableItem item = mainAccountTable.getItem(new Point(e.x, e.y));
                 if(e.button ==1 && item != null){
                     MainAccount mainAccount = (MainAccount) item.getData();
-                    AccountEditDialog editDialog = new AccountEditDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, mainAccount, AdminViewMain.this);
+                    AccountEditDialog editDialog = new AccountEditDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, mainAccount, oldAdminViewMain.this);
                     editDialog.open();
                 }
             }
@@ -996,7 +996,7 @@ public class AdminViewMain {
                 TableItem selected = closeTable.getItem(new Point(e.x, e.y));
                 if(e.button ==1 && selected != null){//左键双击数据项
                     TreeItem treeitem = tree.getSelection().length <1 ? tree.getTopItem() : tree.getSelection()[0];
-                    CloseRuleEditDialog dialog = new CloseRuleEditDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, AdminViewMain.this, treeitem, selected);
+                    CloseRuleEditDialog dialog = new CloseRuleEditDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, oldAdminViewMain.this, treeitem, selected);
                     dialog.open();
                 }
             }
@@ -1418,7 +1418,7 @@ public class AdminViewMain {
         @Override
         public void widgetSelected(SelectionEvent e) {
             
-            AccountAddDialog accountAddDialog = new AccountAddDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, AdminViewMain.this);
+            AccountAddDialog accountAddDialog = new AccountAddDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, oldAdminViewMain.this);
             accountAddDialog.open();
         }
     }
@@ -1486,7 +1486,7 @@ public class AdminViewMain {
             } catch (FutureException e1) {
                 return;
             }
-            GroupAddDialog groupAddDialog = new GroupAddDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, mainAccount,AdminViewMain.this);
+            GroupAddDialog groupAddDialog = new GroupAddDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, mainAccount,oldAdminViewMain.this);
             groupAddDialog.open();
         }
     }
@@ -1565,7 +1565,7 @@ public class AdminViewMain {
         @Override
         public void widgetSelected(SelectionEvent e) {
             GroupInfo groupInfo = (GroupInfo) treeItem.getData();
-            SubAccountAddDialog subAccountAddDialog = new SubAccountAddDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, groupInfo, AdminViewMain.this);
+            SubAccountAddDialog subAccountAddDialog = new SubAccountAddDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, groupInfo, oldAdminViewMain.this);
             subAccountAddDialog.open();
         }
     }
@@ -1587,7 +1587,7 @@ public class AdminViewMain {
             UserInfo userInfo = (UserInfo) treeItem.getData();
             GroupInfo groupInfo = (GroupInfo) treeItem.getParentItem().getData();
             SubAccountEditDialog subAccountEditDialog = new SubAccountEditDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL,
-                    userInfo, groupInfo, AdminViewMain.this);
+                    userInfo, groupInfo, oldAdminViewMain.this);
             subAccountEditDialog.open();
             
         }
@@ -1620,7 +1620,7 @@ public class AdminViewMain {
                     return;
                 }
                 
-                AdminViewMain.this.userInfoService.deleteUser(userInfo);
+                oldAdminViewMain.this.userInfoService.deleteUser(userInfo);
                 MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                 box.setMessage("删除成功！");
                 box.setText("提示");
@@ -1728,7 +1728,7 @@ public class AdminViewMain {
                 return ;
             }
             TreeItem item = tree.getSelection().length <1 ? tree.getTopItem() : tree.getSelection()[0];
-            CloseRuleAddDialog closeRuleAddDialog = new CloseRuleAddDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, AdminViewMain.this ,item);
+            CloseRuleAddDialog closeRuleAddDialog = new CloseRuleAddDialog(shell, SWT.CLOSE|SWT.APPLICATION_MODAL, oldAdminViewMain.this ,item);
             closeRuleAddDialog.open();
         }
     }

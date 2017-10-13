@@ -290,6 +290,7 @@ public class CoreappView {
 				List<InvestorPosition> getUserByUserName = investorPositionService
 						.getUserByUserName(subTradingaccount2.getAccountid());
 				if (getUserByUserName.size() > 0) {
+					totalpcyk = 0;
 					for (InvestorPosition investorPosition2 : getUserByUserName) {
 						userContract = mapUserContractMemorySave
 								.get(investorPosition2.getSubuserid() + investorPosition2.getInstrumentid());

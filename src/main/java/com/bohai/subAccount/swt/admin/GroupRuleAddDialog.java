@@ -42,7 +42,7 @@ public class GroupRuleAddDialog extends Dialog {
 	private Combo groupNameText;
 	//private Combo accountCombo;
 	
-	private AdminViewMain adminView;
+	private oldAdminViewMain adminView;
 	
 	private GroupInfo groupInfo;
 	private MainForm mainForm;
@@ -60,7 +60,7 @@ public class GroupRuleAddDialog extends Dialog {
 		this.mainForm = mainForm;
 	}
 	
-   public GroupRuleAddDialog(Shell parent, int style, AdminViewMain adminView) {
+   public GroupRuleAddDialog(Shell parent, int style, oldAdminViewMain adminView) {
         super(parent, style);
         setText("添加用户组规则");
         //this.groupInfo = groupInfo;

@@ -7,7 +7,7 @@ public class SettlemenetPart4Head {
 	private String retPart4Head1;
 
 	public String getRetPart4Head1() {
-		retPart4Head1 = "                                                              持仓明细 Positions Detail " ;
+		retPart4Head1 = "                                                              开仓明细 Positions Detail " ;
 		retPart4Head1 = retPart4Head1 + tmpStr;
 		retPart4Head1 = retPart4Head1 + "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
 		retPart4Head1 = retPart4Head1 + tmpStr;

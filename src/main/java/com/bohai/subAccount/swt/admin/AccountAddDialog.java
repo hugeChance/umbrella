@@ -32,7 +32,7 @@ public class AccountAddDialog extends Dialog {
 	
 	private Combo combo;
 	
-	private AdminViewMain mainView;
+	private oldAdminViewMain mainView;
 	private MainForm mainForm;
 
 	/**
@@ -40,7 +40,7 @@ public class AccountAddDialog extends Dialog {
 	 * @param parent
 	 * @param style
 	 */
-	public AccountAddDialog(Shell parent, int style, AdminViewMain mainView) {
+	public AccountAddDialog(Shell parent, int style, oldAdminViewMain mainView) {
 		super(parent, style);
 		setText("添加主账户");
 		this.mainView = mainView;

@@ -40,7 +40,7 @@ public class SubAccountAddDialog extends Dialog {
 	private Text limit;
 	
 	private GroupInfo groupInfo; 
-	private AdminViewMain adminView;
+	private oldAdminViewMain adminView;
 	private MainForm mainForm;
 	private Text text;
 	private Text forceRateText;
@@ -51,7 +51,7 @@ public class SubAccountAddDialog extends Dialog {
 	 * @param parent
 	 * @param style
 	 */
-	public SubAccountAddDialog(Shell parent, int style, GroupInfo groupInfo, AdminViewMain adminView) {
+	public SubAccountAddDialog(Shell parent, int style, GroupInfo groupInfo, oldAdminViewMain adminView) {
 		super(parent, style);
 		setText("添加新用户");
 		this.groupInfo = groupInfo;

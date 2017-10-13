@@ -40,7 +40,7 @@ public class CloseRuleAddDialog extends Dialog {
 	private Text forceCloseRate;
 	private Label userNameLab;
 	
-	private AdminViewMain main;
+	private oldAdminViewMain main;
 	private TreeItem treeItem;
 	private TableItem tableItem;
 	
@@ -51,7 +51,7 @@ public class CloseRuleAddDialog extends Dialog {
 	 * @param parent
 	 * @param style
 	 */
-	public CloseRuleAddDialog(Shell parent, int style, AdminViewMain main, TreeItem treeItem) {
+	public CloseRuleAddDialog(Shell parent, int style, oldAdminViewMain main, TreeItem treeItem) {
 		super(parent, style);
 		setText("添加开平仓规则");
 		this.main = main;

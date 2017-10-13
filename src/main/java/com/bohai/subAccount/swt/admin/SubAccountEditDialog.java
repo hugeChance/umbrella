@@ -43,7 +43,7 @@ public class SubAccountEditDialog extends Dialog {
 	private Text limit;
 	
 	private GroupInfo groupInfo; 
-	private AdminViewMain adminView;
+	private oldAdminViewMain adminView;
 	private UserInfo userInfo;
 	private MainForm mainForm;
 	private Text text;
@@ -57,7 +57,7 @@ public class SubAccountEditDialog extends Dialog {
 	 * @param parent
 	 * @param style
 	 */
-	public SubAccountEditDialog(Shell parent, int style, UserInfo userInfo,GroupInfo groupInfo, AdminViewMain adminView) {
+	public SubAccountEditDialog(Shell parent, int style, UserInfo userInfo,GroupInfo groupInfo, oldAdminViewMain adminView) {
 		super(parent, style);
 		setText("修改用户");
 		this.groupInfo = groupInfo;

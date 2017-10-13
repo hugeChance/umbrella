@@ -28,7 +28,7 @@ public class FutureMarketServiceImpl implements FutureMarketService {
         logger.debug("查询合约："+instrument);
         FutureMarket market = null;
         try {
-            market = futureMarketMapper.selectByInstrument(instrument);
+            market = futureMarketMapper.selectByInstrument2(instrument);
         } catch (Exception e) {
             logger.error("查询合约行情失败",e);
             throw new FutureException("", "查询合约行情失败");

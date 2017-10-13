@@ -33,7 +33,7 @@ import com.bohai.subAccount.entity.InvestorPosition;
 import com.bohai.subAccount.entity.Order;
 import com.bohai.subAccount.entity.Trade;
 import com.bohai.subAccount.entity.UserContract;
-import com.bohai.subAccount.swt.admin.AdminViewMain;
+import com.bohai.subAccount.swt.admin.oldAdminViewMain;
 import com.bohai.subAccount.swt.admin.MainForm;
 import com.bohai.subAccount.swt.risk.RiskManageView;
 import com.bohai.subAccount.swt.trader.TraderView;

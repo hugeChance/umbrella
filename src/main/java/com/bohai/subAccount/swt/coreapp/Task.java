@@ -13,7 +13,7 @@ import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcInputOrderField;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.bohai.subAccount.service.MainAccountService;
-import com.bohai.subAccount.swt.admin.AdminViewMain;
+import com.bohai.subAccount.swt.admin.oldAdminViewMain;
 import com.bohai.subAccount.utils.SpringContextUtil;
 
 /** 

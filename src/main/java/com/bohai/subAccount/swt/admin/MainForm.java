@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.bohai.subAccount.constant.CommonConstant;
 import com.bohai.subAccount.dao.CapitalRateMapper;
+import com.bohai.subAccount.dao.FutureMarketMapper;
 import com.bohai.subAccount.dao.UserInfoMapper;
 import com.bohai.subAccount.dao.UseravailableindbMapper;
 import com.bohai.subAccount.entity.BuyDetail;
@@ -123,6 +125,8 @@ public class MainForm {
 	private Table riskUserTable;
 	//所有风控规则列表
 	private Table allRiskTable;
+	
+	private FutureMarketMapper futureMarketMapper;
 	
 	//add COMPOSITE组件
 	private Composite composite;
@@ -223,6 +227,7 @@ public class MainForm {
         buyDetailService = (BuyDetailService) SpringContextUtil.getBean("buyDetailService");
         positionsDetailService = (PositionsDetailService) SpringContextUtil.getBean("positionsDetailService");
         
+        futureMarketMapper = (FutureMarketMapper) SpringContextUtil.getBean("futureMarketMapper");
         setMemory();
     }
 
@@ -888,22 +893,26 @@ public class MainForm {
             	//期末结存 计算
             	//客户权益=上日结存+出入金-手续费+平仓盈亏（逐日盯市）+持仓盈亏（逐日盯市）；
 //            	BigDecimal balanceBDec = useravailableindb.getAvailable().add(useravailableindb.getFrozenavailable()).add(useravailableindb.getMargin()) ;
-            	BigDecimal balanceBDec = useravailableindb.getAvailable().add(useravailableindb.getFrozenavailable()).add(useravailableindb.getMargin()) ;
+            	BigDecimal balanceBDec = useravailableindb.getAvailable().add(useravailableindb.getClosewin()).add(useravailableindb.getPositionwin()).subtract(useravailableindb.getCommission());
+//            	BigDecimal balanceBDec = useravailableindb.getAvailable().add(useravailableindb.getFrozenavailable()).add(useravailableindb.getMargin()) ;
             	settlemenetTitleVO.setBalance_End(String.valueOf(balanceBDec));
             	settlemenetTitleVO.setClient_Equity(String.valueOf(balanceBDec));
             	settlemenetTitleVO.setCommission(String.valueOf(useravailableindb.getCommission()));
             	settlemenetTitleVO.setDeposit(String.valueOf(useravailableindb.getInoutmoney()));
             	//可用资金
-            	BigDecimal fund_availBDec = useravailableindb.getAvailable().add(useravailableindb.getFrozenavailable());
+//            	BigDecimal fund_availBDec = useravailableindb.getAvailable().add(useravailableindb.getFrozenavailable());
+            	BigDecimal fund_availBDec =  balanceBDec.subtract(useravailableindb.getMargin());
             	settlemenetTitleVO.setFund_availible(String.valueOf(fund_availBDec));
             	settlemenetTitleVO.setMargin(String.valueOf(useravailableindb.getMargin()));
             	settlemenetTitleVO.setMTM(String.valueOf(useravailableindb.getPositionwin()));
             	settlemenetTitleVO.setRealized(String.valueOf(useravailableindb.getClosewin()));
             	//风险度=客户保证金占用/客户权益*100%；
 //            	BigDecimal risk_DegreeBDec = useravailableindb.getMargin().divide(balanceBDec);
-            	double dbltmp = useravailableindb.getMargin().doubleValue() / balanceBDec.doubleValue();
-            	dbltmp = Math.round(dbltmp);
-            	settlemenetTitleVO.setRisk_Degree(String.valueOf(dbltmp));
+            	double dbltmp = useravailableindb.getMargin().doubleValue() / balanceBDec.doubleValue() * 100;
+            	
+            	//dbltmp = Math.round(dbltmp);
+            	dbltmp = new BigDecimal(dbltmp).setScale(1, RoundingMode.HALF_UP).doubleValue();
+            	settlemenetTitleVO.setRisk_Degree(String.valueOf(dbltmp)+"%");
             	//应追加资金
             	BigDecimal margin_CallDBec = useravailableindb.getAvailable().add(useravailableindb.getFrozenavailable());
             	
@@ -948,7 +957,7 @@ public class MainForm {
 							//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 							//|20170512|上期所  |铝                |     al1706     |买   |投          | 13840.000|     1|    69200.00|开                |      3.00|        0.00|                 0.00|98274       |
 							userContract = mapUserContractMemorySave.get(useravailableindb.getUsername() + trade.getInstrumentid());
-							settlemenetPart1Body.setDate(settlemenetTitleVO.getTodayDate());
+							settlemenetPart1Body.setDate(getStringDateShort());
 							settlemenetPart1Body.setExchange(trade.getExchangeid());
 							settlemenetPart1Body.setProduct(trade.getInstrumentid());
 							settlemenetPart1Body.setInstrument(trade.getInstrumentid());
@@ -1096,13 +1105,29 @@ public class MainForm {
 							
 							//结算价 需要实装
 							BigDecimal settlement =new BigDecimal(0) ;
+							String futureMarket = futureMarketMapper.selectByInstrument(buyDetail.getInstrumentid());
+							
+							settlement = new BigDecimal(futureMarket);
+							
 							settlemenetPart4Body.setSettlement(prev.toString());
 							
 							//Accum 浮动盈亏
 							settlemenetPart4Body.setAccum("0");
 							
 							//盯市盈亏
-							settlemenetPart4Body.setMTM(buyDetail.getPrice().subtract(settlement).toString());
+							if(buyDetail.getDirection().equals("0")){
+								//买
+								settlement = settlement.subtract(buyDetail.getPrice());
+								settlement = settlement.multiply(new BigDecimal(positionsDetail.getVolume()));
+								settlemenetPart4Body.setMTM(settlement.toString());
+								
+							} else {
+								//卖
+								settlement = buyDetail.getPrice().subtract(settlement);
+								settlement = settlement.multiply(new BigDecimal(positionsDetail.getVolume()));
+								settlemenetPart4Body.setMTM(settlement.toString());
+								
+							}
 							
 							//保证金
 							settlemenetPart4Body.setMargin("");
@@ -1159,6 +1184,31 @@ public class MainForm {
 		            			settlemenetPart3Body.setAvgSellPrice(investorPosition.getPositioncost() ==null? "":investorPosition.getPositioncost().toString());
 		            			
 	            			}
+	            			String futureMarket = futureMarketMapper.selectByInstrumentPre(investorPosition.getInstrumentid());
+	            			settlemenetPart3Body.setPrev(futureMarket);
+	            			futureMarket = futureMarketMapper.selectByInstrument(investorPosition.getInstrumentid());
+	            			settlemenetPart3Body.setSttlToday(futureMarket);
+	            			settlemenetPart3Body.setSH("投");
+	            			//结算价 需要实装
+							BigDecimal settlement =new BigDecimal(0) ;
+							futureMarket = futureMarketMapper.selectByInstrument(investorPosition.getInstrumentid());
+							
+							settlement = new BigDecimal(futureMarket);
+	            			//盯市盈亏
+							if(investorPosition.getPosidirection().equals("0")){
+								//买
+								settlement = settlement.subtract(investorPosition.getOpenamount());
+								settlement = settlement.multiply(new BigDecimal(investorPosition.getPosition()));
+								settlemenetPart3Body.setMTM(settlement.toString());
+								
+							} else {
+								//卖
+								settlement = investorPosition.getOpenamount().subtract(settlement);
+								settlement = settlement.multiply(new BigDecimal(investorPosition.getPosition()));
+								settlemenetPart3Body.setMTM(settlement.toString());
+								
+							}
+							settlemenetPart3Body.setMarginOccupied("");
 	            			//caoxx tempupdate start
 //	            			FutureMarket futureMarket = this.futureMarketService.queryFutureMarketByInstrument(investorPosition.getInstrumentid());
 //	            			
@@ -1180,7 +1230,7 @@ public class MainForm {
 ////	            			fileLineWrite(directiory.getPath(),useravailableindb.getUsername(),settlemenetPart3Body.getRetStr());
 //	            			strB.append(settlemenetPart3Body.getRetStr());
 	            			//caoxx tempupdate
-	            			
+	            			strB.append(settlemenetPart3Body.getRetStr());
 							strB.append("\r\n");
 							}
             		}

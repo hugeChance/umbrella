@@ -43,7 +43,7 @@ public class GroupAddDialog extends Dialog {
 	private Text groupNameText;
 	private Combo accountCombo;
 	
-	private AdminViewMain adminView;
+	private oldAdminViewMain adminView;
 	
 	private MainAccount mainAccount;
 	
@@ -54,7 +54,7 @@ public class GroupAddDialog extends Dialog {
 	 * @param parent
 	 * @param style
 	 */
-	public GroupAddDialog(Shell parent, int style, MainAccount mainAccount, AdminViewMain adminView) {
+	public GroupAddDialog(Shell parent, int style, MainAccount mainAccount, oldAdminViewMain adminView) {
 		super(parent, style);
 		setText("创建用户组");
 		this.mainAccount = mainAccount;

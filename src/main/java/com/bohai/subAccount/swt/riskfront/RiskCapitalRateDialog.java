@@ -29,7 +29,7 @@ import com.bohai.subAccount.service.CapitalRateDetailService;
 import com.bohai.subAccount.service.CapitalRateService;
 import com.bohai.subAccount.service.InvestorPositionService;
 import com.bohai.subAccount.service.TradeService;
-import com.bohai.subAccount.swt.admin.AdminViewMain;
+import com.bohai.subAccount.swt.admin.oldAdminViewMain;
 import com.bohai.subAccount.swt.risk.helper.PositionThread;
 import com.bohai.subAccount.swt.risk.helper.TradeReceiveThread;
 import com.bohai.subAccount.utils.SpringContextUtil;
@@ -57,7 +57,7 @@ public class RiskCapitalRateDialog extends Dialog {
 	private UserInfoMapper userInfoMapper;
 	
 	private UserCapitalRateVO userCapitalRateVO;
-	static Logger logger = Logger.getLogger(AdminViewMain.class);
+	static Logger logger = Logger.getLogger(oldAdminViewMain.class);
 	private Text text_2;
 	private Text text_3;
 

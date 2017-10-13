@@ -37,7 +37,7 @@ public class CloseRuleEditDialog extends Dialog {
 	
 	private Label userNameLab;
 	
-	private AdminViewMain main;
+	private oldAdminViewMain main;
 	private TreeItem treeItem;
 	private TableItem tableItem;
 	
@@ -48,7 +48,7 @@ public class CloseRuleEditDialog extends Dialog {
 	 * @param parent
 	 * @param style
 	 */
-	public CloseRuleEditDialog(Shell parent, int style, AdminViewMain main, TreeItem treeItem, TableItem tableItem) {
+	public CloseRuleEditDialog(Shell parent, int style, oldAdminViewMain main, TreeItem treeItem, TableItem tableItem) {
 		super(parent, style);
 		setText("更新平仓规则");
 		this.main = main;
