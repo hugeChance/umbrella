@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.bohai.subAccount.entity.InputOrder;
@@ -48,12 +49,16 @@ public interface SubTradingaccountMapper {
      * @return 更新条数
      */
     int init();
+
     
-    @Update("update T_SUB_TRADINGACCOUNT set AVAILABLE = (select T_USERAVAILABLEINDB.AVAILABLE + CLOSEWIN + POSITIONWIN - COMMISSION - MARGIN from T_USERAVAILABLEINDB where T_SUB_TRADINGACCOUNT.ACCOUNTID = T_USERAVAILABLEINDB.USERNAME),FROZENMARGIN = (select MARGIN from T_USERAVAILABLEINDB where T_SUB_TRADINGACCOUNT.ACCOUNTID = T_USERAVAILABLEINDB.USERNAME)")
+    @Update("update T_SUB_TRADINGACCOUNT set AVAILABLE = (select T_USERAVAILABLEINDB.AVAILABLE + CLOSEWIN + POSITIONWIN - COMMISSION + MARGIN  from T_USERAVAILABLEINDB where T_SUB_TRADINGACCOUNT.ACCOUNTID = T_USERAVAILABLEINDB.USERNAME),FROZENMARGIN = (select MARGIN from T_USERAVAILABLEINDB where T_SUB_TRADINGACCOUNT.ACCOUNTID = T_USERAVAILABLEINDB.USERNAME)")
     int updateCloseOper1();
     
     @Update("update T_SUB_TRADINGACCOUNT set FROZENMARGIN = '0',FROZENCOMMISSION = '0',CLOSEPROFIT = '0',COMMISSION = '0'")
     int updateCloseOper2();
+    
+    @Update("update T_SUB_TRADINGACCOUNT set POSITIONPROFIT = '#{1}'  where ACCOUNTID = #{0} ")
+    String updatePositionProfit(String userName,String positionProfit);
     
     
 }

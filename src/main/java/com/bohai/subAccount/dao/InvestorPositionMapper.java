@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.bohai.subAccount.entity.InputOrder;
 import com.bohai.subAccount.entity.InvestorPosition;
@@ -55,8 +56,16 @@ public interface InvestorPositionMapper {
      * 删除持仓为0的数据
      * @return 删除条数
      */
-    @Delete("delete from T_INVESTOR_POSITION ")
+    @Delete("delete from T_INVESTOR_POSITION where POSITION = '0'")
     int deleteNoPosition();
+    
+    @Update("update T_INVESTOR_POSITION set OPENVOLUME = OPENVOLUME - CLOSEVOLUME ")
+    int updateSubtractOldPosition();
+    
+    @Update("update T_INVESTOR_POSITION set CLOSEVOLUME = '0' ,COMMISSION = '0' ,CLOSEAMOUNT = '0' ")
+    int updateCloseVolumeZero();
+    
+    void updateUserOpenAmount(InvestorPosition investorPosition);
     
     List<InvestorPosition> getUserClosePostion(String userName);
     

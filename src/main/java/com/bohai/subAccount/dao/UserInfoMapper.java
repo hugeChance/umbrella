@@ -1,9 +1,11 @@
 package com.bohai.subAccount.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.test.context.jdbc.Sql;
 
 import com.bohai.subAccount.entity.UserInfo;
@@ -81,6 +83,9 @@ public interface UserInfoMapper {
     @Select("select user_name from t_user_info where USER_NO = #{0} ")
     String getUserName(String userName);
     
+    @Select("select * from t_user_info  ")
+    List<UserInfo> getAllUser();
+    
     List<Map<String, Object>> selectUserInfoByGroupId(UserInfo userInfo);
     
     /**
@@ -95,4 +100,8 @@ public interface UserInfoMapper {
     
     @Select("select FORCE_LIMIT from t_user_info where user_name = #{0} ")
     String getUserCloseLimitByUserName(String userName);
+    
+    @Update("update t_user_info set CAPITAL = #{1} where USER_NAME = #{0}")
+    int updateUserCapital(String userName,BigDecimal capital);
+    
 }

@@ -32,6 +32,12 @@ public interface UseravailableindbMapper {
     Useravailableindb selectByUserName(String userName);
     
     /**
+     * 查询客户资金情况
+     * @return
+     */
+    Useravailableindb selectByUserName2(String userName);
+    
+    /**
      * 删除所有数据
      * @return 删除条数
      */

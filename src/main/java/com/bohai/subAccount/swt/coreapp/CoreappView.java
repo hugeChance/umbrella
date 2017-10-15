@@ -356,8 +356,12 @@ public class CoreappView {
 				userAvailableMemorySave.setPositionWin("0");
 
 				logger.info("可用资金初始化计算 SubTradingaccount=" + JSON.toJSONString(userAvailableMemorySave));
+//				String availableCalc = availableCalc(userAvailableMemorySave);
+//				//计算初始可用资金
+//				userAvailableMemorySave.setAvailable(availableCalc);
 				mapAvailableMemorySave.put(subTradingaccount2.getAccountid(), userAvailableMemorySave);
 
+			
 			}
 			
 			//平今平昨

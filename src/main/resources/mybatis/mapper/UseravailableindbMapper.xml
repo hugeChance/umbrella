@@ -104,4 +104,9 @@
     </where>
   </select>
   
+  <select id="selectByUserName2" parameterType="java.lang.String" resultMap="BaseResultMap">
+	    select * from T_USERAVAILABLEINDB 
+	    where USERNAME = #{0}
+	  </select>
+  
 </mapper>
