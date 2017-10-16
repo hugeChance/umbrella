@@ -276,6 +276,7 @@ public class CoreappView {
 			double zybzj = 0;
 			double totalzybzj = 0;
 			for (SubTradingaccount subTradingaccount2 : listSubTradingaccount) {
+				totalzybzj = 0;
 				logger.info("可用资金初始化计算 SubTradingaccount=" + JSON.toJSONString(subTradingaccount2));
 				UserAvailableMemorySave userAvailableMemorySave = new UserAvailableMemorySave();
 				userAvailableMemorySave.setUserName(subTradingaccount2.getAccountid());
