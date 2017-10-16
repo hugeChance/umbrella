@@ -439,7 +439,7 @@ public class loginMain {
         fd_combo.left = new FormAttachment(username, 0, SWT.LEFT);
         combo.setLayoutData(fd_combo);
         combo.add("交易员");
-        combo.add("风控员");
+        //combo.add("风控员");
         combo.add("管理员");
         combo.setText(combo.getItem(0));
         
