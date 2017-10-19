@@ -12,6 +12,7 @@ import com.bohai.subAccount.dao.InputOrderHistoryMapper;
 import com.bohai.subAccount.dao.InputOrderMapper;
 import com.bohai.subAccount.dao.InvestorPositionHistoryMapper;
 import com.bohai.subAccount.dao.InvestorPositionMapper;
+import com.bohai.subAccount.dao.InvestorPositionOldMapper;
 import com.bohai.subAccount.dao.OrderHistoryMapper;
 import com.bohai.subAccount.dao.OrderMapper;
 import com.bohai.subAccount.dao.SubTradingaccountHistoryMapper;
@@ -62,6 +63,9 @@ public class ClearServiceImpl implements ClearService {
 	
 	@Autowired
 	private UserFrozenaccountMapper userFrozenaccountMapper;
+	
+	@Autowired
+	private InvestorPositionOldMapper investorPositionOldMapper;
 
 	@Autowired
 	private SubTradingaccountHistoryMapper subTradingaccountHistoryMapper;
@@ -215,6 +219,14 @@ public class ClearServiceImpl implements ClearService {
 		logger.debug("删除冻结信息");
 		count = userFrozenaccountMapper.deleteAll();
 		logger.debug("共删除"+count+"条记录");
+		
+		logger.debug("删除T_INVESTOR_OLD_POSITION信息");
+		count = investorPositionOldMapper.deletePosition();
+		logger.debug("共删除"+count+"条记录");
+		
+		logger.debug("插入T_INVESTOR_OLD_POSITION信息");
+		count = investorPositionOldMapper.insertPosition();
+		logger.debug("共插入"+count+"条记录");
 	}
 	
 }
