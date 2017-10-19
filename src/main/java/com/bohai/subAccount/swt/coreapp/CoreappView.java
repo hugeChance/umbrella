@@ -52,6 +52,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.bohai.subAccount.constant.ErrorConstant;
 import com.bohai.subAccount.dao.FutureMarketMapper;
+import com.bohai.subAccount.dao.InvestorPositionOldMapper;
 import com.bohai.subAccount.dao.UseravailableindbMapper;
 import com.bohai.subAccount.entity.BuyDetail;
 import com.bohai.subAccount.entity.InputOrder;
@@ -87,7 +88,6 @@ import com.bohai.subAccount.service.UserLoginService;
 import com.bohai.subAccount.swt.coreapp.help.CtpConnectThread;
 import com.bohai.subAccount.utils.ApplicationConfig;
 import com.bohai.subAccount.utils.SpringContextUtil;
-import com.bohai.subAccount.vo.HoldContractVo;
 import com.bohai.subAccount.vo.UserAvailableMemorySave;
 import com.bohai.subAccount.vo.UserFlgMemorySave;
 import com.bohai.subAccount.vo.UserTradeRuleMemorySave;
@@ -148,6 +148,8 @@ public class CoreappView {
 	private BuyDetailService buyDetailService;
 	private SellDetailService sellDetailService;
 	private PositionsDetailService positionsDetailService;
+	
+	private InvestorPositionOldMapper investorPositionOldMapper;
 
 	private Socket CTPsocket;
 	// 买开卖平socket
@@ -176,6 +178,9 @@ public class CoreappView {
 	private Map<String, PositionsDetail> mapSubHoldContractSave;
 	
 	private Map<String, PositionsDetail> mapSubNoTradeContractSave;
+	
+	static ArrayList<String> HYname = new ArrayList<String>();
+	
 
 	/**
 	 * Launch the application.
@@ -184,7 +189,22 @@ public class CoreappView {
 	 */
 	public static void main(String[] args) {
 		try {
-
+			//上海合约
+			HYname.add("cu");
+			HYname.add("al");
+			HYname.add("zn");
+			HYname.add("pb");
+			HYname.add("ru");
+			HYname.add("fu");
+			HYname.add("rb");
+			HYname.add("wr");
+			HYname.add("au");
+			HYname.add("ag");
+			HYname.add("bu");
+			HYname.add("hc");
+			HYname.add("ni");
+			HYname.add("sn");
+			
 			CoreappView window = new CoreappView();
 			window.loadSpringContext();
 			atomicInteger = new AtomicInteger(200);
@@ -367,11 +387,24 @@ public class CoreappView {
 			
 			//平今平昨
 			//mapHoldContractMemorySave
-			List<PositionsDetail2> findGroupByPositionsDetail =positionsDetailService.findGroupByPositionsDetail();
-			if (findGroupByPositionsDetail.size() > 0) {
-				for (PositionsDetail2 positionsDetail2 : findGroupByPositionsDetail) {
+			List<Map<String,Object>> findPositionsDetail2 = investorPositionOldMapper.selectOldGroupByPosition();
+			if(findPositionsDetail2.size() > 0){
+				for (Map<String, Object> map : findPositionsDetail2) {
+					String instrumentidStr =  (String)map.get("INSTRUMENTID");
+					String posidirectionStr = (String)map.get("POSIDIRECTION");
+					Long positionNum = (Long)map.get("POSITION");
+					
+					PositionsDetail2 positionsDetail2 = new PositionsDetail2();
+					
+					
+					
 					String comboKey = "";
-					comboKey = positionsDetail2.getInstrumentid() + "|" + positionsDetail2.getDirection();
+					comboKey = instrumentidStr + "|" + posidirectionStr;
+					
+					positionsDetail2.setInstrumentid(instrumentidStr);
+					positionsDetail2.setDirection(posidirectionStr);
+					positionsDetail2.setVolume(positionNum);
+					
 					logger.info("平今平昨MAP生成 positionsDetail2=" + JSON.toJSONString(positionsDetail2));
 					mapHoldContractMemorySave.put(comboKey, positionsDetail2);
 				}
@@ -379,14 +412,41 @@ public class CoreappView {
 				
 			}
 			
-			//昨持仓入MAP
-			List<PositionsDetail> findPositionsDetail =positionsDetailService.findUserPositionsDetail();
-			if (findGroupByPositionsDetail.size() > 0) {
-				for (PositionsDetail positionsDetail : findPositionsDetail) {
+			//昨持仓入MAP 20171019 start
+//			List<PositionsDetail> findPositionsDetail =positionsDetailService.findUserPositionsDetail();
+//			if (findGroupByPositionsDetail.size() > 0) {
+//				for (PositionsDetail positionsDetail : findPositionsDetail) {
+//					String comboKey = "";
+//					comboKey = positionsDetail.getSubuserid() + "|" + positionsDetail.getInstrumentid() + "|" + positionsDetail.getDirection();
+//					logger.info("昨持仓入MAP positionsDetail=" + JSON.toJSONString(positionsDetail));
+//					mapSubHoldContractSave.put(comboKey, positionsDetail);
+//				}
+//			}
+//			20171019 end
+			List<Map<String,Object>> findPositionsDetail = investorPositionOldMapper.selectOldPosition();
+			if(findPositionsDetail.size() > 0){
+				for (Map<String, Object> map : findPositionsDetail) {
+					
+					String instrumentidStr =  (String)map.get("INSTRUMENTID");
+					String posidirectionStr = (String)map.get("POSIDIRECTION");
+					Long positionNum = (Long)map.get("POSITION");
+					String subuseridStr = (String)map.get("SUBUSERID");
+					
 					String comboKey = "";
-					comboKey = positionsDetail.getSubuserid() + "|" + positionsDetail.getInstrumentid() + "|" + positionsDetail.getDirection();
+					comboKey = subuseridStr + "|" +instrumentidStr + "|" + posidirectionStr;
+					
+					PositionsDetail positionsDetail = new PositionsDetail();
+					positionsDetail.setCombokey(comboKey);
+					positionsDetail.setDirection(posidirectionStr);
+					positionsDetail.setInstrumentid(instrumentidStr);
+					positionsDetail.setSubuserid(subuseridStr);
+					positionsDetail.setVolume(positionNum);
+					
+					
 					logger.info("昨持仓入MAP positionsDetail=" + JSON.toJSONString(positionsDetail));
+					//客户每个合约方向的总持仓
 					mapSubHoldContractSave.put(comboKey, positionsDetail);
+					
 				}
 			}
 			
@@ -395,6 +455,22 @@ public class CoreappView {
 			e.printStackTrace();
 		}
 
+	}
+	
+	public boolean checkSHPosition(String HyName) {
+		//check 持仓是否是上海的。只有上海要平今平昨
+		boolean retFlg = false;
+		if(HyName.length() == 6){			
+			for (String hyName : HYname) {
+				if(HyName.substring(0, 2).equals(hyName)){
+					//上海
+					return true;
+				}
+			}
+			
+		}
+		return retFlg;
+		
 	}
 
 	public void availableMap(String userName, UserAvailableMemorySave userAvailableMemorySave) {
@@ -674,6 +750,8 @@ public class CoreappView {
 		positionsDetailService = (PositionsDetailService) SpringContextUtil.getBean("positionsDetailService");
 
 		futureMarketMapper = (FutureMarketMapper) SpringContextUtil.getBean("futureMarketMapper");
+		
+		investorPositionOldMapper = (InvestorPositionOldMapper) SpringContextUtil.getBean("investorPositionOldMapper");
 
 		// groupInfoService = (GroupInfoService)
 		// SpringContextUtil.getBean("groupInfoService");
@@ -1522,8 +1600,7 @@ public class CoreappView {
 			e.printStackTrace();
 		}
 		
-		if(inputOrderTemp.getComboffsetflag().equals("3")){
-			//正常撤昨仓单 把单还回去
+		if(inputOrderTemp.getComboffsetflag().equals("1")){
 			String comboKey = "";
 		    if(inputOrderTemp.getDirection().equals("0"))
 		    {
@@ -1727,10 +1804,12 @@ public class CoreappView {
 		
 		//CTP 错误返回
 		if(String.valueOf(pOrder.getOrderStatus()).equals("4") ) {
+			String combokey = "";
+			
 			if(!pOrder.getCombOffsetFlag().equals("0")) {
 				logger.info("如果是委托平仓错误的时候 要减去委托的数量");
 				
-				String combokey = "";
+				
 				combokey = subAccount + "|" + pOrder.getInstrumentID() + "|" + String.valueOf(pOrder.getDirection());
 				PositionsDetail oldpositionsDetail = new PositionsDetail();
 				oldpositionsDetail = mapSubNoTradeContractSave.get(combokey);
@@ -1744,7 +1823,24 @@ public class CoreappView {
 					newpositionsDetail.setVolume(oldpositionsDetail.getVolume() - pOrder.getVolumeTotalOriginal());
 				} 
 				mapSubNoTradeContractSave.put(combokey, newpositionsDetail);
+				
+				
+				if(checkSHPosition(pOrder.getInstrumentID())) {
+					if(pOrder.getCombOffsetFlag().equals("1")) {
+						//昨仓还回去
+						PositionsDetail2 positionsDetail2 = mapHoldContractMemorySave.get(combokey);
+					    PositionsDetail2 positionsDetail2now = new PositionsDetail2();
+					    positionsDetail2now.setInstrumentid(positionsDetail2.getInstrumentid());
+		    			positionsDetail2now.setDirection(positionsDetail2.getDirection());
+		    			Long pingcangnum = positionsDetail2.getVolume() + pOrder.getVolumeTotalOriginal();
+		    			positionsDetail2now.setVolume(pingcangnum);
+		    			mapHoldContractMemorySave.put(combokey, positionsDetail2now);
+					}
+				}
+				
+				
 			}
+			
 
 		}
 		
@@ -1812,33 +1908,33 @@ public class CoreappView {
 		}
 		
 		//全部成交报单已提交 当成交时。因为持仓已经 && 撤单正常时。未成交MAP要做减法
-		if(String.valueOf(pOrder.getOrderStatus()).equals("0") && String.valueOf(pOrder.getOrderStatus()).equals("5")) {
-			logger.info("全部成交报单已提交 当成交时。因为持仓已经 && 撤单正常时。未成交MAP要做减法,ORDERSTATUS:" + String.valueOf(pOrder.getOrderStatus()));
-			//平仓的场合
-			if(!pOrder.getCombOffsetFlag().equals("0")) {
-				//因为正常平仓了。所以持仓减少后，委托也要减少
-				String combokey = "";
-
-				//这个平仓不用做买开卖平转换
-				combokey = subAccount + "|" + pOrder.getInstrumentID() + "|" + String.valueOf(pOrder.getDirection());
-				PositionsDetail oldpositionsDetail = new PositionsDetail();
-				oldpositionsDetail = mapSubNoTradeContractSave.get(combokey);
-				PositionsDetail newpositionsDetail = new PositionsDetail();
-				newpositionsDetail.setCombokey("");
-				newpositionsDetail.setSubuserid(subAccount);
-				newpositionsDetail.setInstrumentid(pOrder.getInstrumentID());
-				newpositionsDetail.setDirection(String.valueOf(pOrder.getDirection()));
-				newpositionsDetail.setVolume(oldpositionsDetail.getVolume() - pOrder.getVolumeTotalOriginal());
-				
-				mapSubNoTradeContractSave.put(combokey, newpositionsDetail);
-				
-				if(oldpositionsDetail.getVolume() - Long.valueOf(pOrder.getVolumeCondition()) < 0){
-					logger.info("ERROR！ 全部成交报单已提交 当成交时，平仓的场合。委托数项减法出错！");
-				}
-				
-			}
-			
-		}
+//		if(String.valueOf(pOrder.getOrderStatus()).equals("0") && String.valueOf(pOrder.getOrderStatus()).equals("5")) {
+//			logger.info("全部成交报单已提交 当成交时。因为持仓已经 && 撤单正常时。未成交MAP要做减法,ORDERSTATUS:" + String.valueOf(pOrder.getOrderStatus()));
+//			//平仓的场合
+//			if(!pOrder.getCombOffsetFlag().equals("0")) {
+//				//因为正常平仓了。所以持仓减少后，委托也要减少
+//				String combokey = "";
+//
+//				//这个平仓不用做买开卖平转换
+//				combokey = subAccount + "|" + pOrder.getInstrumentID() + "|" + String.valueOf(pOrder.getDirection());
+//				PositionsDetail oldpositionsDetail = new PositionsDetail();
+//				oldpositionsDetail = mapSubNoTradeContractSave.get(combokey);
+//				PositionsDetail newpositionsDetail = new PositionsDetail();
+//				newpositionsDetail.setCombokey("");
+//				newpositionsDetail.setSubuserid(subAccount);
+//				newpositionsDetail.setInstrumentid(pOrder.getInstrumentID());
+//				newpositionsDetail.setDirection(String.valueOf(pOrder.getDirection()));
+//				newpositionsDetail.setVolume(oldpositionsDetail.getVolume() - pOrder.getVolumeTotalOriginal());
+//				
+//				mapSubNoTradeContractSave.put(combokey, newpositionsDetail);
+//				
+//				if(oldpositionsDetail.getVolume() - Long.valueOf(pOrder.getVolumeCondition()) < 0){
+//					logger.info("ERROR！ 全部成交报单已提交 当成交时，平仓的场合。委托数项减法出错！");
+//				}
+//				
+//			}
+//			
+//		}
 		
 		
 		
@@ -2450,71 +2546,77 @@ public class CoreappView {
 			sendOrderAndToDb(subAccount, order, strJson,"","");
 
 		} else {
-			//平仓操作 
-			//上期所平今指令和平仓指令确认
-			//查找总未平合约 
-			String comboKey = "";
-		    if(json.getString("direction").equals("0"))
-		    {
-		    	//买开卖平
-		    	comboKey =json.getString("instrumentID") + "|1";
-		    } else {
-		    	//卖开买平
-		    	comboKey =json.getString("instrumentID") + "|0";
-		    }
-					
-			long pingcangnum = 0;
-			//平昨数量
-			long pingzuonum=0;
-			//平今数量
-			long pingjinnum = 0;
-		    PositionsDetail2 positionsDetail2 = mapHoldContractMemorySave.get(comboKey);
-		    PositionsDetail2 positionsDetail2now = new PositionsDetail2();
-		    if(positionsDetail2 == null){
-		    	//平今仓
-		    	pingjinnum = json.getLong("volumeTotalOriginal");
-		    	pingzuonum = 0;
-		    	sendOrderAndToDb(subAccount, order, strJson,"1",String.valueOf(pingjinnum));
-
-		    } else {
-		    	if(positionsDetail2.getVolume() == 0){
-		    		//平今仓
-		    		pingjinnum = json.getLong("volumeTotalOriginal");
-		    		pingzuonum = 0;
-			    	sendOrderAndToDb(subAccount, order, strJson,"1",String.valueOf(pingjinnum));
-		    	} else {
-		    		pingcangnum = json.getLong("volumeTotalOriginal");
-		    		if(pingcangnum <= positionsDetail2.getVolume()){
-		    			//平仓全部平昨仓
-		    			positionsDetail2now.setInstrumentid(positionsDetail2.getInstrumentid());
-		    			positionsDetail2now.setDirection(positionsDetail2.getDirection());
-		    			pingcangnum = positionsDetail2.getVolume() - json.getLong("volumeTotalOriginal");
-		    			positionsDetail2now.setVolume(pingcangnum);
-		    			mapHoldContractMemorySave.put(comboKey, positionsDetail2now);
-		    			pingzuonum = json.getLong("volumeTotalOriginal");
-		    			pingjinnum =0;
-		    			sendOrderAndToDb(subAccount, order, strJson,"2",String.valueOf(pingzuonum));
-		    		} else {
-		    			//既要平昨仓。又要平今仓。要2次发送平仓条件
-		    			positionsDetail2now.setInstrumentid(positionsDetail2.getInstrumentid());
-		    			positionsDetail2now.setDirection(positionsDetail2.getDirection());
-		    			pingcangnum = 0;
-		    			positionsDetail2now.setVolume(pingcangnum);
-		    			mapHoldContractMemorySave.put(comboKey, positionsDetail2now);
-		    			pingzuonum = positionsDetail2.getVolume();
-		    			sendOrderAndToDb(subAccount, order, strJson,"2",String.valueOf(pingzuonum));
-		    			
-		    			tmpint = atomicInteger.incrementAndGet();
-		    			order = String.valueOf(tmpint);
-		    			nRequestID = nRequestID + 1;
-		    			pingjinnum = json.getLong("volumeTotalOriginal") - pingzuonum;
-		    			sendOrderAndToDb(subAccount, order, strJson,"1",String.valueOf(pingjinnum));
-		    			
-		    		}
-		    	}
-		    }
+			if(checkSHPosition(json.getString("instrumentID"))){
 			
-		}
+				//平仓操作 
+				//上期所平今指令和平仓指令确认
+				//查找总未平合约 
+				String comboKey = "";
+			    if(json.getString("direction").equals("0"))
+			    {
+			    	//买开卖平
+			    	comboKey =json.getString("instrumentID") + "|1";
+			    } else {
+			    	//卖开买平
+			    	comboKey =json.getString("instrumentID") + "|0";
+			    }
+						
+				long pingcangnum = 0;
+				//平昨数量
+				long pingzuonum=0;
+				//平今数量
+				long pingjinnum = 0;
+			    PositionsDetail2 positionsDetail2 = mapHoldContractMemorySave.get(comboKey);
+			    PositionsDetail2 positionsDetail2now = new PositionsDetail2();
+			    if(positionsDetail2 == null){
+			    	//平今仓
+			    	pingjinnum = json.getLong("volumeTotalOriginal");
+			    	pingzuonum = 0;
+			    	sendOrderAndToDb(subAccount, order, strJson,"1",String.valueOf(pingjinnum));
+	
+			    } else {
+			    	if(positionsDetail2.getVolume() == 0){
+			    		//平今仓
+			    		pingjinnum = json.getLong("volumeTotalOriginal");
+			    		pingzuonum = 0;
+				    	sendOrderAndToDb(subAccount, order, strJson,"1",String.valueOf(pingjinnum));
+			    	} else {
+			    		pingcangnum = json.getLong("volumeTotalOriginal");
+			    		if(pingcangnum <= positionsDetail2.getVolume()){
+			    			//平仓全部平昨仓
+			    			positionsDetail2now.setInstrumentid(positionsDetail2.getInstrumentid());
+			    			positionsDetail2now.setDirection(positionsDetail2.getDirection());
+			    			pingcangnum = positionsDetail2.getVolume() - json.getLong("volumeTotalOriginal");
+			    			positionsDetail2now.setVolume(pingcangnum);
+			    			mapHoldContractMemorySave.put(comboKey, positionsDetail2now);
+			    			pingzuonum = json.getLong("volumeTotalOriginal");
+			    			pingjinnum =0;
+			    			sendOrderAndToDb(subAccount, order, strJson,"2",String.valueOf(pingzuonum));
+			    		} else {
+			    			//既要平昨仓。又要平今仓。要2次发送平仓条件
+			    			positionsDetail2now.setInstrumentid(positionsDetail2.getInstrumentid());
+			    			positionsDetail2now.setDirection(positionsDetail2.getDirection());
+			    			pingcangnum = 0;
+			    			positionsDetail2now.setVolume(pingcangnum);
+			    			mapHoldContractMemorySave.put(comboKey, positionsDetail2now);
+			    			pingzuonum = positionsDetail2.getVolume();
+			    			sendOrderAndToDb(subAccount, order, strJson,"2",String.valueOf(pingzuonum));
+			    			
+			    			tmpint = atomicInteger.incrementAndGet();
+			    			order = String.valueOf(tmpint);
+			    			nRequestID = nRequestID + 1;
+			    			pingjinnum = json.getLong("volumeTotalOriginal") - pingzuonum;
+			    			sendOrderAndToDb(subAccount, order, strJson,"1",String.valueOf(pingjinnum));
+			    			
+			    		}
+			    	}
+			    }
+				
+			}else {
+				//非上期所
+				sendOrderAndToDb(subAccount, order, strJson,"","");
+			}
+		} 
 
 		
 		
