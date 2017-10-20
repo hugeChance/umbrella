@@ -1859,7 +1859,7 @@ public class CoreappView {
 				e.printStackTrace();
 			}
 			
-			if(inputOrderTemp.getComboffsetflag().equals("3")){
+			if(inputOrderTemp.getComboffsetflag().equals("1")){
 				//正常撤昨仓单 把单还回去
 				String comboKey = "";
 			    if(inputOrderTemp.getDirection().equals("0"))
