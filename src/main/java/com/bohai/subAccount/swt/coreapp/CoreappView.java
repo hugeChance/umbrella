@@ -392,7 +392,7 @@ public class CoreappView {
 				for (Map<String, Object> map : findPositionsDetail2) {
 					String instrumentidStr =  (String)map.get("INSTRUMENTID");
 					String posidirectionStr = (String)map.get("POSIDIRECTION");
-					Long positionNum = (Long)map.get("POSITION");
+					BigDecimal positionNum = (BigDecimal)map.get("POSITION");
 					
 					PositionsDetail2 positionsDetail2 = new PositionsDetail2();
 					
@@ -403,7 +403,7 @@ public class CoreappView {
 					
 					positionsDetail2.setInstrumentid(instrumentidStr);
 					positionsDetail2.setDirection(posidirectionStr);
-					positionsDetail2.setVolume(positionNum);
+					positionsDetail2.setVolume(positionNum.longValue());
 					
 					logger.info("平今平昨MAP生成 positionsDetail2=" + JSON.toJSONString(positionsDetail2));
 					mapHoldContractMemorySave.put(comboKey, positionsDetail2);
@@ -429,7 +429,7 @@ public class CoreappView {
 					
 					String instrumentidStr =  (String)map.get("INSTRUMENTID");
 					String posidirectionStr = (String)map.get("POSIDIRECTION");
-					Long positionNum = (Long)map.get("POSITION");
+					BigDecimal positionNum = (BigDecimal)map.get("POSITION");
 					String subuseridStr = (String)map.get("SUBUSERID");
 					
 					String comboKey = "";
@@ -440,7 +440,7 @@ public class CoreappView {
 					positionsDetail.setDirection(posidirectionStr);
 					positionsDetail.setInstrumentid(instrumentidStr);
 					positionsDetail.setSubuserid(subuseridStr);
-					positionsDetail.setVolume(positionNum);
+					positionsDetail.setVolume(positionNum.longValue());
 					
 					
 					logger.info("昨持仓入MAP positionsDetail=" + JSON.toJSONString(positionsDetail));

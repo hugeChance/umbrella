@@ -245,7 +245,7 @@ public class TraderView {
             }
         });
         
-        shell.setSize(908, 493);
+        shell.setSize(908, 646);
         shell.setText("交易员："+userName);
         shell.setLayout(new BorderLayout(0, 0));
         
@@ -342,7 +342,7 @@ public class TraderView {
 		bottomForm.setLayout(new FillLayout(SWT.HORIZONTAL));
         
 		southFolder = new CTabFolder(bottomForm, SWT.NONE);
-		headForm.setWeights(new int[] {139, 189, 89});
+		headForm.setWeights(new int[] {145, 297, 128});
 		createSouthFolder();
         
         
@@ -501,52 +501,56 @@ public class TraderView {
         composite.setLayout(null);
         
         Label lblNewLabel = new Label(composite, SWT.NONE);
-        lblNewLabel.setFont(SWTResourceManager.getFont("微软雅黑", 8, SWT.NORMAL));
-        lblNewLabel.setBounds(10, 5, 32, 17);
+        lblNewLabel.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+        lblNewLabel.setBounds(10, 17, 55, 22);
         lblNewLabel.setText("合约");
         
         combo = new Combo(composite, SWT.NONE);
-        combo.setFont(SWTResourceManager.getFont("微软雅黑", 7, SWT.NORMAL));
+        combo.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
         combo.setEnabled(false);
-        combo.setBounds(48, 3, 61, 22);
+        combo.setBounds(71, 14, 95, 26);
         
         Label label = new Label(composite, SWT.NONE);
-        label.setFont(SWTResourceManager.getFont("微软雅黑", 8, SWT.NORMAL));
-        label.setBounds(10, 30, 32, 17);
+        label.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+        label.setBounds(10, 48, 55, 27);
         label.setText("买卖");
         
         Composite buySellComp = new Composite(composite, SWT.NONE);
-        buySellComp.setBounds(48, 30, 95, 17);
+        buySellComp.setBounds(71, 50, 95, 25);
         
         buyButton = new Button(buySellComp, SWT.RADIO);
+        buyButton.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
         buyButton.setLocation(0, 0);
-        buyButton.setSize(33, 17);
+        buyButton.setSize(43, 25);
         buyButton.setText("买");
         
         sellButton = new Button(buySellComp, SWT.RADIO);
-        sellButton.setLocation(39, 0);
-        sellButton.setSize(46, 17);
+        sellButton.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+        sellButton.setLocation(49, 0);
+        sellButton.setSize(46, 25);
         sellButton.setText("卖");
         
         Label label_1 = new Label(composite, SWT.NONE);
-        label_1.setFont(SWTResourceManager.getFont("微软雅黑", 8, SWT.NORMAL));
-        label_1.setBounds(10, 53, 32, 17);
+        label_1.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+        label_1.setBounds(10, 81, 55, 27);
         label_1.setText("开平");
         
         Composite openCloseComp = new Composite(composite, SWT.NONE);
-        openCloseComp.setBounds(48, 53, 95, 17);
+        openCloseComp.setBounds(71, 81, 95, 27);
         
         openButton = new Button(openCloseComp, SWT.RADIO);
-        openButton.setBounds(0, 0, 33, 17);
+        openButton.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+        openButton.setBounds(0, 0, 43, 27);
         openButton.setText("开");
         
         closeButton = new Button(openCloseComp, SWT.RADIO);
-        closeButton.setBounds(39, 0, 33, 17);
+        closeButton.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+        closeButton.setBounds(52, 1, 43, 26);
         closeButton.setText("平");
         
         Label label_2 = new Label(composite, SWT.NONE);
-        label_2.setFont(SWTResourceManager.getFont("微软雅黑", 8, SWT.NORMAL));
-        label_2.setBounds(10, 76, 32, 17);
+        label_2.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+        label_2.setBounds(10, 119, 55, 27);
         label_2.setText("手数");
         
         volume = new Text(composite, SWT.BORDER);
@@ -558,8 +562,8 @@ public class TraderView {
         		}
         	}
         });
-        volume.setFont(SWTResourceManager.getFont("微软雅黑", 8, SWT.NORMAL));
-        volume.setBounds(48, 74, 61, 17);
+        volume.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+        volume.setBounds(71, 116, 95, 27);
         
         String volumeStr = ApplicationConfig.getProperty("volume");
         if(!StringUtils.isEmpty(volumeStr)){
@@ -567,22 +571,22 @@ public class TraderView {
         }
         
         Label label_3 = new Label(composite, SWT.NONE);
-        label_3.setFont(SWTResourceManager.getFont("微软雅黑", 8, SWT.NORMAL));
-        label_3.setBounds(10, 99, 32, 17);
+        label_3.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+        label_3.setBounds(10, 152, 55, 24);
         label_3.setText("指定价");
         
         priceText = new Text(composite, SWT.BORDER);
-        priceText.setFont(SWTResourceManager.getFont("微软雅黑", 8, SWT.NORMAL));
-        priceText.setBounds(48, 97, 61, 17);
+        priceText.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+        priceText.setBounds(71, 149, 95, 27);
         
         availableLabel = new Label(composite, SWT.NONE);
-        availableLabel.setFont(SWTResourceManager.getFont("微软雅黑", 8, SWT.NORMAL));
-        availableLabel.setBounds(115, 100, 83, 17);
+        availableLabel.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+        availableLabel.setBounds(190, 149, 83, 27);
         availableLabel.setText(available);
         
         volumePermit = new Label(composite, SWT.NONE);
-        volumePermit.setFont(SWTResourceManager.getFont("微软雅黑", 8, SWT.NORMAL));
-        volumePermit.setBounds(115, 76, 51, 16);
+        volumePermit.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+        volumePermit.setBounds(190, 119, 71, 27);
         volumePermit.setText("可开数量");
         
         Button btnNewButton = new Button(composite, SWT.NONE);
@@ -774,13 +778,13 @@ public class TraderView {
                 thread.start();
             }
         });
-        btnNewButton.setBounds(10, 163, 156, 34);
+        btnNewButton.setBounds(10, 252, 156, 34);
         btnNewButton.setText("下单");
         
         Listener listener = new quickKeyListener();
         
         Button btnCheckButton = new Button(composite, SWT.CHECK);
-        btnCheckButton.setFont(SWTResourceManager.getFont("微软雅黑", 8, SWT.NORMAL));
+        btnCheckButton.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
         btnCheckButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -811,22 +815,22 @@ public class TraderView {
                 }
             }
         });
-        btnCheckButton.setBounds(10, 120, 61, 17);
+        btnCheckButton.setBounds(10, 183, 83, 17);
         btnCheckButton.setText("一键下单");
         
         killButton = new Button(composite, SWT.CHECK);
-        killButton.setFont(SWTResourceManager.getFont("微软雅黑", 8, SWT.NORMAL));
-        killButton.setBounds(77, 120, 89, 17);
+        killButton.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+        killButton.setBounds(99, 183, 105, 17);
         killButton.setText("不成交即撤单");
         
         Label label_6 = new Label(composite, SWT.NONE);
-        label_6.setFont(SWTResourceManager.getFont("微软雅黑", 8, SWT.NORMAL));
-        label_6.setBounds(8, 140, 71, 17);
+        label_6.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+        label_6.setBounds(10, 218, 99, 28);
         label_6.setText("一键模式选择");
         
         mode = new Combo(composite, SWT.DROP_DOWN|SWT.READ_ONLY);
-        mode.setFont(SWTResourceManager.getFont("微软雅黑", 7, SWT.NORMAL));
-        mode.setBounds(87, 138, 71, 22);
+        mode.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+        mode.setBounds(115, 215, 71, 22);
         mode.add("模式一");
         mode.add("模式二");
         mode.add("模式三");
@@ -834,15 +838,15 @@ public class TraderView {
         mode.setEnabled(false);
         
         hand = new Label(composite, SWT.NONE);
-        hand.setFont(SWTResourceManager.getFont("微软雅黑", 7, SWT.NORMAL));
-        hand.setBounds(150, 6, 38, 17);
+        hand.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+        hand.setBounds(261, 17, 83, 22);
         hand.setText(handCount.toString());
         
         Label label_4 = new Label(composite, SWT.NONE);
         label_4.setAlignment(SWT.RIGHT);
-        label_4.setFont(SWTResourceManager.getFont("微软雅黑", 7, SWT.NORMAL));
+        label_4.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
         label_4.setText("总开平：");
-        label_4.setBounds(111, 6, 36, 17);
+        label_4.setBounds(190, 17, 65, 22);
     }
     
     private void createCenterFolder(){
