@@ -3160,7 +3160,7 @@ public class CoreappView {
 			subTradingaccount.setAccountid(subAccount);
 			subTradingaccount.setAvailable(new BigDecimal(available));
 			sb.delete(0, sb.length());
-			sb.append("subLogin|" + subAccount + "|" + "subTradingaccount|" + JSON.toJSONString(subTradingaccount));
+			sb.append("subLogin|" + subAccount + "|" + "subTradingaccount|" + JSON.toJSONString(subTradingaccount) + "|" + JSON.toJSONString(userAvailableMemorySave));
 			SocketPrintOut(sb.toString());
 			Display.getDefault().syncExec(new Runnable() {
 
