@@ -26,6 +26,7 @@ import com.bohai.subAccount.entity.UserContract;
 import com.bohai.subAccount.swt.loginMain;
 import com.bohai.subAccount.swt.trader.TraderView;
 import com.bohai.subAccount.utils.MediaPlay;
+import com.bohai.subAccount.vo.UserAvailableMemorySave;
 
 public class TradeReceiveThread implements Runnable {
     
@@ -279,7 +280,32 @@ public class TradeReceiveThread implements Runnable {
                                 
                                 BigDecimal b = new BigDecimal(available).setScale(2, RoundingMode.HALF_UP);
                                 
-                                tradreView.availableLabel.setText(b.toString());
+                                //tradreView.availableLabel.setText(b.toString());
+                                //资金栏目
+                                String jsonStr = params[4];
+                                UserAvailableMemorySave obj = JSON.parseObject(jsonStr, UserAvailableMemorySave.class);
+                                
+                                
+                                TableItem[] items = tradreView.getTable().getItems();
+                                if(items == null ||items.length < 1){
+                                    TableItem newItem = new TableItem(tradreView.getTable(), SWT.NONE);
+                                    newItem.setText(0, obj.getAvailable());//静态资金
+                                    newItem.setText(1, obj.getCloseWin());//平仓盈亏
+                                    newItem.setText(2, obj.getPositionWin());//持仓盈亏
+                                    newItem.setText(3, b.toString());   //可用资金
+                                    newItem.setText(4, obj.getFrozenAvailable());//冻结资金
+                                    newItem.setText(5, obj.getMargin());//占用保证金
+                                    newItem.setText(6, obj.getCommission());//手续费
+                                }else {
+                                    TableItem item = items[0];
+                                    item.setText(0, obj.getAvailable());//静态资金
+                                    item.setText(1, obj.getCloseWin());//平仓盈亏
+                                    item.setText(2, obj.getPositionWin());//持仓盈亏
+                                    item.setText(3, b.toString());   //可用资金
+                                    item.setText(4, obj.getFrozenAvailable());//冻结资金
+                                    item.setText(5, obj.getMargin());//占用保证金
+                                    item.setText(6, obj.getCommission());//手续费
+                                }
                                 
                                 String price = tradreView.getPriceText().getText();
                                 if(StringUtils.isEmpty(price)){

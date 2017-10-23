@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -157,6 +158,13 @@ public class MarketReceiveThread implements Runnable {
                                         tableItem.setText(13, openInterest.toString());
                                     }
                                 }
+                            }
+                            
+                            String contract = traderView.getCombo().getText();
+                            if(!StringUtils.isEmpty(contract) && contract.equals(json.getString("instrumentID"))){
+                                //更新买卖价格
+                                traderView.sellLabel.setText("卖  "+json.getBigDecimal("askPrice1").setScale(2,RoundingMode.HALF_UP).toString()+"   /   "+json.getInteger("askVolume1"));
+                                traderView.buyLabel.setText("买  "+json.getBigDecimal("bidPrice1").setScale(2,RoundingMode.HALF_UP).toString()+"   /   "+json.getInteger("bidVolume1"));
                             }
                             
                         }

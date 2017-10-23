@@ -107,7 +107,7 @@ public class TraderView {
     private Button openButton;
     private Button closeButton;
     private Combo mode;
-    public Label availableLabel;
+    //public Label availableLabel;
     private Label hand;
     public Integer handCount;
     private Label volumePermit;
@@ -139,6 +139,11 @@ public class TraderView {
     private Socket marketSocket;
     
     private Socket tradeSocket;
+    private Table table;
+    
+    public Label sellLabel;
+    
+    public Label buyLabel;
     /**
      * Launch the application.
      * @param args
@@ -181,6 +186,8 @@ public class TraderView {
         
         //行情接收线程
         Thread thread = new Thread(new MarketReceiveThread(this, marketTable));
+        
+        
         thread.setDaemon(true);
         thread.start();
         
@@ -190,6 +197,42 @@ public class TraderView {
         Thread tradeThread = new Thread(new TradeReceiveThread(this));
         tradeThread.setDaemon(true);
         tradeThread.start();
+        
+        SashForm sashForm = new SashForm(shell, SWT.NONE);
+        sashForm.setLayoutData(BorderLayout.NORTH);
+        
+        table = new Table(sashForm, SWT.BORDER | SWT.FULL_SELECTION);
+        table.setHeaderVisible(true);
+        table.setLinesVisible(true);
+        
+        TableColumn tblclmnNewColumn = new TableColumn(table, SWT.CENTER);
+        tblclmnNewColumn.setWidth(100);
+        tblclmnNewColumn.setText("静态权益");
+        
+        TableColumn tableColumn_3 = new TableColumn(table, SWT.CENTER);
+        tableColumn_3.setWidth(100);
+        tableColumn_3.setText("平仓盈亏");
+        
+        TableColumn tableColumn_4 = new TableColumn(table, SWT.CENTER);
+        tableColumn_4.setWidth(100);
+        tableColumn_4.setText("持仓盈亏");
+        
+        TableColumn tableColumn = new TableColumn(table, SWT.CENTER);
+        tableColumn.setWidth(100);
+        tableColumn.setText("可用资金");
+        
+        TableColumn tableColumn_5 = new TableColumn(table, SWT.CENTER);
+        tableColumn_5.setWidth(100);
+        tableColumn_5.setText("冻结资金");
+        
+        TableColumn tableColumn_2 = new TableColumn(table, SWT.CENTER);
+        tableColumn_2.setWidth(100);
+        tableColumn_2.setText("占用保证金");
+        
+        TableColumn tableColumn_1 = new TableColumn(table, SWT.CENTER);
+        tableColumn_1.setWidth(100);
+        tableColumn_1.setText("手续费");
+        sashForm.setWeights(new int[] {1});
         
         shell.layout();
         
@@ -245,7 +288,7 @@ public class TraderView {
             }
         });
         
-        shell.setSize(908, 646);
+        shell.setSize(908, 693);
         shell.setText("交易员："+userName);
         shell.setLayout(new BorderLayout(0, 0));
         
@@ -336,13 +379,14 @@ public class TraderView {
 		createComposite();
 
 		centerFolder = new CTabFolder(centerForm, SWT.NONE);
+		centerForm.setWeights(new int[] {341, 544});
 		createCenterFolder();
 		
 		final SashForm bottomForm = new SashForm(headForm, SWT.HORIZONTAL);
 		bottomForm.setLayout(new FillLayout(SWT.HORIZONTAL));
         
 		southFolder = new CTabFolder(bottomForm, SWT.NONE);
-		headForm.setWeights(new int[] {145, 297, 128});
+		headForm.setWeights(new int[] {143, 312, 117});
 		createSouthFolder();
         
         
@@ -572,17 +616,17 @@ public class TraderView {
         
         Label label_3 = new Label(composite, SWT.NONE);
         label_3.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
-        label_3.setBounds(10, 152, 55, 24);
+        label_3.setBounds(10, 162, 55, 24);
         label_3.setText("指定价");
         
         priceText = new Text(composite, SWT.BORDER);
         priceText.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
-        priceText.setBounds(71, 149, 95, 27);
+        priceText.setBounds(71, 159, 95, 27);
         
-        availableLabel = new Label(composite, SWT.NONE);
+        /*availableLabel = new Label(composite, SWT.NONE);
         availableLabel.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
         availableLabel.setBounds(190, 149, 83, 27);
-        availableLabel.setText(available);
+        availableLabel.setText(available);*/
         
         volumePermit = new Label(composite, SWT.NONE);
         volumePermit.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
@@ -778,7 +822,7 @@ public class TraderView {
                 thread.start();
             }
         });
-        btnNewButton.setBounds(10, 252, 156, 34);
+        btnNewButton.setBounds(10, 267, 156, 34);
         btnNewButton.setText("下单");
         
         Listener listener = new quickKeyListener();
@@ -815,22 +859,22 @@ public class TraderView {
                 }
             }
         });
-        btnCheckButton.setBounds(10, 183, 83, 17);
+        btnCheckButton.setBounds(10, 198, 83, 17);
         btnCheckButton.setText("一键下单");
         
         killButton = new Button(composite, SWT.CHECK);
         killButton.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
-        killButton.setBounds(99, 183, 105, 17);
+        killButton.setBounds(99, 198, 105, 17);
         killButton.setText("不成交即撤单");
         
         Label label_6 = new Label(composite, SWT.NONE);
         label_6.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
-        label_6.setBounds(10, 218, 99, 28);
+        label_6.setBounds(10, 233, 99, 28);
         label_6.setText("一键模式选择");
         
         mode = new Combo(composite, SWT.DROP_DOWN|SWT.READ_ONLY);
         mode.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
-        mode.setBounds(115, 215, 71, 22);
+        mode.setBounds(115, 230, 71, 22);
         mode.add("模式一");
         mode.add("模式二");
         mode.add("模式三");
@@ -847,6 +891,14 @@ public class TraderView {
         label_4.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
         label_4.setText("总开平：");
         label_4.setBounds(190, 17, 65, 22);
+        
+        sellLabel = new Label(composite, SWT.NONE);
+        sellLabel.setBounds(190, 145, 126, 17);
+        sellLabel.setText(" ");
+        
+        buyLabel = new Label(composite, SWT.NONE);
+        buyLabel.setBounds(190, 168, 126, 17);
+        buyLabel.setText(" ");
     }
     
     private void createCenterFolder(){
@@ -1330,6 +1382,16 @@ public class TraderView {
     public void setCombo(Combo combo) {
         this.combo = combo;
     }
+
+    
+    public Table getTable() {
+        return table;
+    }
+
+    public void setTable(Table table) {
+        this.table = table;
+    }
+
 
 
 
