@@ -589,7 +589,7 @@ public class TraderView {
         
         closeButton = new Button(openCloseComp, SWT.RADIO);
         closeButton.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
-        closeButton.setBounds(52, 1, 43, 26);
+        closeButton.setBounds(49, 0, 43, 26);
         closeButton.setText("平");
         
         Label label_2 = new Label(composite, SWT.NONE);
