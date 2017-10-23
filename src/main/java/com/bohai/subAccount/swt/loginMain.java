@@ -39,6 +39,7 @@ import com.bohai.subAccount.swt.risk.RiskManageView;
 import com.bohai.subAccount.swt.trader.TraderView;
 import com.bohai.subAccount.utils.ApplicationConfig;
 import com.bohai.subAccount.utils.UserConfig;
+import com.bohai.subAccount.vo.UserAvailableMemorySave;
 import com.bohai.subAccount.vo.UserVO;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.ModifyEvent;
@@ -252,6 +253,7 @@ public class loginMain {
                         List<InvestorPosition> investorPositions = new ArrayList<InvestorPosition>();
                         String available = "";
                         Integer handCount = 0;
+                        UserAvailableMemorySave obj = null;
                         while(true){
                             String s = in.readLine();
                             logger.info("登录响应："+s);
@@ -290,6 +292,8 @@ public class loginMain {
                                         window.setPasswd(passwd.getText());
                                         //可用资金
                                         window.setAvailable(available);
+                                        //资金模块
+                                        window.setInitAvailable(obj);
                                         
                                         shlSubaccount.dispose();
                                         window.open();
@@ -308,6 +312,11 @@ public class loginMain {
                                     	 
                                     	 available = jo.getBigDecimal("available").setScale(2, RoundingMode.HALF_UP).toString();
                                      }
+                                     
+                                     String jsonStr = paramList[4];
+                                     obj = JSON.parseObject(jsonStr, UserAvailableMemorySave.class);
+                                     
+                                     
 								}else if(paramList[2].equals("listUserContract")){//订阅合约信息
                                     
                                     String contractStr = paramList[3];

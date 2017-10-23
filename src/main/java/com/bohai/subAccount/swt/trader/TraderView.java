@@ -75,6 +75,7 @@ import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.swt.trader.helper.MarketReceiveThread;
 import com.bohai.subAccount.swt.trader.helper.TradeReceiveThread;
 import com.bohai.subAccount.utils.ApplicationConfig;
+import com.bohai.subAccount.vo.UserAvailableMemorySave;
 
 import swing2swt.layout.BorderLayout;
 
@@ -144,6 +145,10 @@ public class TraderView {
     public Label sellLabel;
     
     public Label buyLabel;
+    
+    private UserAvailableMemorySave initAvailable;
+    
+    
     /**
      * Launch the application.
      * @param args
@@ -233,6 +238,17 @@ public class TraderView {
         tableColumn_1.setWidth(100);
         tableColumn_1.setText("手续费");
         sashForm.setWeights(new int[] {1});
+        
+        if(initAvailable != null){
+            TableItem newItem = new TableItem(table, SWT.NONE);
+            newItem.setText(0, initAvailable.getAvailable());//静态资金
+            newItem.setText(1, initAvailable.getCloseWin());//平仓盈亏
+            newItem.setText(2, initAvailable.getPositionWin());//持仓盈亏
+            newItem.setText(3, available);   //可用资金
+            newItem.setText(4, initAvailable.getFrozenAvailable());//冻结资金
+            newItem.setText(5, initAvailable.getMargin());//占用保证金
+            newItem.setText(6, initAvailable.getCommission());//手续费
+        }
         
         shell.layout();
         
@@ -1390,6 +1406,15 @@ public class TraderView {
 
     public void setTable(Table table) {
         this.table = table;
+    }
+
+
+    public UserAvailableMemorySave getInitAvailable() {
+        return initAvailable;
+    }
+
+    public void setInitAvailable(UserAvailableMemorySave initAvailable) {
+        this.initAvailable = initAvailable;
     }
 
 
