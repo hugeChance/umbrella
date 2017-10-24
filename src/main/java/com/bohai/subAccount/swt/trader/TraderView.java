@@ -395,14 +395,13 @@ public class TraderView {
 		createComposite();
 
 		centerFolder = new CTabFolder(centerForm, SWT.NONE);
-		centerForm.setWeights(new int[] {373, 512});
+		centerForm.setWeights(new int[] {112, 773});
 		createCenterFolder();
 		
 		final SashForm bottomForm = new SashForm(headForm, SWT.HORIZONTAL);
 		bottomForm.setLayout(new FillLayout(SWT.HORIZONTAL));
         
 		southFolder = new CTabFolder(bottomForm, SWT.NONE);
-		bottomForm.setWeights(new int[] {1});
 		headForm.setWeights(new int[] {143, 312, 117});
 		createSouthFolder();
         
@@ -916,37 +915,6 @@ public class TraderView {
         buyLabel = new Label(composite, SWT.NONE);
         buyLabel.setBounds(190, 168, 126, 17);
         buyLabel.setText(" ");
-        
-        Button btnNewButton_1 = new Button(composite, SWT.NONE);
-        btnNewButton_1.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                
-                //市价反手
-                
-                TableItem[] items = positionTable.getSelection();
-                if(items == null || items.length <1){
-                    MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
-                    box.setMessage("请先选择持仓");
-                    box.setText(CommonConstant.MESSAGE_BOX_ERROR);
-                    box.open();
-                }else{
-                    if(items[0].getData() != null){
-                        InvestorPosition position = (InvestorPosition) items[0].getData();
-                        //下反手单
-                        inverseOrder(position);
-                    }else{
-                        MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
-                        box.setMessage("请先选择持仓");
-                        box.setText(CommonConstant.MESSAGE_BOX_ERROR);
-                        box.open();
-                    }
-                }
-                
-            }
-        });
-        btnNewButton_1.setBounds(188, 267, 156, 34);
-        btnNewButton_1.setText("市价反手");
     }
     
     private void createCenterFolder(){
@@ -1838,134 +1806,6 @@ public class TraderView {
             logger.error("快捷下单失败");
         }
     	
-    }
-    
-    
-    /**
-     * 市价反手方法
-     */
-    public void inverseOrder(InvestorPosition position){
-        
-        logger.debug("平现有持仓："+JSON.toJSONString(position));
-        //下单入参
-        CThostFtdcInputOrderField inputOrderField=new CThostFtdcInputOrderField();
-        
-        // 合约代码
-        String instrumentid = position.getInstrumentid();
-        inputOrderField.setInstrumentID(instrumentid);
-        
-        String lowerLimitPrice = "0";
-        String upperLimitPrice = "0";
-        
-        //获取涨跌停价格
-        for (TableItem item : marketTable.getItems()) {
-            if(instrumentid.equals(item.getText(0))){
-                lowerLimitPrice = item.getText(9);
-                upperLimitPrice = item.getText(8);
-                break;
-            }
-        }
-        
-        //买卖方向
-        if(position.getPosidirection().equals("0")){
-
-            inputOrderField.setDirection(THOST_FTDC_D_Sell);
-            //买开 --> 卖平 ，以跌停价平仓
-            
-            BigDecimal price = new BigDecimal(lowerLimitPrice);
-            logger.debug("清仓价格为跌停价："+price);
-            inputOrderField.setLimitPrice(price.doubleValue());
-        }else {
-            //卖开 --> 买平 ，以涨停价平仓
-            BigDecimal price = new BigDecimal(upperLimitPrice);
-            //跌停价
-            logger.debug("清仓价格为涨停价："+price);
-            inputOrderField.setDirection(THOST_FTDC_D_Buy);
-            inputOrderField.setLimitPrice(price.doubleValue());
-        }
-        
-        //开平标志
-        inputOrderField.setCombOffsetFlag("3");
-        
-        //数量为持仓数量
-        inputOrderField.setVolumeTotalOriginal(position.getPosition().intValue());
-        
-        //投资者代码
-        inputOrderField.setInvestorID(userName);
-        // 用户代码
-        inputOrderField.setUserID(userName);
-        // 报单价格条件
-        inputOrderField.setOrderPriceType(THOST_FTDC_OPT_LimitPrice);
-        
-        // 组合投机套保标志
-        inputOrderField.setCombHedgeFlag("1");
-        
-        // 有效期类型
-        inputOrderField.setTimeCondition(THOST_FTDC_TC_GFD);
-        // GTD日期
-        inputOrderField.setGTDDate("");
-        // 成交量类型
-        inputOrderField.setVolumeCondition(THOST_FTDC_VC_AV);
-        // 最小成交量
-        inputOrderField.setMinVolume(0);
-        // 触发条件
-        inputOrderField.setContingentCondition(THOST_FTDC_CC_Immediately);
-        // 止损价
-        inputOrderField.setStopPrice(0);
-        // 强平原因
-        inputOrderField.setForceCloseReason(THOST_FTDC_FCC_NotForceClose);
-        // 自动挂起标志
-        inputOrderField.setIsAutoSuspend(0);
-        
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("order");
-        stringBuffer.append("|"+userName);
-        stringBuffer.append("|"+JSON.toJSONString(inputOrderField));
-        logger.info("清仓下单请求参数："+stringBuffer.toString());
-        
-        PrintWriter out;
-        try {
-            out = new PrintWriter(new OutputStreamWriter(tradeSocket.getOutputStream(),"UTF-8"));
-            out.println(stringBuffer.toString());
-            out.flush();
-        } catch (Exception e) {
-            logger.error("市价反手平仓失败");
-            MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
-            box.setMessage("市价反手平仓失败");
-            box.setText(CommonConstant.MESSAGE_BOX_ERROR);
-            box.open();
-        }
-        
-        //等待50毫秒
-        try {
-            Thread.sleep(50);
-        } catch (InterruptedException e) {
-            logger.error("市价反手等待失败");
-            MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
-            box.setMessage("市价反手等待失败");
-            box.setText(CommonConstant.MESSAGE_BOX_ERROR);
-            box.open();
-        }
-        
-        //下反手单
-        inputOrderField.setCombOffsetFlag("0");
-        StringBuffer stringBuffer1 = new StringBuffer();
-        stringBuffer1.append("order");
-        stringBuffer1.append("|"+userName);
-        stringBuffer1.append("|"+JSON.toJSONString(inputOrderField));
-        logger.info("反手下单请求参数："+stringBuffer1.toString());
-        try {
-            out = new PrintWriter(new OutputStreamWriter(tradeSocket.getOutputStream(),"UTF-8"));
-            out.println(stringBuffer1.toString());
-            out.flush();
-        } catch (Exception e) {
-            logger.error("市价反手开仓失败");
-            MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
-            box.setMessage("市价反手开仓失败");
-            box.setText(CommonConstant.MESSAGE_BOX_ERROR);
-            box.open();
-        }
-        
     }
     
     
