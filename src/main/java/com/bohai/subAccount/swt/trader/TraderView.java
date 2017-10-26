@@ -107,6 +107,7 @@ public class TraderView {
     private Button sellButton;
     private Button openButton;
     private Button closeButton;
+    private Button closeYesterdayButton;
     private Combo mode;
     //public Label availableLabel;
     private Label hand;
@@ -596,7 +597,7 @@ public class TraderView {
         label_1.setText("开平");
         
         Composite openCloseComp = new Composite(composite, SWT.NONE);
-        openCloseComp.setBounds(71, 81, 95, 27);
+        openCloseComp.setBounds(71, 81, 167, 27);
         
         openButton = new Button(openCloseComp, SWT.RADIO);
         openButton.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
@@ -607,6 +608,11 @@ public class TraderView {
         closeButton.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
         closeButton.setBounds(49, 0, 43, 26);
         closeButton.setText("平");
+        
+        closeYesterdayButton = new Button(openCloseComp, SWT.RADIO);
+        closeYesterdayButton.setText("平昨");
+        closeYesterdayButton.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+        closeYesterdayButton.setBounds(98, 0, 59, 26);
         
         Label label_2 = new Label(composite, SWT.NONE);
         label_2.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
@@ -709,6 +715,9 @@ public class TraderView {
                     }else if (closeButton.getSelection()) {
                         //平今仓
                         inputOrderField.setCombOffsetFlag("3");
+                    }else if (closeYesterdayButton.getSelection()) {
+                        //平昨仓
+                        inputOrderField.setCombOffsetFlag("4");
                     }else {
                         MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                         box.setMessage(CommonConstant.OFFSET_MISS);
