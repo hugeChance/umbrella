@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.net.Socket;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -107,7 +108,7 @@ public class TraderView {
     private Button sellButton;
     private Button openButton;
     private Button closeButton;
-    private Button closeYesterdayButton;
+    private Button closeTodayButton;
     private Combo mode;
     //public Label availableLabel;
     private Label hand;
@@ -149,6 +150,25 @@ public class TraderView {
     
     private UserAvailableMemorySave initAvailable;
     
+    static List<String> SHINST ;
+    
+    static {
+        SHINST = new ArrayList<String>();
+        SHINST.add("cu");
+        SHINST.add("al");
+        SHINST.add("zn");
+        SHINST.add("pb");
+        SHINST.add("ru");
+        SHINST.add("fu");
+        SHINST.add("rb");
+        SHINST.add("wr");
+        SHINST.add("au");
+        SHINST.add("ag");
+        SHINST.add("bu");
+        SHINST.add("hc");
+        SHINST.add("ni");
+        SHINST.add("sn");
+    }
     
     /**
      * Launch the application.
@@ -577,19 +597,19 @@ public class TraderView {
         label.setText("买卖");
         
         Composite buySellComp = new Composite(composite, SWT.NONE);
-        buySellComp.setBounds(71, 50, 95, 25);
+        buySellComp.setBounds(71, 50, 167, 25);
         
         buyButton = new Button(buySellComp, SWT.RADIO);
         buyButton.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
         buyButton.setLocation(0, 0);
-        buyButton.setSize(43, 25);
-        buyButton.setText("买");
+        buyButton.setSize(53, 25);
+        buyButton.setText("买入");
         
         sellButton = new Button(buySellComp, SWT.RADIO);
         sellButton.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
-        sellButton.setLocation(49, 0);
-        sellButton.setSize(46, 25);
-        sellButton.setText("卖");
+        sellButton.setLocation(59, 0);
+        sellButton.setSize(53, 25);
+        sellButton.setText("卖出");
         
         Label label_1 = new Label(composite, SWT.NONE);
         label_1.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
@@ -597,22 +617,22 @@ public class TraderView {
         label_1.setText("开平");
         
         Composite openCloseComp = new Composite(composite, SWT.NONE);
-        openCloseComp.setBounds(71, 81, 167, 27);
+        openCloseComp.setBounds(71, 81, 190, 27);
         
         openButton = new Button(openCloseComp, SWT.RADIO);
         openButton.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
-        openButton.setBounds(0, 0, 43, 27);
-        openButton.setText("开");
+        openButton.setBounds(0, 0, 53, 27);
+        openButton.setText("开仓");
         
         closeButton = new Button(openCloseComp, SWT.RADIO);
         closeButton.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
-        closeButton.setBounds(49, 0, 43, 26);
-        closeButton.setText("平");
+        closeButton.setBounds(59, 0, 53, 26);
+        closeButton.setText("平仓");
         
-        closeYesterdayButton = new Button(openCloseComp, SWT.RADIO);
-        closeYesterdayButton.setText("平昨");
-        closeYesterdayButton.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
-        closeYesterdayButton.setBounds(98, 0, 59, 26);
+        closeTodayButton = new Button(openCloseComp, SWT.RADIO);
+        closeTodayButton.setText("平今");
+        closeTodayButton.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
+        closeTodayButton.setBounds(118, 0, 59, 26);
         
         Label label_2 = new Label(composite, SWT.NONE);
         label_2.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
@@ -679,14 +699,18 @@ public class TraderView {
                     }
                     
                     // 合约代码
-                    if(StringUtils.isEmpty(combo.getText())){
+                    String instrumentID = combo.getText();
+                    
+                    if(StringUtils.isEmpty(instrumentID)){
                         MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                         box.setMessage(CommonConstant.CONTRACT_MISS);
                         box.setText(CommonConstant.MESSAGE_BOX_ERROR);
                         box.open();
                         return;
                     }
-                    inputOrderField.setInstrumentID(combo.getText());
+                    
+                    
+                    inputOrderField.setInstrumentID(instrumentID);
                     
                     // 价格
                     if(StringUtils.isEmpty(priceText.getText())){
@@ -713,11 +737,19 @@ public class TraderView {
                         // 组合开平标志     开仓
                         inputOrderField.setCombOffsetFlag("0");
                     }else if (closeButton.getSelection()) {
-                        //平今仓
-                        inputOrderField.setCombOffsetFlag("3");
-                    }else if (closeYesterdayButton.getSelection()) {
-                        //平昨仓
-                        inputOrderField.setCombOffsetFlag("4");
+                        //平仓
+                        if(checkSHPosition(instrumentID)){
+                            inputOrderField.setCombOffsetFlag("4");
+                        }else {
+                            inputOrderField.setCombOffsetFlag("1");
+                        }
+                    }else if (closeTodayButton.getSelection()) {
+                        //平今
+                        if(checkSHPosition(instrumentID)){
+                            inputOrderField.setCombOffsetFlag("3");
+                        }else {
+                            inputOrderField.setCombOffsetFlag("1");
+                        }
                     }else {
                         MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                         box.setMessage(CommonConstant.OFFSET_MISS);
@@ -2132,5 +2164,22 @@ public class TraderView {
         }
         //logger.debug("返回"+contractNo+"合约属性"+JSON.toJSONString(userContract));
         return userContract;
+    }
+    
+    //是否上海合约
+    public boolean checkSHPosition(String HyName) {
+        //check 持仓是否是上海的。只有上海要平今平昨
+        boolean retFlg = false;
+        if(HyName.length() == 6){
+            for (String hyName : SHINST) {
+                if(HyName.substring(0, 2).equals(hyName)){
+                    //上海
+                    return true;
+                }
+            }
+            
+        }
+        return retFlg;
+        
     }
 }
