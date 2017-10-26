@@ -103,7 +103,17 @@ public class TradeReceiveThread implements Runnable {
                                 tableItem.setData(trade);
                                 tableItem.setText(0, trade.getInstrumentid());
                                 tableItem.setText(1, trade.getDirection().equals("0")? "买":"卖");
-                                tableItem.setText(2, trade.getOffsetflag().equals("0")? "开":"平");
+                                String offsetFlagStr = "";
+                                if(trade.getOffsetflag().equals("0")){
+                                    offsetFlagStr = "开";
+                                }else if (trade.getOffsetflag().equals("1")) {
+                                    offsetFlagStr = "平";
+                                }else if (trade.getOffsetflag().equals("3")) {
+                                    offsetFlagStr = "平今";
+                                }else if (trade.getOffsetflag().equals("4")) {
+                                    offsetFlagStr = "平昨";
+                                }
+                                tableItem.setText(2, offsetFlagStr);
                                 tableItem.setText(3, trade.getVolume().toString());
                                 tableItem.setText(4, trade.getPrice().toString());
                                 tableItem.setText(5, StringUtils.isEmpty(trade.getTradetime())?"":trade.getTradetime());
@@ -190,7 +200,19 @@ public class TradeReceiveThread implements Runnable {
                                             item.setData(order);
                                             item.setText(0, order.getInstrumentid());
                                             item.setText(1, order.getDirection().equals("0")? "买":"卖");
-                                            item.setText(2, order.getComboffsetflag().equals("0")? "开":"平");
+                                            
+                                            String offsetFlagStr = "";
+                                            if(order.getComboffsetflag().equals("0")){
+                                                offsetFlagStr = "开";
+                                            }else if (order.getComboffsetflag().equals("1")) {
+                                                offsetFlagStr = "平";
+                                            }else if (order.getComboffsetflag().equals("3")) {
+                                                offsetFlagStr = "平今";
+                                            }else if (order.getComboffsetflag().equals("4")) {
+                                                offsetFlagStr = "平昨";
+                                            }
+                                            
+                                            item.setText(2, offsetFlagStr);
                                             item.setText(3, order.getVolumetotaloriginal().toString());
                                             item.setText(4, order.getLimitprice().toString());
                                             item.setText(5, order.getVolumetraded().toString());
