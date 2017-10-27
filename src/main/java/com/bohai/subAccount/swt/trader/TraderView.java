@@ -730,6 +730,17 @@ public class TraderView {
                         box.open();
                         return;
                     }
+                    //手数必须大于0
+                    Integer vol = Integer.parseInt(volume.getText());
+                    if(vol < 1){
+                        
+                        MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                        box.setMessage(CommonConstant.VOLUME_LIMIT);
+                        box.setText(CommonConstant.MESSAGE_BOX_ERROR);
+                        box.open();
+                        return;
+                    }
+                    
                     inputOrderField.setVolumeTotalOriginal(Integer.parseInt(volume.getText()));
                     
                     //开平方向
