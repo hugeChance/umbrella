@@ -21,7 +21,7 @@ public interface InvestorPositionOldMapper {
     @Select("select * from T_INVESTOR_OLD_POSITION")
     List<Map<String,Object>> selectOldPosition ();
     
-    @Select("select INSTRUMENTID,POSIDIRECTION,sum(POSITION) as POSITION from T_INVESTOR_OLD_POSITION group by INSTRUMENTID,POSIDIRECTION")
+    @Select("select SUBUSERID,INSTRUMENTID,POSIDIRECTION,sum(POSITION) as POSITION from T_INVESTOR_OLD_POSITION group by SUBUSERID,INSTRUMENTID,POSIDIRECTION")
     List<Map<String,Object>> selectOldGroupByPosition ();
 
 }
