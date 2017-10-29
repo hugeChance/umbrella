@@ -1297,9 +1297,15 @@ public class CoreappView {
 			} 
 			
 			//计算平仓量的也要还回去
-			
+			// 平今 平昨 改修20171029
 			combokey = "";
-			combokey = subAccount + "|" + pTrade.getInstrumentID() + "|" + String.valueOf(pTrade.getDirection());
+			if (String.valueOf(pTrade.getOffsetFlag()).equals("1")) {
+				combokey = subAccount + "|" + pTrade.getInstrumentID() + "|" + String.valueOf(pTrade.getDirection());
+			} else if(String.valueOf(pTrade.getOffsetFlag()).equals("3")) {
+				combokey = subAccount + "|" + pTrade.getInstrumentID() + "|" + String.valueOf(pTrade.getDirection()) + "|3";
+			} else if(String.valueOf(pTrade.getOffsetFlag()).equals("4")) {
+				combokey = subAccount + "|" + pTrade.getInstrumentID() + "|" + String.valueOf(pTrade.getDirection()) + "|4";
+			}
 			oldpositionsDetail = new PositionsDetail();
 			oldpositionsDetail = mapSubNoTradeContractSave.get(combokey);
 			newpositionsDetail = new PositionsDetail();
@@ -1630,7 +1636,14 @@ public class CoreappView {
 		//计算平仓量的也要还回去
 		if(!pInputOrder.getCombOffsetFlag().equals("0")){
 			String combokey = "";
-			combokey = subAccount + "|" + pInputOrder.getInstrumentID() + "|" + String.valueOf(pInputOrder.getDirection());
+			if(pInputOrder.getCombOffsetFlag().equals("1")){
+				combokey = subAccount + "|" + pInputOrder.getInstrumentID() + "|" + String.valueOf(pInputOrder.getDirection());
+			} else if (pInputOrder.getCombOffsetFlag().equals("3")){
+				combokey = subAccount + "|" + pInputOrder.getInstrumentID() + "|" + String.valueOf(pInputOrder.getDirection() + "|3");
+			} else if (pInputOrder.getCombOffsetFlag().equals("4")){
+				combokey = subAccount + "|" + pInputOrder.getInstrumentID() + "|" + String.valueOf(pInputOrder.getDirection() + "|4");
+			}
+			
 			PositionsDetail oldpositionsDetail = new PositionsDetail();
 			oldpositionsDetail = mapSubNoTradeContractSave.get(combokey);
 			PositionsDetail newpositionsDetail = new PositionsDetail();
@@ -1811,8 +1824,14 @@ public class CoreappView {
 			if(!pOrder.getCombOffsetFlag().equals("0")) {
 				logger.info("如果是委托平仓错误的时候 要减去委托的数量");
 				
+				if(pOrder.getCombOffsetFlag().equals("1")) {
+					combokey = subAccount + "|" + pOrder.getInstrumentID() + "|" + String.valueOf(pOrder.getDirection());
+				} else if(pOrder.getCombOffsetFlag().equals("3")) {
+					combokey = subAccount + "|" + pOrder.getInstrumentID() + "|" + String.valueOf(pOrder.getDirection()) + "|3";
+				} else if(pOrder.getCombOffsetFlag().equals("4")) {
+					combokey = subAccount + "|" + pOrder.getInstrumentID() + "|" + String.valueOf(pOrder.getDirection()) + "|4";
+				}
 				
-				combokey = subAccount + "|" + pOrder.getInstrumentID() + "|" + String.valueOf(pOrder.getDirection());
 				PositionsDetail oldpositionsDetail = new PositionsDetail();
 				oldpositionsDetail = mapSubNoTradeContractSave.get(combokey);
 				PositionsDetail newpositionsDetail = new PositionsDetail();
@@ -1828,8 +1847,9 @@ public class CoreappView {
 				
 				
 				if(checkSHPosition(pOrder.getInstrumentID())) {
-					if(pOrder.getCombOffsetFlag().equals("1")) {
+					if(!pOrder.getCombOffsetFlag().equals("0")) {
 						//昨仓还回去
+						combokey = subAccount + "|" + pOrder.getInstrumentID() + "|" + String.valueOf(pOrder.getDirection());
 						PositionsDetail2 positionsDetail2 = mapHoldContractMemorySave.get(combokey);
 					    PositionsDetail2 positionsDetail2now = new PositionsDetail2();
 					    positionsDetail2now.setSubuserid(positionsDetail2.getSubuserid());
@@ -1892,7 +1912,14 @@ public class CoreappView {
 			//计算平仓量的也要还回去
 			if(!pOrder.getCombOffsetFlag().equals("0")){
 				String combokey = "";
-				combokey = subAccount + "|" + pOrder.getInstrumentID() + "|" + String.valueOf(pOrder.getDirection());
+				if(pOrder.getCombOffsetFlag().equals("1")) {
+					combokey = subAccount + "|" + pOrder.getInstrumentID() + "|" + String.valueOf(pOrder.getDirection());
+				} else if(pOrder.getCombOffsetFlag().equals("3")) {
+					combokey = subAccount + "|" + pOrder.getInstrumentID() + "|" + String.valueOf(pOrder.getDirection()) + "|3";
+				} else if(pOrder.getCombOffsetFlag().equals("4")) {
+					combokey = subAccount + "|" + pOrder.getInstrumentID() + "|" + String.valueOf(pOrder.getDirection()) + "|4";
+				}
+				
 				PositionsDetail oldpositionsDetail = new PositionsDetail();
 				oldpositionsDetail = mapSubNoTradeContractSave.get(combokey);
 				PositionsDetail newpositionsDetail = new PositionsDetail();
@@ -2594,9 +2621,9 @@ public class CoreappView {
 			}
 			oldPositionsDetail = mapSubHoldContractSave.get(combokey);
 			oldPositionsDetail2 = mapHoldContractMemorySave.get(combokey);
-			//平今的数据量 是 昨仓 - 输入平今量  >=0 才正常
+			//平昨的数据量 是 昨仓 - 输入平昨量  >=0 才正常
 			if(oldPositionsDetail2.getVolume() - Long.valueOf(json.getIntValue("volumeTotalOriginal")) > 0) {
-				// 有平今量的场合
+				// 有平昨量的场合
 				//正常
 				oldNoTradePositionsDetail = mapSubNoTradeContractSave.get(combokeyNoTrade);
 				long tmpVolume = 0;
@@ -2605,7 +2632,7 @@ public class CoreappView {
 				} else {
 					tmpVolume = 0;
 				}
-				//平仓的数据量 是 昨仓 - 平昨委托量  >=输入平今量才正常
+				//平仓的数据量 是 昨仓 - 平昨委托量  >=输入平昨量才正常
 				if(oldPositionsDetail2.getVolume() - tmpVolume >= Long.valueOf(json.getIntValue("volumeTotalOriginal"))){
 					//正常
 					// 增加未成交数
