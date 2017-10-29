@@ -1607,7 +1607,7 @@ public class CoreappView {
 			e.printStackTrace();
 		}
 		
-		if(inputOrderTemp.getComboffsetflag().equals("1")){
+		if(inputOrderTemp.getComboffsetflag().equals("1") || inputOrderTemp.getComboffsetflag().equals("3") || inputOrderTemp.getComboffsetflag().equals("4")){
 			String comboKey = "";
 		    if(inputOrderTemp.getDirection().equals("0"))
 		    {
@@ -1882,7 +1882,7 @@ public class CoreappView {
 				e.printStackTrace();
 			}
 			
-			if(inputOrderTemp.getComboffsetflag().equals("1")){
+			if(inputOrderTemp.getComboffsetflag().equals("1") || inputOrderTemp.getComboffsetflag().equals("4")){
 				//正常撤昨仓单 把单还回去
 				String comboKey = "";
 			    if(inputOrderTemp.getDirection().equals("0"))
@@ -2804,65 +2804,102 @@ public class CoreappView {
 
 		} else {
 			
-			String comboKey = "";
-		    if(json.getString("direction").equals("0"))
-		    {
-		    	//买开卖平
-		    	comboKey =subAccount + "|" + json.getString("instrumentID") + "|1";
+//			String comboKey = "";
+//		    if(json.getString("direction").equals("0"))
+//		    {
+//		    	//买开卖平
+//		    	comboKey =subAccount + "|" + json.getString("instrumentID") + "|1";
+//		    } else {
+//		    	//卖开买平
+//		    	comboKey =subAccount + "|" + json.getString("instrumentID") + "|0";
+//		    }
+//		    long pingcangnum = 0;
+//			//平昨数量
+//			long pingzuonum=0;
+//			//平今数量
+//			long pingjinnum = 0;
+//		    PositionsDetail2 positionsDetail2 = mapHoldContractMemorySave.get(comboKey);
+//		    PositionsDetail2 positionsDetail2now = new PositionsDetail2();
+//		    if(positionsDetail2 == null){
+//		    	//平今仓
+//		    	pingjinnum = json.getLong("volumeTotalOriginal");
+//		    	pingzuonum = 0;
+//		    	sendOrderAndToDb(subAccount, order, strJson,"1",String.valueOf(pingjinnum));
+//		    } else {
+//		    	if(positionsDetail2.getVolume() == 0){
+//		    		//平今仓
+//		    		pingjinnum = json.getLong("volumeTotalOriginal");
+//		    		pingzuonum = 0;
+//			    	sendOrderAndToDb(subAccount, order, strJson,"1",String.valueOf(pingjinnum));
+//		    	} else {
+//		    		pingcangnum = json.getLong("volumeTotalOriginal");
+//		    		if(pingcangnum <= positionsDetail2.getVolume()){
+//		    			//平仓全部平昨仓
+//		    			positionsDetail2now.setSubuserid(positionsDetail2.getSubuserid());
+//		    			positionsDetail2now.setInstrumentid(positionsDetail2.getInstrumentid());
+//		    			positionsDetail2now.setDirection(positionsDetail2.getDirection());
+//		    			pingcangnum = positionsDetail2.getVolume() - json.getLong("volumeTotalOriginal");
+//		    			positionsDetail2now.setVolume(pingcangnum);
+//		    			mapHoldContractMemorySave.put(comboKey, positionsDetail2now);
+//		    			pingzuonum = json.getLong("volumeTotalOriginal");
+//		    			pingjinnum =0;
+//		    			sendOrderAndToDb(subAccount, order, strJson,"2",String.valueOf(pingzuonum));
+//		    		} else {
+//		    			//既要平昨仓。又要平今仓。要2次发送平仓条件
+//		    			positionsDetail2now.setSubuserid(positionsDetail2.getSubuserid());
+//		    			positionsDetail2now.setInstrumentid(positionsDetail2.getInstrumentid());
+//		    			positionsDetail2now.setDirection(positionsDetail2.getDirection());
+//		    			pingcangnum = 0;
+//		    			positionsDetail2now.setVolume(pingcangnum);
+//		    			mapHoldContractMemorySave.put(comboKey, positionsDetail2now);
+//		    			pingzuonum = positionsDetail2.getVolume();
+//		    			sendOrderAndToDb(subAccount, order, strJson,"2",String.valueOf(pingzuonum));
+//		    			
+//		    			tmpint = atomicInteger.incrementAndGet();
+//		    			order = String.valueOf(tmpint);
+//		    			nRequestID = nRequestID + 1;
+//		    			pingjinnum = json.getLong("volumeTotalOriginal") - pingzuonum;
+//		    			sendOrderAndToDb(subAccount, order, strJson,"1",String.valueOf(pingjinnum));
+//		    			
+//		    		}
+//		    	}
+//		    }
+		    
+		    // 20171029 曹改修 平昨时 上海特例
+		    if(json.getString("combOffsetFlag").equals("4")){
+			    if(checkSHPosition(json.getString("instrumentID"))){
+			    	String comboKey = "";
+				    if(json.getString("direction").equals("0"))
+				    {
+				    	//买开卖平
+				    	comboKey =json.getString("instrumentID") + "|1";
+				    } else {
+				    	//卖开买平
+				    	comboKey =json.getString("instrumentID") + "|0";
+				    }
+			    	
+				    PositionsDetail2 positionsDetail2 = mapHoldContractMemorySave.get(comboKey);
+				    PositionsDetail2 positionsDetail2now = new PositionsDetail2();
+				    
+				    if(positionsDetail2 == null){
+				    	// 没有昨仓
+				    } else {
+				    	if(positionsDetail2.getVolume() == 0){
+				    		// 昨仓已平完
+				    	} else {
+				    		long pingcangnum = 0;
+				    		pingcangnum = json.getLong("volumeTotalOriginal");
+				    		positionsDetail2now.setInstrumentid(positionsDetail2.getInstrumentid());
+			    			positionsDetail2now.setDirection(positionsDetail2.getDirection());
+			    			pingcangnum = positionsDetail2.getVolume() - json.getLong("volumeTotalOriginal");
+			    			positionsDetail2now.setVolume(pingcangnum);
+			    			mapHoldContractMemorySave.put(comboKey, positionsDetail2now);
+				    	}
+				    }
+			    }
+			    sendOrderAndToDb(subAccount, order, strJson,"","");
 		    } else {
-		    	//卖开买平
-		    	comboKey =subAccount + "|" + json.getString("instrumentID") + "|0";
-		    }
-		    long pingcangnum = 0;
-			//平昨数量
-			long pingzuonum=0;
-			//平今数量
-			long pingjinnum = 0;
-		    PositionsDetail2 positionsDetail2 = mapHoldContractMemorySave.get(comboKey);
-		    PositionsDetail2 positionsDetail2now = new PositionsDetail2();
-		    if(positionsDetail2 == null){
-		    	//平今仓
-		    	pingjinnum = json.getLong("volumeTotalOriginal");
-		    	pingzuonum = 0;
-		    	sendOrderAndToDb(subAccount, order, strJson,"1",String.valueOf(pingjinnum));
-		    } else {
-		    	if(positionsDetail2.getVolume() == 0){
-		    		//平今仓
-		    		pingjinnum = json.getLong("volumeTotalOriginal");
-		    		pingzuonum = 0;
-			    	sendOrderAndToDb(subAccount, order, strJson,"1",String.valueOf(pingjinnum));
-		    	} else {
-		    		pingcangnum = json.getLong("volumeTotalOriginal");
-		    		if(pingcangnum <= positionsDetail2.getVolume()){
-		    			//平仓全部平昨仓
-		    			positionsDetail2now.setSubuserid(positionsDetail2.getSubuserid());
-		    			positionsDetail2now.setInstrumentid(positionsDetail2.getInstrumentid());
-		    			positionsDetail2now.setDirection(positionsDetail2.getDirection());
-		    			pingcangnum = positionsDetail2.getVolume() - json.getLong("volumeTotalOriginal");
-		    			positionsDetail2now.setVolume(pingcangnum);
-		    			mapHoldContractMemorySave.put(comboKey, positionsDetail2now);
-		    			pingzuonum = json.getLong("volumeTotalOriginal");
-		    			pingjinnum =0;
-		    			sendOrderAndToDb(subAccount, order, strJson,"2",String.valueOf(pingzuonum));
-		    		} else {
-		    			//既要平昨仓。又要平今仓。要2次发送平仓条件
-		    			positionsDetail2now.setSubuserid(positionsDetail2.getSubuserid());
-		    			positionsDetail2now.setInstrumentid(positionsDetail2.getInstrumentid());
-		    			positionsDetail2now.setDirection(positionsDetail2.getDirection());
-		    			pingcangnum = 0;
-		    			positionsDetail2now.setVolume(pingcangnum);
-		    			mapHoldContractMemorySave.put(comboKey, positionsDetail2now);
-		    			pingzuonum = positionsDetail2.getVolume();
-		    			sendOrderAndToDb(subAccount, order, strJson,"2",String.valueOf(pingzuonum));
-		    			
-		    			tmpint = atomicInteger.incrementAndGet();
-		    			order = String.valueOf(tmpint);
-		    			nRequestID = nRequestID + 1;
-		    			pingjinnum = json.getLong("volumeTotalOriginal") - pingzuonum;
-		    			sendOrderAndToDb(subAccount, order, strJson,"1",String.valueOf(pingjinnum));
-		    			
-		    		}
-		    	}
+		    	sendOrderAndToDb(subAccount, order, strJson,"","");
 		    }
 		    
 		    
@@ -2934,7 +2971,7 @@ public class CoreappView {
 //				
 //			}else {
 				//非上期所
-				sendOrderAndToDb(subAccount, order, strJson,"","");
+				
 //			}
 				
 			
