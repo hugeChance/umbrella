@@ -2575,8 +2575,22 @@ public class CoreappView {
 			}
 			oldPositionsDetail = mapSubHoldContractSave.get(combokey);
 			oldPositionsDetail2 = mapHoldContractMemorySave.get(combokey);
+			long tempSubHoldContract;
+			
+			if(oldPositionsDetail == null) {
+				tempSubHoldContract = 0;
+			} else {
+				tempSubHoldContract = oldPositionsDetail.getVolume();
+			}
+			long tempHoldContract;
+			
+			if(oldPositionsDetail2 == null) {
+				tempHoldContract = 0;
+			} else {
+				tempHoldContract = oldPositionsDetail2.getVolume();
+			}
 			//平今的数据量 是 总持仓 - 昨仓 - 输入平今量  >=0 才正常
-			if(oldPositionsDetail.getVolume() - oldPositionsDetail2.getVolume() - Long.valueOf(json.getIntValue("volumeTotalOriginal")) >= 0) {
+			if(tempSubHoldContract - tempHoldContract - Long.valueOf(json.getIntValue("volumeTotalOriginal")) >= 0) {
 				// 有平今量的场合
 				//正常
 				oldNoTradePositionsDetail = mapSubNoTradeContractSave.get(combokeyNoTrade);
@@ -2587,7 +2601,7 @@ public class CoreappView {
 					tmpVolume = 0;
 				}
 				//平今的数据量 是 总持仓 - 昨仓 - 平今委托量  >=输入平今量才正常
-				if(oldPositionsDetail.getVolume() - oldPositionsDetail2.getVolume() - tmpVolume >= Long.valueOf(json.getIntValue("volumeTotalOriginal"))){
+				if(tempSubHoldContract - tempHoldContract - tmpVolume >= Long.valueOf(json.getIntValue("volumeTotalOriginal"))){
 					//正常
 					// 增加未成交数
 					
@@ -2653,7 +2667,21 @@ public class CoreappView {
 			oldPositionsDetail = mapSubHoldContractSave.get(combokey);
 			oldPositionsDetail2 = mapHoldContractMemorySave.get(combokey);
 			//平昨的数据量 是 昨仓 - 输入平昨量  >=0 才正常
-			if(oldPositionsDetail2.getVolume() - Long.valueOf(json.getIntValue("volumeTotalOriginal")) >= 0) {
+			long tempSubHoldContract;
+			
+			if(oldPositionsDetail == null) {
+				tempSubHoldContract = 0;
+			} else {
+				tempSubHoldContract = oldPositionsDetail.getVolume();
+			}
+			long tempHoldContract;
+			
+			if(oldPositionsDetail2 == null) {
+				tempHoldContract = 0;
+			} else {
+				tempHoldContract = oldPositionsDetail2.getVolume();
+			}
+			if(tempHoldContract - Long.valueOf(json.getIntValue("volumeTotalOriginal")) >= 0) {
 				// 有平昨量的场合
 				//正常
 				oldNoTradePositionsDetail = mapSubNoTradeContractSave.get(combokeyNoTrade);
@@ -2664,7 +2692,7 @@ public class CoreappView {
 					tmpVolume = 0;
 				}
 				//平仓的数据量 是 昨仓 - 平昨委托量  >=输入平昨量才正常
-				if(oldPositionsDetail2.getVolume() - tmpVolume >= Long.valueOf(json.getIntValue("volumeTotalOriginal"))){
+				if(tempHoldContract - tmpVolume >= Long.valueOf(json.getIntValue("volumeTotalOriginal"))){
 					//正常
 					// 增加未成交数
 					
