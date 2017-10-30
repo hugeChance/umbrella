@@ -1295,7 +1295,7 @@ public class CoreappView {
 				}
 				
 			} 
-			
+		
 			//计算平仓量的也要还回去
 			// 平今 平昨 改修20171029
 			combokey = "";
@@ -1318,6 +1318,37 @@ public class CoreappView {
 				newpositionsDetail.setVolume(oldpositionsDetail.getVolume() - pTrade.getVolume());
 				mapSubNoTradeContractSave.put(combokey, newpositionsDetail);
 			} 
+			
+			 // 20171029 曹改修 平昨时 上海特例
+		    if(String.valueOf(pTrade.getOffsetFlag()).equals("4")){
+			    if(checkSHPosition(pTrade.getInstrumentID())){
+			    	String comboKey = "";
+				   
+				   
+				    comboKey =subAccount + "|" + pTrade.getInstrumentID() + "|" + String.valueOf(pTrade.getDirection());
+				   
+			    	
+				    PositionsDetail2 positionsDetail2 = mapHoldContractMemorySave.get(comboKey);
+				    PositionsDetail2 positionsDetail2now = new PositionsDetail2();
+				    
+				    if(positionsDetail2 == null){
+				    	// 没有昨仓
+				    } else {
+				    	if(positionsDetail2.getVolume() == 0){
+				    		// 昨仓已平完
+				    	} else {
+				    		long pingcangnum = 0;
+				    		pingcangnum = pTrade.getVolume();
+				    		positionsDetail2now.setInstrumentid(positionsDetail2.getInstrumentid());
+			    			positionsDetail2now.setDirection(positionsDetail2.getDirection());
+			    			pingcangnum = positionsDetail2.getVolume() - pTrade.getVolume();
+			    			positionsDetail2now.setVolume(pingcangnum);
+			    			mapHoldContractMemorySave.put(comboKey, positionsDetail2now);
+				    	}
+				    }
+			    }
+
+		    } 
 			
 		}
 
@@ -1629,7 +1660,7 @@ public class CoreappView {
 				 positionsDetail2now.setDirection(positionsDetail2.getDirection());
 				 pingcangnum = positionsDetail2.getVolume() + inputOrderTemp.getVolumetotaloriginal();
 				 positionsDetail2now.setVolume(pingcangnum);
-				 mapHoldContractMemorySave.put(comboKey, positionsDetail2now);
+//				 mapHoldContractMemorySave.put(comboKey, positionsDetail2now);
 			}
 		}
 		
@@ -1857,7 +1888,7 @@ public class CoreappView {
 		    			positionsDetail2now.setDirection(positionsDetail2.getDirection());
 		    			Long pingcangnum = positionsDetail2.getVolume() + pOrder.getVolumeTotalOriginal();
 		    			positionsDetail2now.setVolume(pingcangnum);
-		    			mapHoldContractMemorySave.put(combokey, positionsDetail2now);
+//		    			mapHoldContractMemorySave.put(combokey, positionsDetail2now);
 					}
 				}
 				
@@ -1905,7 +1936,7 @@ public class CoreappView {
 					 positionsDetail2now.setDirection(positionsDetail2.getDirection());
 					 pingcangnum = positionsDetail2.getVolume() + inputOrderTemp.getVolumetotaloriginal();
 					 positionsDetail2now.setVolume(pingcangnum);
-					 mapHoldContractMemorySave.put(comboKey, positionsDetail2now);
+//					 mapHoldContractMemorySave.put(comboKey, positionsDetail2now);
 				}
 			}
 			
@@ -2545,7 +2576,7 @@ public class CoreappView {
 			oldPositionsDetail = mapSubHoldContractSave.get(combokey);
 			oldPositionsDetail2 = mapHoldContractMemorySave.get(combokey);
 			//平今的数据量 是 总持仓 - 昨仓 - 输入平今量  >=0 才正常
-			if(oldPositionsDetail.getVolume() - oldPositionsDetail2.getVolume() - Long.valueOf(json.getIntValue("volumeTotalOriginal")) > 0) {
+			if(oldPositionsDetail.getVolume() - oldPositionsDetail2.getVolume() - Long.valueOf(json.getIntValue("volumeTotalOriginal")) >= 0) {
 				// 有平今量的场合
 				//正常
 				oldNoTradePositionsDetail = mapSubNoTradeContractSave.get(combokeyNoTrade);
@@ -2622,7 +2653,7 @@ public class CoreappView {
 			oldPositionsDetail = mapSubHoldContractSave.get(combokey);
 			oldPositionsDetail2 = mapHoldContractMemorySave.get(combokey);
 			//平昨的数据量 是 昨仓 - 输入平昨量  >=0 才正常
-			if(oldPositionsDetail2.getVolume() - Long.valueOf(json.getIntValue("volumeTotalOriginal")) > 0) {
+			if(oldPositionsDetail2.getVolume() - Long.valueOf(json.getIntValue("volumeTotalOriginal")) >= 0) {
 				// 有平昨量的场合
 				//正常
 				oldNoTradePositionsDetail = mapSubNoTradeContractSave.get(combokeyNoTrade);
@@ -2648,7 +2679,7 @@ public class CoreappView {
 					logger.info("委托平仓正常 增加未成交数:" + JSON.toJSONString(newNoTradePositionsDetail));
 					
 				} else {
-					//上期委托+平今未成交大于平今持仓 》 持仓 error
+					//上期委托+平昨未成交大于平昨持仓 》 持仓 error
 					StringBuffer sb = new StringBuffer();
 					sb.append("onRtnOrder|" + subAccount + "|error|上期委托+平昨未成交大于平昨持仓！");
 					SocketPrintOut(sb.toString());
@@ -2865,43 +2896,8 @@ public class CoreappView {
 //		    	}
 //		    }
 		    
-		    // 20171029 曹改修 平昨时 上海特例
-		    if(json.getString("combOffsetFlag").equals("4")){
-			    if(checkSHPosition(json.getString("instrumentID"))){
-			    	String comboKey = "";
-				    if(json.getString("direction").equals("0"))
-				    {
-				    	//买开卖平
-				    	comboKey =json.getString("instrumentID") + "|1";
-				    } else {
-				    	//卖开买平
-				    	comboKey =json.getString("instrumentID") + "|0";
-				    }
-			    	
-				    PositionsDetail2 positionsDetail2 = mapHoldContractMemorySave.get(comboKey);
-				    PositionsDetail2 positionsDetail2now = new PositionsDetail2();
-				    
-				    if(positionsDetail2 == null){
-				    	// 没有昨仓
-				    } else {
-				    	if(positionsDetail2.getVolume() == 0){
-				    		// 昨仓已平完
-				    	} else {
-				    		long pingcangnum = 0;
-				    		pingcangnum = json.getLong("volumeTotalOriginal");
-				    		positionsDetail2now.setInstrumentid(positionsDetail2.getInstrumentid());
-			    			positionsDetail2now.setDirection(positionsDetail2.getDirection());
-			    			pingcangnum = positionsDetail2.getVolume() - json.getLong("volumeTotalOriginal");
-			    			positionsDetail2now.setVolume(pingcangnum);
-			    			mapHoldContractMemorySave.put(comboKey, positionsDetail2now);
-				    	}
-				    }
-			    }
-			    sendOrderAndToDb(subAccount, order, strJson,"","");
-		    } else {
-		    	sendOrderAndToDb(subAccount, order, strJson,"","");
-		    }
-		    
+		   
+		    sendOrderAndToDb(subAccount, order, strJson,"","");
 		    
 //			if(checkSHPosition(json.getString("instrumentID"))){
 //			
