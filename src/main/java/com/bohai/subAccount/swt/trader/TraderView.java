@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.Socket;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -262,13 +263,13 @@ public class TraderView {
         
         if(initAvailable != null){
             TableItem newItem = new TableItem(table, SWT.NONE);
-            newItem.setText(0, initAvailable.getAvailable());//静态资金
-            newItem.setText(1, initAvailable.getCloseWin());//平仓盈亏
-            newItem.setText(2, initAvailable.getPositionWin());//持仓盈亏
-            newItem.setText(3, available);   //可用资金
-            newItem.setText(4, initAvailable.getFrozenAvailable());//冻结资金
-            newItem.setText(5, initAvailable.getMargin());//占用保证金
-            newItem.setText(6, initAvailable.getCommission());//手续费
+            newItem.setText(0, initAvailable.getAvailable()==null ? "0.00" : new BigDecimal(initAvailable.getAvailable()).setScale(2, RoundingMode.HALF_UP).toString());//静态资金
+            newItem.setText(1, initAvailable.getCloseWin()==null ? "0.00" : new BigDecimal(initAvailable.getCloseWin()).setScale(2, RoundingMode.HALF_UP).toString());//平仓盈亏
+            newItem.setText(2, initAvailable.getPositionWin()==null ? "0.00" : new BigDecimal(initAvailable.getPositionWin()).setScale(2, RoundingMode.HALF_UP).toString());//持仓盈亏
+            newItem.setText(3, available==null ? "0.00" : new BigDecimal(available).setScale(2, RoundingMode.HALF_UP).toString());   //可用资金
+            newItem.setText(4, initAvailable.getFrozenAvailable()==null ? "0.00" : new BigDecimal(initAvailable.getFrozenAvailable()).setScale(2, RoundingMode.HALF_UP).toString());//冻结资金
+            newItem.setText(5, initAvailable.getMargin()==null ? "0.00" : new BigDecimal(initAvailable.getMargin()).setScale(2, RoundingMode.HALF_UP).toString());//占用保证金
+            newItem.setText(6, initAvailable.getCommission()==null ? "0.00" : new BigDecimal(initAvailable.getCommission()).setScale(2, RoundingMode.HALF_UP).toString());//手续费
         }
         
         shell.layout();

@@ -66,7 +66,7 @@ public class Test {
 		System.out.println(JSON.toJSONString(inputOrderField));*/
 		
 		Test test = new Test();
-		test.test();
+		test.test3();
 	}
 	
 	
@@ -121,6 +121,14 @@ public class Test {
 		Date d1 = sdf.parse("14:1:14");
 		
 		System.out.println(d1.before(d));*/
+	}
+	
+	public void test3(){
+	    String s = "1.2346456734567841E11";
+	    
+	    BigDecimal bs = new BigDecimal(s).setScale(2, RoundingMode.HALF_UP);
+	    
+	    System.out.println(bs.toString());
 	}
 
 }
