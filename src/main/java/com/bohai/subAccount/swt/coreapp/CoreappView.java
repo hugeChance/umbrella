@@ -1381,7 +1381,7 @@ public class CoreappView {
 		if (listInvestorPosition.size() == 0) {
 			// 空持仓返回
 
-			sb.append("onPosition|" + subAccount + "|0|0|");
+			sb.append("onPosition|" + subAccount + "|0|0|0|");
 			SocketPrintOut(sb.toString());
 			// socketStr = ;
 			Display.getDefault().syncExec(new Runnable() {
@@ -1393,10 +1393,16 @@ public class CoreappView {
 			});
 		}
 		for (InvestorPosition investorPosition2 : listInvestorPosition) {
+			//实际老仓持仓数 20171101
+			PositionsDetail2 oldPositionsDetail2 = new PositionsDetail2(); 
+			String combokey = subAccount + "|" + investorPosition2.getInstrumentid() + "|" + investorPosition2.getPosidirection() ;
+			oldPositionsDetail2 = mapHoldContractMemorySave.get(combokey);
+			
+			
 			// 发送给交易员持仓数据
 			sb.delete(0, sb.length());
 			sb.append("onPosition|" + subAccount + "|" + i + "|" + listInvestorPosition.size() + "|"
-					+ JSON.toJSONString(investorPosition2));
+					+ JSON.toJSONString(investorPosition2)  +"|" + oldPositionsDetail2.getVolume());
 			SocketPrintOut(sb.toString());
 			// socketStr = ;
 			Display.getDefault().syncExec(new Runnable() {
@@ -3623,9 +3629,13 @@ public class CoreappView {
 				e.printStackTrace();
 			}
 			for (InvestorPosition investorPosition2 : listInvestorPosition) {
+				//实际老仓持仓数 20171101
+				PositionsDetail2 oldPositionsDetail2 = new PositionsDetail2(); 
+				String combokey = subAccount + "|" + investorPosition2.getInstrumentid() + "|" + investorPosition2.getPosidirection() ;
+				oldPositionsDetail2 = mapHoldContractMemorySave.get(combokey);
 				// 发送给交易员持仓数据
 				sb.delete(0, sb.length());
-				sb.append("subLogin|" + subAccount + "|onPosition|" + JSON.toJSONString(investorPosition2));
+				sb.append("subLogin|" + subAccount + "|onPosition|"  + JSON.toJSONString(investorPosition2) +"|" + oldPositionsDetail2.getVolume());
 				SocketPrintOut(sb.toString());
 				// socketStr = ;
 				Display.getDefault().syncExec(new Runnable() {
