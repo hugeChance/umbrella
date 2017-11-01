@@ -1323,9 +1323,13 @@ public class CoreappView {
 		    if(String.valueOf(pTrade.getOffsetFlag()).equals("4")){
 			    if(checkSHPosition(pTrade.getInstrumentID())){
 			    	String comboKey = "";
-				   
-				   
-				    comboKey =subAccount + "|" + pTrade.getInstrumentID() + "|" + String.valueOf(pTrade.getDirection());
+				    // 20171101 晚平仓修正补丁
+				    if(String.valueOf(pTrade.getDirection()).equals("0")){
+				    	comboKey =subAccount + "|" + pTrade.getInstrumentID() + "|1" ;
+				    } else {
+				    	comboKey =subAccount + "|" + pTrade.getInstrumentID() + "|0" ;
+				    }
+				    
 				   
 			    	
 				    PositionsDetail2 positionsDetail2 = mapHoldContractMemorySave.get(comboKey);
@@ -1397,12 +1401,17 @@ public class CoreappView {
 			PositionsDetail2 oldPositionsDetail2 = new PositionsDetail2(); 
 			String combokey = subAccount + "|" + investorPosition2.getInstrumentid() + "|" + investorPosition2.getPosidirection() ;
 			oldPositionsDetail2 = mapHoldContractMemorySave.get(combokey);
-			
+			long oldPosition = 0;
+			if(oldPositionsDetail2 != null){
+				oldPosition = oldPositionsDetail2.getVolume();
+			} else {
+				oldPosition = 0;
+			}
 			
 			// 发送给交易员持仓数据
 			sb.delete(0, sb.length());
 			sb.append("onPosition|" + subAccount + "|" + i + "|" + listInvestorPosition.size() + "|"
-					+ JSON.toJSONString(investorPosition2)  +"|" + oldPositionsDetail2.getVolume());
+					+ JSON.toJSONString(investorPosition2)  +"|" + String.valueOf(oldPosition));
 			SocketPrintOut(sb.toString());
 			// socketStr = ;
 			Display.getDefault().syncExec(new Runnable() {
@@ -3633,9 +3642,15 @@ public class CoreappView {
 				PositionsDetail2 oldPositionsDetail2 = new PositionsDetail2(); 
 				String combokey = subAccount + "|" + investorPosition2.getInstrumentid() + "|" + investorPosition2.getPosidirection() ;
 				oldPositionsDetail2 = mapHoldContractMemorySave.get(combokey);
+				long oldPosition = 0;
+				if(oldPositionsDetail2 != null){
+					oldPosition = oldPositionsDetail2.getVolume();
+				} else {
+					oldPosition = 0;
+				}
 				// 发送给交易员持仓数据
 				sb.delete(0, sb.length());
-				sb.append("subLogin|" + subAccount + "|onPosition|"  + JSON.toJSONString(investorPosition2) +"|" + oldPositionsDetail2.getVolume());
+				sb.append("subLogin|" + subAccount + "|onPosition|"  + JSON.toJSONString(investorPosition2) +"|" + String.valueOf(oldPosition));
 				SocketPrintOut(sb.toString());
 				// socketStr = ;
 				Display.getDefault().syncExec(new Runnable() {
