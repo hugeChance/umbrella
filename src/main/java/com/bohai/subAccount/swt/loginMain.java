@@ -397,6 +397,9 @@ public class loginMain {
                                     }
                                 }else if (paramList[2].equals("onPosition")) {//持仓
                                 	String position = paramList[3];
+                                	//老仓
+                                	String oldPosition =  paramList[4];
+                                	
                                 	if(!StringUtils.isEmpty(position)){
                                 		JSONObject jo = JSON.parseObject(position);
                                 		InvestorPosition investorPosition = new InvestorPosition();
@@ -404,6 +407,7 @@ public class loginMain {
                                 		investorPosition.setPosidirection(jo.getString("posidirection"));
                                 		investorPosition.setPosition(jo.getLong("position"));
                                 		investorPosition.setOpenamount(jo.getBigDecimal("openamount"));
+                                		investorPosition.setYdposition(Long.parseLong(oldPosition));
                                 		investorPositions.add(investorPosition);
                                 	}
 								}

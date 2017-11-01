@@ -274,11 +274,14 @@ public class TradeReceiveThread implements Runnable {
                         String positionStr = params[4];
                         JSONObject jo = JSON.parseObject(positionStr);
                         
+                        String oldPosition = params[5];
+                        
                         InvestorPosition position = new InvestorPosition();
                         position.setInstrumentid(jo.getString("instrumentid"));
                         position.setPosidirection(jo.getString("posidirection"));
                         position.setPosition(jo.getLong("position"));
                         position.setOpenamount(jo.getBigDecimal("openamount"));
+                        position.setYdposition(Long.parseLong(oldPosition));//昨仓
                         
                         Display.getDefault().syncExec(new Runnable() {
                             @Override
@@ -288,7 +291,12 @@ public class TradeReceiveThread implements Runnable {
                                 tableItem.setText(0, jo.getString("instrumentid"));
                                 tableItem.setText(1, jo.getString("posidirection").equals("0")?"买":"卖");
                                 tableItem.setText(2, jo.getString("position"));
-                                tableItem.setText(3, jo.getString("openamount"));
+                                //昨仓
+                                tableItem.setText(3, position.getYdposition().toString());
+                                //今仓
+                                Long todayPosition = position.getPosition()-position.getYdposition();
+                                tableItem.setText(4, todayPosition.toString());
+                                tableItem.setText(5, jo.getString("openamount"));
                                 //tradreView.shell.layout();
                             }
                         });

@@ -326,7 +326,7 @@ public class TraderView {
             }
         });
         
-        shell.setSize(908, 693);
+        shell.setSize(908, 736);
         shell.setText("交易员："+userName);
         shell.setLayout(new BorderLayout(0, 0));
         
@@ -424,7 +424,7 @@ public class TraderView {
 		bottomForm.setLayout(new FillLayout(SWT.HORIZONTAL));
         
 		southFolder = new CTabFolder(bottomForm, SWT.NONE);
-		headForm.setWeights(new int[] {143, 312, 117});
+		headForm.setWeights(new int[] {152, 356, 107});
 		createSouthFolder();
         
         
@@ -999,6 +999,78 @@ public class TraderView {
         });
         btnNewButton_1.setBounds(188, 267, 156, 34);
         btnNewButton_1.setText("市价反手");
+        
+        Button clearButten = new Button(composite, SWT.NONE);
+        clearButten.setBounds(10, 311, 156, 34);
+        clearButten.setText("清仓");
+        clearButten.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                
+                //清仓
+                if(entrustTable.getItems() != null && entrustTable.getItems().length > 0){
+                    
+                    for (TableItem tableItem : entrustTable.getItems()) {
+                        Order order = (Order) tableItem.getData();
+                        if(order.getOrderstatus().equals("5") || order.getOrderstatus().equals("0")
+                            || order.getOrderstatus().equals("2") || order.getOrderstatus().equals("4")){
+                            
+                            continue;
+                        }
+                        
+                        cancelOrder(order);
+                        try {
+                            Thread.sleep(20);
+                        } catch (InterruptedException e1) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        }
+                    }
+                    
+                }
+                
+
+                
+                try {
+                    if(positionTable.getItems() == null || positionTable.getItemCount() <1){
+                        return;
+                    }
+                    for(TableItem item : positionTable.getItems()){
+                        if(StringUtils.isEmpty(item.getText(0))){
+                            continue;
+                        }
+                        
+                        InvestorPosition position = (InvestorPosition) item.getData();
+                        //上海
+                        if(checkSHPosition(position.getInstrumentid())){
+                            
+                            Long yposition = position.getYdposition();//昨仓
+                            Long tposition = position.getPosition() - yposition;//今仓
+                            if(yposition >0){
+                                //平昨仓
+                                closeOrder(position,"4",yposition.intValue());
+                            }
+                            if(tposition >0){
+                                //平今仓
+                                closeOrder(position,"3",tposition.intValue());
+                            }
+                        }else {
+                            //非上海
+                            closeOrder(position,"1",position.getPosition().intValue());
+                        }
+                        
+                    }
+                } catch (Exception e1) {
+                    logger.error("一键清仓失败",e1);
+                    MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                    box.setMessage(CommonConstant.CLOSE_FIELD);
+                    box.setText(CommonConstant.MESSAGE_BOX_ERROR);
+                    box.open();
+                }
+                
+                
+            }
+        });
     }
     
     private void createCenterFolder(){
@@ -1165,7 +1237,13 @@ public class TraderView {
                  String s = position.getPosidirection().equals("0")?"买":"卖";
                  tableItem.setText(1, s);//买卖数量
                  tableItem.setText(2, position.getPosition().toString());//数量
-                 tableItem.setText(3, position.getOpenamount().toString());//持仓均价
+                 //昨仓
+                 tableItem.setText(3, position.getYdposition().toString());
+                 //今仓
+                 Long todayPosition = position.getPosition()-position.getYdposition();
+                 tableItem.setText(4, todayPosition.toString());
+                 
+                 tableItem.setText(5, position.getOpenamount().toString());//持仓均价
              }
          }
          
@@ -1280,6 +1358,12 @@ public class TraderView {
         
         tLayout.addColumnData(new ColumnWeightData(30));
         new TableColumn(positionTable, SWT.NONE).setText("数量");
+        
+        tLayout.addColumnData(new ColumnWeightData(30));
+        new TableColumn(positionTable, SWT.NONE).setText("昨仓");
+        
+        tLayout.addColumnData(new ColumnWeightData(30));
+        new TableColumn(positionTable, SWT.NONE).setText("今仓");
         
         tLayout.addColumnData(new ColumnWeightData(30));
         new TableColumn(positionTable, SWT.NONE).setText("持仓均价");
@@ -1803,7 +1887,7 @@ public class TraderView {
     /**
      * 平仓方法
      */
-    public void closeOrder(InvestorPosition position){
+    public void closeOrder(InvestorPosition position,String offsetFlag,int volumn){
     	
     	logger.debug("平现有持仓："+JSON.toJSONString(position));
     	//下单入参
@@ -1843,10 +1927,10 @@ public class TraderView {
 		}
         
         //开平标志
-        inputOrderField.setCombOffsetFlag("3");
+        inputOrderField.setCombOffsetFlag(offsetFlag);
         
         //数量为持仓数量
-        inputOrderField.setVolumeTotalOriginal(position.getPosition().intValue());
+        inputOrderField.setVolumeTotalOriginal(volumn);
         
         //投资者代码
         inputOrderField.setInvestorID(userName);
@@ -2141,7 +2225,23 @@ public class TraderView {
 						}
 						
 						InvestorPosition position = (InvestorPosition) item.getData();
-						closeOrder(position);
+						 //上海
+                        if(checkSHPosition(position.getInstrumentid())){
+                            
+                            Long yposition = position.getYdposition();//昨仓
+                            Long tposition = position.getPosition() - yposition;//今仓
+                            if(yposition >0){
+                                //平昨仓
+                                closeOrder(position,"4",yposition.intValue());
+                            }
+                            if(tposition >0){
+                                //平今仓
+                                closeOrder(position,"3",tposition.intValue());
+                            }
+                        }else {
+                            //非上海
+                            closeOrder(position,"1",position.getPosition().intValue());
+                        }
 						
 					}
 				} catch (Exception e1) {
