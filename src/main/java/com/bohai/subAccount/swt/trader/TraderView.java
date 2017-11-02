@@ -424,7 +424,7 @@ public class TraderView {
 		bottomForm.setLayout(new FillLayout(SWT.HORIZONTAL));
         
 		southFolder = new CTabFolder(bottomForm, SWT.NONE);
-		headForm.setWeights(new int[] {152, 356, 107});
+		headForm.setWeights(new int[] {151, 330, 134});
 		createSouthFolder();
         
         
@@ -891,7 +891,7 @@ public class TraderView {
                 thread.start();
             }
         });
-        btnNewButton.setBounds(10, 267, 156, 34);
+        btnNewButton.setBounds(10, 267, 95, 34);
         btnNewButton.setText("下单");
         
         Listener listener = new quickKeyListener();
@@ -997,11 +997,11 @@ public class TraderView {
                 
             }
         });
-        btnNewButton_1.setBounds(188, 267, 156, 34);
+        btnNewButton_1.setBounds(111, 267, 95, 34);
         btnNewButton_1.setText("市价反手");
         
         Button clearButten = new Button(composite, SWT.NONE);
-        clearButten.setBounds(10, 311, 156, 34);
+        clearButten.setBounds(212, 267, 95, 34);
         clearButten.setText("清仓");
         clearButten.addSelectionListener(new SelectionAdapter() {
             @Override
