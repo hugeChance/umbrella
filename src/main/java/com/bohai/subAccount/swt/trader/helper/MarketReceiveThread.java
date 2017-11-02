@@ -184,7 +184,7 @@ public class MarketReceiveThread implements Runnable {
                                 for(TableItem item : items){
                                     if(item.getText(0).equals(json.getString("instrumentID"))){
                                         //最新价
-                                        item.setText(4,json.getBigDecimal("lastPrice").setScale(1, RoundingMode.HALF_UP).toString());
+                                        item.setText(6,json.getBigDecimal("lastPrice").setScale(1, RoundingMode.HALF_UP).toString());
                                         UserContract contract = traderView.getContractByContractNo(json.getString("instrumentID"));
                                         
                                         //合约单位
@@ -194,7 +194,7 @@ public class MarketReceiveThread implements Runnable {
                                         BigDecimal d = new BigDecimal("0");
                                         String lastPrice = json.getString("lastPrice");
                                         //logger.debug("最新价："+lastPrice);
-                                        String positionPrice = item.getText(3);
+                                        String positionPrice = item.getText(5);
                                         //logger.debug("持仓价："+positionPrice);
                                         //logger.debug("合约单位："+contractUnit.toString());
                                         String volumn = item.getText(2);
@@ -205,12 +205,12 @@ public class MarketReceiveThread implements Runnable {
                                         if(item.getText(1).equals("买")){
                                             //logger.debug("买入开仓盈亏 = （最新价-持仓价）*合约单位*手数 ");
                                             //logger.debug("持仓盈亏："+d.toString());
-                                            item.setText(5, d.toString());
+                                            item.setText(7, d.toString());
                                         }else {
                                             //logger.debug("卖出开仓盈亏 = （持仓价-最新价）*合约单位*手数 ");
                                             d = d.multiply(new BigDecimal("-1"));
                                             //logger.debug("持仓盈亏："+ d.toString());
-                                            item.setText(5, d.toString());
+                                            item.setText(7, d.toString());
                                         }
                                         
                                         if(d.compareTo(new BigDecimal("0"))>0){
