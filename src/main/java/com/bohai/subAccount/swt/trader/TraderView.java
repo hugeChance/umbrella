@@ -986,7 +986,24 @@ public class TraderView {
                     if(items[0].getData() != null){
                         InvestorPosition position = (InvestorPosition) items[0].getData();
                         //下反手单
-                        inverseOrder(position);
+                      //上海
+                        if(checkSHPosition(position.getInstrumentid())){
+                            
+                            Long yposition = position.getYdposition();//昨仓
+                            Long tposition = position.getPosition() - yposition;//今仓
+                            if(yposition >0){
+                                //平昨仓
+                                inverseOrder(position,"4",yposition.intValue());
+                            }
+                            if(tposition >0){
+                                //平今仓
+                                inverseOrder(position,"3",tposition.intValue());
+                            }
+                        }else {
+                            //非上海
+                            inverseOrder(position,"1",position.getPosition().intValue());
+                        }
+                        
                     }else{
                         MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
                         box.setMessage("请先选择持仓");
@@ -1237,11 +1254,13 @@ public class TraderView {
                  String s = position.getPosidirection().equals("0")?"买":"卖";
                  tableItem.setText(1, s);//买卖数量
                  tableItem.setText(2, position.getPosition().toString());//数量
-                 //昨仓
-                 tableItem.setText(3, position.getYdposition().toString());
-                 //今仓
-                 Long todayPosition = position.getPosition()-position.getYdposition();
-                 tableItem.setText(4, todayPosition.toString());
+                 if(checkSHPosition(position.getInstrumentid())){
+                     //昨仓
+                     tableItem.setText(3, position.getYdposition().toString());
+                     //今仓
+                     Long todayPosition = position.getPosition()-position.getYdposition();
+                     tableItem.setText(4, todayPosition.toString());
+                 }
                  
                  tableItem.setText(5, position.getOpenamount().toString());//持仓均价
              }
@@ -1924,6 +1943,7 @@ public class TraderView {
 			//跌停价
 			logger.debug("清仓价格为涨停价："+price);
         	inputOrderField.setDirection(THOST_FTDC_D_Buy);
+        	inputOrderField.setLimitPrice(price.doubleValue());
 		}
         
         //开平标志
@@ -1980,7 +2000,7 @@ public class TraderView {
     /**
      * 市价反手方法
      */
-    public void inverseOrder(InvestorPosition position){
+    public void inverseOrder(InvestorPosition position,String offsetFlag,int volumn){
         
         logger.debug("平现有持仓："+JSON.toJSONString(position));
         //下单入参
@@ -2020,11 +2040,10 @@ public class TraderView {
             inputOrderField.setLimitPrice(price.doubleValue());
         }
         
-        //开平标志
-        inputOrderField.setCombOffsetFlag("3");
+        inputOrderField.setCombOffsetFlag(offsetFlag);
         
         //数量为持仓数量
-        inputOrderField.setVolumeTotalOriginal(position.getPosition().intValue());
+        inputOrderField.setVolumeTotalOriginal(volumn);
         
         //投资者代码
         inputOrderField.setInvestorID(userName);
