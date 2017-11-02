@@ -2016,8 +2016,12 @@ public class TraderView {
         //获取涨跌停价格
         for (TableItem item : marketTable.getItems()) {
             if(instrumentid.equals(item.getText(0))){
-                lowerLimitPrice = item.getText(9);
-                upperLimitPrice = item.getText(8);
+                if(!StringUtils.isEmpty(item.getText(9))){
+                    lowerLimitPrice = item.getText(9);
+                }
+                if(!StringUtils.isEmpty(item.getText(8))){
+                    upperLimitPrice = item.getText(8);
+                }
                 break;
             }
         }
