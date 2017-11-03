@@ -215,10 +215,10 @@ public class MarketReceiveThread implements Runnable {
                                         
                                         if(d.compareTo(new BigDecimal("0"))>0){
                                             //item.setBackground(5, SWTResourceManager.getColor(249,204,226));
-                                            item.setForeground(5, SWTResourceManager.getColor(242,14,14));
+                                            item.setForeground(7, SWTResourceManager.getColor(242,14,14));
                                         }else {
                                             //item.setBackground(5, SWTResourceManager.getColor(117,243,83));
-                                            item.setForeground(5, SWTResourceManager.getColor(78,178,88));
+                                            item.setForeground(7, SWTResourceManager.getColor(78,178,88));
                                         }
                                     }
                                 }
