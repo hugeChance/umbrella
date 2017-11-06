@@ -259,6 +259,10 @@ public class TraderView {
         TableColumn tableColumn_1 = new TableColumn(table, SWT.CENTER);
         tableColumn_1.setWidth(100);
         tableColumn_1.setText("手续费");
+        
+        TableColumn tableColumn_6 = new TableColumn(table, SWT.CENTER);
+        tableColumn_6.setWidth(100);
+        tableColumn_6.setText("出入金");
         sashForm.setWeights(new int[] {1});
         
         if(initAvailable != null){
@@ -270,6 +274,7 @@ public class TraderView {
             newItem.setText(4, initAvailable.getFrozenAvailable()==null ? "0.00" : new BigDecimal(initAvailable.getFrozenAvailable()).setScale(2, RoundingMode.HALF_UP).toString());//冻结资金
             newItem.setText(5, initAvailable.getMargin()==null ? "0.00" : new BigDecimal(initAvailable.getMargin()).setScale(2, RoundingMode.HALF_UP).toString());//占用保证金
             newItem.setText(6, initAvailable.getCommission()==null ? "0.00" : new BigDecimal(initAvailable.getCommission()).setScale(2, RoundingMode.HALF_UP).toString());//手续费
+            newItem.setText(7, initAvailable.getInOutMoney()==null? "0.00":new BigDecimal(initAvailable.getInOutMoney()).setScale(2, RoundingMode.HALF_UP).toString());//出入金
         }
         
         shell.layout();

@@ -328,6 +328,7 @@ public class TradeReceiveThread implements Runnable {
                                     newItem.setText(4, obj.getFrozenAvailable()==null ? "0.00" : new BigDecimal(obj.getFrozenAvailable()).setScale(2, RoundingMode.HALF_UP).toString());//冻结资金
                                     newItem.setText(5, obj.getMargin()==null ? "0.00" : new BigDecimal(obj.getMargin()).setScale(2, RoundingMode.HALF_UP).toString());//占用保证金
                                     newItem.setText(6, obj.getCommission()==null ? "0.00" : new BigDecimal(obj.getCommission()).setScale(2, RoundingMode.HALF_UP).toString());//手续费
+                                    newItem.setText(7, obj.getInOutMoney()==null? "0.00":new BigDecimal(obj.getInOutMoney()).setScale(2, RoundingMode.HALF_UP).toString());//出入金
                                 }else {
                                     TableItem item = items[0];
                                     item.setText(0, obj.getAvailable()==null ? "0.00" : new BigDecimal(obj.getAvailable()).setScale(2, RoundingMode.HALF_UP).toString());//静态资金
@@ -337,6 +338,7 @@ public class TradeReceiveThread implements Runnable {
                                     item.setText(4, obj.getFrozenAvailable()==null ? "0.00" : new BigDecimal(obj.getFrozenAvailable()).setScale(2, RoundingMode.HALF_UP).toString());//冻结资金
                                     item.setText(5, obj.getMargin()==null ? "0.00" : new BigDecimal(obj.getMargin()).setScale(2, RoundingMode.HALF_UP).toString());//占用保证金
                                     item.setText(6, obj.getCommission()==null ? "0.00" : new BigDecimal(obj.getCommission()).setScale(2, RoundingMode.HALF_UP).toString());//手续费
+                                    item.setText(7, obj.getInOutMoney()==null? "0.00":new BigDecimal(obj.getInOutMoney()).setScale(2, RoundingMode.HALF_UP).toString());//出入金
                                 }
                                 
                                 String price = tradreView.getPriceText().getText();
