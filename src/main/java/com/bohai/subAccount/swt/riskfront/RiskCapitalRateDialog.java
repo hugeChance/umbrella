@@ -191,11 +191,26 @@ public class RiskCapitalRateDialog extends Dialog {
 				returnCheckFlg = 0;
 				double doublej = Double.valueOf(item == null?"0":item.getText(1));
 				doublej = doublej - capitalRate.getHostCapital1().doubleValue();
+				
+				if(StringUtils.isEmpty(text.getText())) {
+					text.setText("0");
+				}
+				if(StringUtils.isEmpty(text_1.getText())) {
+					text_1.setText("0");
+				}
+				if(StringUtils.isEmpty(text_2.getText())) {
+					text_2.setText("0");
+				}
+				if(StringUtils.isEmpty(text_3.getText())) {
+					text_3.setText("0");
+				}
+				
 				// 出入金CHECK
 				if (item !=null && checkCapital(item.getText(0),text.getText(),text_1.getText(),String.valueOf(doublej),"0") == 1){
 					// 出入金操作
 					// 现在质押资金设了常量为0
-					setCapital(item.getText(0),text.getText(),text_1.getText(),capitalRate.getUserCapitalRate().toString(),text_2.getText(),text_3.getText());
+//					setCapital(item.getText(0),text.getText(),text_1.getText(),capitalRate.getUserCapitalRate().toString(),text_2.getText(),text_3.getText());
+					setCapital(item.getText(0),text.getText(),text_1.getText(),"0",text_2.getText(),text_3.getText());
 				} else {
 					MessageBox messagebox = new MessageBox(shell, SWT.ICON_QUESTION
 	                        | SWT.YES );
