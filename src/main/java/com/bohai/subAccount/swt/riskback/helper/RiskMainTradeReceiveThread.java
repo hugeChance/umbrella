@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Display;
@@ -150,9 +151,71 @@ public class RiskMainTradeReceiveThread implements Runnable {
                             }
                         });
                         continue;
+                    }else if (params[2].equals("1")) {
+                      //刷新持仓表
+                        Display.getDefault().syncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(riskManageView.getSubAccountTable().getItemCount()>0){
+                                    TableItem[] items = riskManageView.getSubAccountTable().getItems();
+                                    for(TableItem item :items){
+                                        if(item.getText(0).equals(userName)){
+                                            UserPositionVO userPositionVO = (UserPositionVO) item.getData();
+                                            
+                                            String positionStr = params[4];
+                                            JSONObject jo = JSON.parseObject(positionStr);
+                                            
+                                            String oldPosition = params[5];
+                                            
+                                            InvestorPosition position = new InvestorPosition();
+                                            position.setInstrumentid(jo.getString("instrumentid"));
+                                            position.setPosidirection(jo.getString("posidirection"));
+                                            position.setPosition(jo.getLong("position"));
+                                            position.setOpenamount(jo.getBigDecimal("openamount"));
+                                            position.setYdposition(Long.parseLong(oldPosition));//昨仓
+                                            List<InvestorPosition> investorPositions = new ArrayList<InvestorPosition>();
+                                            investorPositions.add(position);
+                                            userPositionVO.setInvestorPositions(investorPositions);
+                                            //item.setData(userPositionVO);
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }else {
+                        //刷新持仓表
+                        Display.getDefault().syncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(riskManageView.getSubAccountTable().getItemCount()>0){
+                                    TableItem[] items = riskManageView.getSubAccountTable().getItems();
+                                    for(TableItem item :items){
+                                        if(item.getText(0).equals(userName)){
+                                            UserPositionVO userPositionVO = (UserPositionVO) item.getData();
+                                            
+                                            String positionStr = params[4];
+                                            JSONObject jo = JSON.parseObject(positionStr);
+                                            
+                                            String oldPosition = params[5];
+                                            
+                                            InvestorPosition position = new InvestorPosition();
+                                            position.setInstrumentid(jo.getString("instrumentid"));
+                                            position.setPosidirection(jo.getString("posidirection"));
+                                            position.setPosition(jo.getLong("position"));
+                                            position.setOpenamount(jo.getBigDecimal("openamount"));
+                                            position.setYdposition(Long.parseLong(oldPosition));//昨仓
+                                            
+                                            userPositionVO.getInvestorPositions().add(position);
+                                            
+                                            //item.setData(userPositionVO);
+                                        }
+                                    }
+                                }
+                            }
+                        });
                     }
                     
-                    if(params[2].equals("1")){//如果是重新推送则清空持仓表
+                    /*if(params[2].equals("1")){//如果是重新推送则清空持仓表
                         //刷新持仓表
                         Display.getDefault().syncExec(new Runnable() {
                             @Override
@@ -177,19 +240,8 @@ public class RiskMainTradeReceiveThread implements Runnable {
                             	}
                             }
                         });
-                    }
-                	
-                	/*List<InvestorPosition> investorPositions = null;
-                	//List<InvestorPosition2> investorPositions2 = null;
-					try {
-						investorPositions = investorPositionService.getUserByUserName(userName);
-						//investorPositions2 = investorPositionService.getUserByUserName2(userName);
-					} catch (FutureException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					riskManageView.savePosition(userName, investorPositions);*/
-					//riskManageView.savePosition(params[1] + "close", investorPositions2);
+                    }*/
+                    
                 	
                 }
 			} catch (IOException e) {

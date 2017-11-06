@@ -107,7 +107,7 @@ public class RiskMainMarketReceiveThread implements Runnable {
 					//合约编号
 					String instrumentID = json.getString("instrumentID");
 					
-					Display.getDefault().syncExec(new Runnable() {
+					Display.getDefault().asyncExec(new Runnable() {
 						@Override
 						public void run() {
 							
