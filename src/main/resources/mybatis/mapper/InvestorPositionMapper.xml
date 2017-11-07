@@ -99,8 +99,8 @@
     on t.SUBUSERID = y.SUBUSERID
     and t.INSTRUMENTID = y.INSTRUMENTID
     and t.POSIDIRECTION = y.POSIDIRECTION
-    WHERE SUBUSERID = #{subuserid,jdbcType=VARCHAR}
-    and POSITION > 0
+    WHERE t.SUBUSERID = #{subuserid,jdbcType=VARCHAR}
+    and t.POSITION > 0
   </select>
   
   <select id="getUserByUserName" resultMap="BaseResultMap" parameterType="java.lang.String" >
