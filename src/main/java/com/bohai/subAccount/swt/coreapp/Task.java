@@ -71,90 +71,94 @@ public class Task implements Runnable {
 			}
 		});
     	  
-         System.out.println(temp);
-         templist = temp.split("\\|");
-         controlID = templist[0];
-         subAccount = templist[1];
-         
-         if(controlID.equals("admin")){
-        	 logger.info("admin结算按下，结算单准备生成");
-        	 if (subAccount.equals("closeAccount")){
-        		 coreappView.closeAccount();
-        	 }
-        	 
-         }
-         
-         if(controlID.equals("hello")){
-        	 logger.info("TASK登入操作");
-        	 password = templist[2];
-             //登入操作
-        	 coreappView.subLogin(subAccount, password);
-         }
-         
-         
-         if(controlID.equals("order")){
-        	 logger.info("TASK下单操作");
-             //下单操作
-        	 
-             strJson = templist[2];
-        	 coreappView.subOrder(subAccount, strJson);
-         }
-         
-         if(controlID.equals("bye")){
-        	 logger.info("TASK登入操作");
-        	 password = templist[2];
-             //登入操作
-        	 coreappView.subLoginout(subAccount, password);
-        	 socket.close();
-        	 coreappView.getClients().remove(socket);
-        	 break;
-         }
-         
-         if(controlID.equals("cancel")){
-        	 logger.info("TASK撤单操作");
-             //下单操作
+    	 
+         try {
+            templist = temp.split("\\|");
+             controlID = templist[0];
+             subAccount = templist[1];
+             
+             if(controlID.equals("admin")){
+            	 logger.info("admin结算按下，结算单准备生成");
+            	 if (subAccount.equals("closeAccount")){
+            		 coreappView.closeAccount();
+            	 }
+            	 
+             }
+             
+             if(controlID.equals("hello")){
+            	 logger.info("TASK登入操作");
+            	 password = templist[2];
+                 //登入操作
+            	 coreappView.subLogin(subAccount, password);
+             }
+             
+             
+             if(controlID.equals("order")){
+            	 logger.info("TASK下单操作");
+                 //下单操作
+            	 
+                 strJson = templist[2];
+            	 coreappView.subOrder(subAccount, strJson);
+             }
+             
+             if(controlID.equals("bye")){
+            	 logger.info("TASK登入操作");
+            	 password = templist[2];
+                 //登入操作
+            	 coreappView.subLoginout(subAccount, password);
+            	 socket.close();
+            	 coreappView.removeClient(socket);
+            	 break;
+             }
+             
+             if(controlID.equals("cancel")){
+            	 logger.info("TASK撤单操作");
+                 //下单操作
 //        	 Thread.sleep(5);
-             strJson = templist[2];
-        	 coreappView.subOrderAction(subAccount, strJson);
-         }
-         
-         if(controlID.equals("risk")){
-        	 //logger.info("TASK-risk-命令");
-        	 riskstr = templist[2];
-             //下单操作
-        	 //logger.info("操作交易员名："+subAccount+"|命令是:"+riskstr);
-        	 if(riskstr.equals("QPXZ")){
-        		 logger.info("操作交易员名："+subAccount+"|命令是:"+riskstr);
-        		 //强平限制
-        		 coreappView.riskCommand1(subAccount);
-        	 }else if(riskstr.equals("FKQP")){
-        		 logger.info("操作交易员名："+subAccount+"|命令是:"+riskstr);
-        		 //风控强平
-        		 coreappView.riskForceClose(subAccount,templist[3]);
-        	 }else if(riskstr.equals("YJCD")){
-        		 logger.info("操作交易员名："+subAccount+"|命令是:"+riskstr);
-        		 //一键撤单
-        		 coreappView.riskCommand2(subAccount);
-        	 }else if(riskstr.equals("XZKC")){
-        		 logger.info("操作交易员名："+subAccount+"|命令是:"+riskstr);
-        		 //限制开仓
-        		 coreappView.riskCommand3(subAccount);
-        	 }else if(riskstr.equals("QXXZ")){
-        		 logger.info("操作交易员名："+subAccount+"|命令是:"+riskstr);
-        		 //取消限制
-        		 coreappView.riskCommand4(subAccount);
-        	 }else if(riskstr.equals("CCYK")){
-        		 //持仓盈亏
-        		 coreappView.riskCCYK(subAccount,templist[3]);
-        	 }else if(riskstr.equals("TPXZ")){
-        		 //用户名 合约号 开仓方向
-        		 coreappView.riskTPXZ(subAccount,templist[3],templist[4]);
-        	 }else if(riskstr.equals("CRJ")){
-        		 //出入金
-        		 coreappView.riskCRJ(subAccount,templist[3]);
-        	 }
+                 strJson = templist[2];
+            	 coreappView.subOrderAction(subAccount, strJson);
+             }
+             
+             if(controlID.equals("risk")){
+            	 //logger.info("TASK-risk-命令");
+            	 riskstr = templist[2];
+                 //下单操作
+            	 //logger.info("操作交易员名："+subAccount+"|命令是:"+riskstr);
+            	 if(riskstr.equals("QPXZ")){
+            		 logger.info("操作交易员名："+subAccount+"|命令是:"+riskstr);
+            		 //强平限制
+            		 coreappView.riskCommand1(subAccount);
+            	 }else if(riskstr.equals("FKQP")){
+            		 logger.info("操作交易员名："+subAccount+"|命令是:"+riskstr);
+            		 //风控强平
+            		 coreappView.riskForceClose(subAccount,templist[3]);
+            	 }else if(riskstr.equals("YJCD")){
+            		 logger.info("操作交易员名："+subAccount+"|命令是:"+riskstr);
+            		 //一键撤单
+            		 coreappView.riskCommand2(subAccount);
+            	 }else if(riskstr.equals("XZKC")){
+            		 logger.info("操作交易员名："+subAccount+"|命令是:"+riskstr);
+            		 //限制开仓
+            		 coreappView.riskCommand3(subAccount);
+            	 }else if(riskstr.equals("QXXZ")){
+            		 logger.info("操作交易员名："+subAccount+"|命令是:"+riskstr);
+            		 //取消限制
+            		 coreappView.riskCommand4(subAccount);
+            	 }else if(riskstr.equals("CCYK")){
+            		 //持仓盈亏
+            		 coreappView.riskCCYK(subAccount,templist[3]);
+            	 }else if(riskstr.equals("TPXZ")){
+            		 //用户名 合约号 开仓方向
+            		 coreappView.riskTPXZ(subAccount,templist[3],templist[4]);
+            	 }else if(riskstr.equals("CRJ")){
+            		 //出入金
+            		 coreappView.riskCRJ(subAccount,templist[3]);
+            	 }
 //        	 coreappView.subOrderAction(subAccount, strJson);
-         }
+             }
+        } catch (Exception e) {
+            logger.error("报文解析失败:"+temp,e);
+        }
          
          
          

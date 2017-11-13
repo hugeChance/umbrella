@@ -222,6 +222,13 @@ public class CoreappView {
 		}
 		clients.add(client);
 	}
+	
+	public synchronized void removeClient(Socket client){
+	    
+	    if (clients != null) {
+	        clients.remove(client);
+	    }
+	}
 
 	public void setMemory() {
 		UserContract userContract = new UserContract();
