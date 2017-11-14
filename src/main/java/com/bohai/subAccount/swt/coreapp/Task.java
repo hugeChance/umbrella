@@ -102,7 +102,7 @@ public class Task implements Runnable {
              }
              
              if(controlID.equals("bye")){
-            	 logger.info("TASK登入操作");
+            	 logger.info("TASK登出操作");
             	 password = templist[2];
                  //登入操作
             	 coreappView.subLoginout(subAccount, password);

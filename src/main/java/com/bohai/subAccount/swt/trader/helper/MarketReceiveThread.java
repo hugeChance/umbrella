@@ -94,7 +94,7 @@ public class MarketReceiveThread implements Runnable {
                                 for (TableItem tableItem : tableItems) {
                                     if(tableItem.getText(0).equals(json.getString("instrumentID"))){
                                         //最新价
-                                        tableItem.setText(1, json.getBigDecimal("lastPrice").setScale(1, RoundingMode.HALF_UP).toString());
+                                        tableItem.setText(1, json.getBigDecimal("lastPrice").setScale(2, RoundingMode.HALF_UP).toString());
                                         
                                         //买量
                                         Integer bidVolume1 = json.getInteger("bidVolume1");
@@ -106,7 +106,7 @@ public class MarketReceiveThread implements Runnable {
                                         	//如果是极限值 买价等于跌停价
                                         	buyPrice = json.getDouble("lowerLimitPrice");
                                         }
-                                        tableItem.setText(3, new BigDecimal(buyPrice).setScale(1, RoundingMode.HALF_UP).toString());
+                                        tableItem.setText(3, new BigDecimal(buyPrice).setScale(2, RoundingMode.HALF_UP).toString());
                                         tableItem.setForeground(3, SWTResourceManager.getColor(242,14,14));
                                         
                                         //卖价
@@ -115,14 +115,14 @@ public class MarketReceiveThread implements Runnable {
                                         	//如果是极限值   卖价就是涨停价
                                         	sellPrice = json.getDouble("upperLimitPrice");
                                         }
-                                        tableItem.setText(4, new BigDecimal(sellPrice).setScale(1, RoundingMode.HALF_UP).toString());
+                                        tableItem.setText(4, new BigDecimal(sellPrice).setScale(2, RoundingMode.HALF_UP).toString());
                                         tableItem.setForeground(4, SWTResourceManager.getColor(78,178,88));
                                         //卖量
                                         Integer askVolume1 = json.getInteger("askVolume1");
                                         tableItem.setText(5, askVolume1.toString());
                                         tableItem.setForeground(5, SWTResourceManager.getColor(78,178,88));
                                         //涨跌 = 最新价 - 昨收盘
-                                        BigDecimal change= new BigDecimal(json.getString("lastPrice")).subtract(new BigDecimal(json.getString("preSettlementPrice"))).setScale(1, RoundingMode.HALF_UP);
+                                        BigDecimal change= new BigDecimal(json.getString("lastPrice")).subtract(new BigDecimal(json.getString("preSettlementPrice"))).setScale(2, RoundingMode.HALF_UP);
                                         tableItem.setText(6, String.valueOf(change));
                                         if(change.compareTo(new BigDecimal("0"))>0){
                                         	//红色
@@ -138,17 +138,17 @@ public class MarketReceiveThread implements Runnable {
                                         changeRate = changeRate.multiply(new BigDecimal("100")).setScale(2, RoundingMode.HALF_UP);;
                                         tableItem.setText(7, changeRate+"%");
                                         //涨停价
-                                        BigDecimal upperLimitPrice = json.getBigDecimal("upperLimitPrice").setScale(1, RoundingMode.HALF_UP);
+                                        BigDecimal upperLimitPrice = json.getBigDecimal("upperLimitPrice").setScale(2, RoundingMode.HALF_UP);
                                         tableItem.setText(8, upperLimitPrice.toString());
                                         //跌停价
-                                        BigDecimal lowerLimitPrice = json.getBigDecimal("lowerLimitPrice").setScale(1, RoundingMode.HALF_UP);
+                                        BigDecimal lowerLimitPrice = json.getBigDecimal("lowerLimitPrice").setScale(2, RoundingMode.HALF_UP);
                                         tableItem.setText(9, lowerLimitPrice.toString());
                                         
                                         //最高价
-                                        BigDecimal highestPrice = json.getBigDecimal("highestPrice").setScale(1, RoundingMode.HALF_UP);
+                                        BigDecimal highestPrice = json.getBigDecimal("highestPrice").setScale(2, RoundingMode.HALF_UP);
                                         tableItem.setText(10, highestPrice.toString());
                                         //最低价
-                                        BigDecimal lowestPrice = json.getBigDecimal("lowestPrice").setScale(1, RoundingMode.HALF_UP);
+                                        BigDecimal lowestPrice = json.getBigDecimal("lowestPrice").setScale(2, RoundingMode.HALF_UP);
                                         tableItem.setText(11, lowestPrice.toString());
                                         //成交量
                                         Integer volume = json.getInteger("volume");
@@ -184,7 +184,7 @@ public class MarketReceiveThread implements Runnable {
                                 for(TableItem item : items){
                                     if(item.getText(0).equals(json.getString("instrumentID"))){
                                         //最新价
-                                        item.setText(6,json.getBigDecimal("lastPrice").setScale(1, RoundingMode.HALF_UP).toString());
+                                        item.setText(6,json.getBigDecimal("lastPrice").setScale(2, RoundingMode.HALF_UP).toString());
                                         UserContract contract = traderView.getContractByContractNo(json.getString("instrumentID"));
                                         
                                         //合约单位
