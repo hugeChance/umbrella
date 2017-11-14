@@ -157,7 +157,7 @@ public class Task implements Runnable {
 //        	 coreappView.subOrderAction(subAccount, strJson);
              }
         } catch (Exception e) {
-            logger.error("报文解析失败:"+temp,e);
+            logger.error("报文解析失败:"+temp+",远程地址："+socket.getRemoteSocketAddress()+","+socket.getInetAddress(),e);
         }
          
          
