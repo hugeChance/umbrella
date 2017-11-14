@@ -134,7 +134,7 @@ public class RiskMainTradeReceiveThread implements Runnable {
                 	String userName = params[1];
                 	if(params[2].equals("0")){//持仓为空
                         //刷新持仓表
-                        Display.getDefault().syncExec(new Runnable() {
+                        Display.getDefault().asyncExec(new Runnable() {
                             @Override
                             public void run() {
                             	if(riskManageView.getSubAccountTable().getItemCount()>0){
@@ -153,7 +153,7 @@ public class RiskMainTradeReceiveThread implements Runnable {
                         continue;
                     }else if (params[2].equals("1")) {
                       //刷新持仓表
-                        Display.getDefault().syncExec(new Runnable() {
+                        Display.getDefault().asyncExec(new Runnable() {
                             @Override
                             public void run() {
                                 if(riskManageView.getSubAccountTable().getItemCount()>0){
@@ -184,7 +184,7 @@ public class RiskMainTradeReceiveThread implements Runnable {
                         });
                     }else {
                         //刷新持仓表
-                        Display.getDefault().syncExec(new Runnable() {
+                        Display.getDefault().asyncExec(new Runnable() {
                             @Override
                             public void run() {
                                 if(riskManageView.getSubAccountTable().getItemCount()>0){
