@@ -73,6 +73,13 @@ public class Task implements Runnable {
     	  
     	 
          try {
+             
+             if(temp == null || temp.equals("null")){
+                 socket.close();
+                 coreappView.removeClient(socket);
+                 break;
+             }
+             
             templist = temp.split("\\|");
              controlID = templist[0];
              subAccount = templist[1];

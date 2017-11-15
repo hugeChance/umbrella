@@ -382,6 +382,10 @@ public class TradeReceiveThread implements Runnable {
                         loginMain.open();
                     }
                 });
+            }catch (Exception e) {
+                logger.error("报文解析失败",e);
+                e.printStackTrace();
+                continue;
             }
         }
         

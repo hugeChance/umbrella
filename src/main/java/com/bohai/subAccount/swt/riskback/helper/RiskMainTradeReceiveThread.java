@@ -245,9 +245,10 @@ public class RiskMainTradeReceiveThread implements Runnable {
                 	
                 }
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				logger.error("连接交易服务器失败",e);
+			}catch (Exception e) {
+                logger.error("报文解析失败",e);
+            }
 		}
 		
 	}
