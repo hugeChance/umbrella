@@ -91,6 +91,9 @@ import com.bohai.subAccount.utils.SpringContextUtil;
 import com.bohai.subAccount.vo.UserAvailableMemorySave;
 import com.bohai.subAccount.vo.UserFlgMemorySave;
 import com.bohai.subAccount.vo.UserTradeRuleMemorySave;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 
 public class CoreappView {
 
@@ -111,6 +114,8 @@ public class CoreappView {
 	int frontID = 0;
 	int CTPerrID = 0;
 	int tradingAccountnRequestID = 0;
+	
+	public int reStartFlg = 0;
 
 	/** 测试前置机地址 **/
 	// static String frontAddr = "tcp://180.169.116.120:41205";
@@ -800,7 +805,7 @@ public class CoreappView {
 				}
 			}
 		});
-		shell.setSize(613, 399);
+		shell.setSize(613, 427);
 		shell.setText("SWT Application");
 		shell.setLayout(null);
 
@@ -831,6 +836,121 @@ public class CoreappView {
 		Label label_1 = new Label(shell, SWT.NONE);
 		label_1.setText("交易员应答");
 		label_1.setBounds(339, 172, 61, 17);
+		
+		Button btnctp = new Button(shell, SWT.NONE);
+		btnctp.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e1) {
+				MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION
+						| SWT.OK | SWT.CANCEL);
+				box.setMessage("盘中重启是否开始（重启有风险，建议谨慎使用）？");
+				if(box.open() == SWT.OK){
+					MessageBox boxrepeat = new MessageBox(shell, SWT.ICON_INFORMATION
+							| SWT.OK | SWT.CANCEL);
+					boxrepeat.setMessage("盘中重启是否开始（重启有风险，建议谨慎使用）！");
+					if(box.open() == SWT.OK){
+						System.out.println("盘中重启开始");
+						logger.info("=====================盘中重启开始==============");
+						reStartFlg = 1;
+						logger.info("=====================盘中重启STEP1:清空显示框==============");
+						tradeResponse.setText("");;
+						ctpRequest.setText("");
+						ctpResponse.setText("");
+						tradeRequest.setText("");
+						setTradeResponse(tradeResponse);
+						setCtpRequest(ctpRequest);
+						setCtpResponse(ctpResponse);
+						setTradeRequest(tradeRequest);
+						logger.info("=====================盘中重启STEP2:登入命令==============");
+						// 查询主账号
+						List<MainAccount> listmainAccount = findMainAcc();
+						if (listmainAccount != null) {
+							mainAccount = listmainAccount.get(0);
+						} else {
+							logger.error("查询主账号失败！！！");
+							return;
+						}
+						// 连接CTP
+						/*
+						 * Thread connect = new Thread(new ConnectCTP());
+						 * connect.setDaemon(true); connect.start();
+						 */
+
+						try {
+							// 买开 卖平路线 账户主
+
+							MainAccount accountPrimary = mainAccountService.getAccountByType("1");
+							ctpFirst = new Socket(ApplicationConfig.getProperty("addressFirst"),
+									Integer.parseInt(ApplicationConfig.getProperty("portFirst")));
+							outFirst = new PrintWriter(new OutputStreamWriter(ctpFirst.getOutputStream(), "UTF-8"));
+							Thread buyConnect = new Thread(new CtpConnectThread(CoreappView.this, ctpFirst));
+							buyConnect.setDaemon(true);
+							buyConnect.start();
+
+							// 登录
+
+							CThostFtdcReqUserLoginField userLoginField = new CThostFtdcReqUserLoginField();
+							userLoginField.setBrokerID(accountPrimary.getBrokerId());
+							userLoginField.setUserID(accountPrimary.getAccountNo());
+							userLoginField.setPassword(accountPrimary.getPasswd());
+							outFirst.println("reqUserLogin|" + JSON.toJSONString(userLoginField) + "|1");
+							outFirst.flush();
+						} catch (FutureException e) {
+							logger.error("查询主账户信息失败", e);
+							box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+							box.setMessage("查询主账户信息失败");
+							box.setText("错误");
+							box.open();
+						} catch (Exception e) {
+							logger.error("连接前置机1失败", e);
+							box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+							box.setMessage("连接前置机1失败");
+							box.setText("错误");
+							box.open();
+						}
+
+						try {
+							// 卖开 买平路线 账户备
+							MainAccount accountSecondary = mainAccountService.getAccountByType("2");
+							if (accountSecondary != null) {
+								ctpSecond = new Socket(ApplicationConfig.getProperty("addressSecond"),
+										Integer.parseInt(ApplicationConfig.getProperty("portSecond")));
+								outSecond = new PrintWriter(new OutputStreamWriter(ctpSecond.getOutputStream(), "UTF-8"));
+								Thread sellConnect = new Thread(new CtpConnectThread(CoreappView.this, ctpSecond));
+								sellConnect.setDaemon(true);
+								sellConnect.start();
+
+								// 登录
+								CThostFtdcReqUserLoginField userLoginField = new CThostFtdcReqUserLoginField();
+								userLoginField.setBrokerID(accountSecondary.getBrokerId());
+								userLoginField.setUserID(accountSecondary.getAccountNo());
+								userLoginField.setPassword(accountSecondary.getPasswd());
+								outSecond.println("reqUserLogin|" + JSON.toJSONString(userLoginField) + "|1");
+								outSecond.flush();
+							}
+						} catch (FutureException e) {
+							logger.error("查询备账户信息失败", e);
+							box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+							box.setMessage("查询备账户信息失败");
+							box.setText("错误");
+							box.open();
+						} catch (Exception e) {
+							logger.error("连接前置机2失败");
+							box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+							box.setMessage("连接前置机2失败");
+							box.setText("错误");
+							box.open();
+						}
+
+						
+						
+					}
+				}
+				
+			}
+		});
+		btnctp.setBounds(29, 351, 162, 27);
+		btnctp.setText("重连CTP（谨慎操作）");
 
 	}
 
@@ -2187,14 +2307,25 @@ public class CoreappView {
 			this.nRequestID = nRequestID;
 			CTPerrID = pRspInfo.getErrorID();
 			
-			//确认账单
-			CThostFtdcSettlementInfoConfirmField settlementInfoConfirmField = new CThostFtdcSettlementInfoConfirmField();
-			settlementInfoConfirmField.setBrokerID(mainAccount.getBrokerId());
-			settlementInfoConfirmField.setInvestorID(mainAccount.getAccountNo());
+			if(reStartFlg == 1){
+				//重置orderRef
+				atomicInteger.set(atomicInteger.get() + 1000000);
+				logger.info("重置orderRef:"+atomicInteger.get());
+				//重置SessionID
+				//重置FrontID
+				logger.info("重置SessionID,新SessionID:"+sessionID);
+				logger.info("重置FrontID,新FrontID:"+frontID);
+				
+			} else {
+				//确认账单
+				CThostFtdcSettlementInfoConfirmField settlementInfoConfirmField = new CThostFtdcSettlementInfoConfirmField();
+				settlementInfoConfirmField.setBrokerID(mainAccount.getBrokerId());
+				settlementInfoConfirmField.setInvestorID(mainAccount.getAccountNo());
 
-			nRequestID = nRequestID + 1;
-			outFirst.println("reqSettlementInfoConfirm|" + JSON.toJSONString(settlementInfoConfirmField) + "|" + nRequestID);
-			outFirst.flush();
+				nRequestID = nRequestID + 1;
+				outFirst.println("reqSettlementInfoConfirm|" + JSON.toJSONString(settlementInfoConfirmField) + "|" + nRequestID);
+				outFirst.flush();
+			}
 			
 			
 		} catch (NumberFormatException e) {
@@ -2348,6 +2479,23 @@ public class CoreappView {
 		logger.info("subOrder:" + subAccount + JSON.toJSONString(strJson));
 
 		JSONObject json = JSON.parseObject(strJson);
+		
+		//重启状态FLG判断
+		if(reStartFlg == 1){
+			// 重启状态FLG判断
+			StringBuffer sb = new StringBuffer();
+			sb.append("onRtnOrder|" + subAccount + "|error|系统正在重启中请等待！！！");
+			SocketPrintOut(sb.toString());
+			// socketStr = ;
+			Display.getDefault().syncExec(new Runnable() {
+
+				@Override
+				public void run() {
+					getTradeResponse().append(sb.toString() + "\r\n");
+				}
+			});
+			return;
+		}
 
 		// 最大委托CHECK
 		if (mapTradeRuleMemorySave.size() > 0) {
@@ -4316,5 +4464,4 @@ public class CoreappView {
 
 		}
 	}
-
 }
