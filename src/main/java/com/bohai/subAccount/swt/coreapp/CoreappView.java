@@ -7,6 +7,7 @@ import static org.hraink.futures.ctp.thostftdcuserapidatatype.ThostFtdcUserApiDa
 import static org.hraink.futures.ctp.thostftdcuserapidatatype.ThostFtdcUserApiDataTypeLibrary.THOST_FTDC_TC_GFD;
 import static org.hraink.futures.ctp.thostftdcuserapidatatype.ThostFtdcUserApiDataTypeLibrary.THOST_FTDC_VC_AV;
 
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
@@ -159,6 +160,8 @@ public class CoreappView {
 	private Socket CTPsocket;
 	// 买开卖平socket
 	private Socket ctpFirst;
+	
+
 	// 买开卖平输出流
 	private PrintWriter outFirst;
 	// 卖开买平socket
@@ -576,6 +579,9 @@ public class CoreappView {
 			ctpFirst = new Socket(ApplicationConfig.getProperty("addressFirst"),
 					Integer.parseInt(ApplicationConfig.getProperty("portFirst")));
 			outFirst = new PrintWriter(new OutputStreamWriter(ctpFirst.getOutputStream(), "UTF-8"));
+			
+			
+			
 			Thread buyConnect = new Thread(new CtpConnectThread(CoreappView.this, ctpFirst));
 			buyConnect.setDaemon(true);
 			buyConnect.start();
@@ -896,12 +902,9 @@ public class CoreappView {
 							// 买开 卖平路线 账户主
 
 							MainAccount accountPrimary = mainAccountService.getAccountByType("1");
-							ctpFirst = new Socket(ApplicationConfig.getProperty("addressFirst"),
-									Integer.parseInt(ApplicationConfig.getProperty("portFirst")));
-							outFirst = new PrintWriter(new OutputStreamWriter(ctpFirst.getOutputStream(), "UTF-8"));
-							Thread buyConnect = new Thread(new CtpConnectThread(CoreappView.this, ctpFirst));
-							buyConnect.setDaemon(true);
-							buyConnect.start();
+//							ctpFirst = new Socket(ApplicationConfig.getProperty("addressFirst"),
+//									Integer.parseInt(ApplicationConfig.getProperty("portFirst")));
+							
 
 							// 登录
 
@@ -4552,5 +4555,41 @@ public class CoreappView {
 			});
 
 		}
+	}
+	
+	public Socket getCtpFirst() {
+		return ctpFirst;
+	}
+
+	public void setCtpFirst(Socket ctpFirst) {
+		this.ctpFirst = ctpFirst;
+	}
+	
+	 public void recreateSocket(){
+	        logger.info("重连CTPFIRST前置");
+//	        if(ctpFirst != null){
+//	            try {
+//	            	ctpFirst.close();
+//	            } catch (IOException e) {
+//	                // TODO Auto-generated catch block
+//	                e.printStackTrace();
+//	            }
+//	        }
+	        try {
+	            this.ctpFirst = new Socket(ApplicationConfig.getProperty("addressFirst"),
+						Integer.parseInt(ApplicationConfig.getProperty("portFirst")));
+	            outFirst = new PrintWriter(new OutputStreamWriter(ctpFirst.getOutputStream(), "UTF-8"));
+	            Thread.sleep(5000);
+	        } catch (Exception e) {
+	            logger.error("与行情服务器通信失败",e);
+	        }
+	    }
+
+	public Socket getCtpSecond() {
+		return ctpSecond;
+	}
+
+	public void setCtpSecond(Socket ctpSecond) {
+		this.ctpSecond = ctpSecond;
 	}
 }
