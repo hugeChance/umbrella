@@ -852,6 +852,22 @@ public class CoreappView {
 						System.out.println("盘中重启开始");
 						logger.info("=====================盘中重启开始==============");
 						reStartFlg = 1;
+						
+						logger.info("=====================盘中重启定时1分钟计时开始==============");
+						new Thread("睡眠1分钟") {
+			                public void run() {
+			                    try {
+									sleep(60000);
+									reStartFlg = 0;
+									logger.info("=====================盘中重启定时1分钟计时结束==============");
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+			                }
+			            }.start();
+
+						
 						logger.info("=====================盘中重启STEP1:清空显示框==============");
 						tradeResponse.setText("");;
 						ctpRequest.setText("");
@@ -1000,6 +1016,12 @@ public class CoreappView {
 		// 中报单的状态为“已成交”。但是仍然建议客户端将成交回报作为报单成交的标志，因为 CTP 的交易核心在 收到 OnRtnTrade
 		// 之后才会更新该报单的状态。如果客户端通过报单回报来判断报单成交与否并立即平仓，有 极小的概率会出现在平仓指令到达 CTP
 		// 交易核心时该报单的状态仍未更新，就会导致无法平仓。
+		
+		if(reStartFlg == 1){
+			logger.info("重启中，成交回调，以下忽略");
+			logger.info(JSON.toJSONString(pTrade));
+			return;
+		}
 		logger.info("成交");
 		logger.info(JSON.toJSONString(pTrade));
 
@@ -1633,6 +1655,11 @@ public class CoreappView {
 
 	public void onRspQryInvestorPositionDetail(CThostFtdcInvestorPositionDetailField pInvestorPositionDetail,
 			CThostFtdcRspInfoField pRspInfo, int nRequestID, boolean bIsLast) {
+		if(reStartFlg == 1){
+			logger.info("重启中，持仓明细查询回调，以下忽略");
+			logger.info(JSON.toJSONString(pInvestorPositionDetail));
+			return;
+		}
 		logger.info("持仓明细查询回调");
 		logger.info(JSON.toJSONString(pInvestorPositionDetail));
 
@@ -1654,6 +1681,11 @@ public class CoreappView {
 
 	public void onRspQryInvestorPosition(CThostFtdcInvestorPositionField pInvestorPosition,
 			CThostFtdcRspInfoField pRspInfo, int nRequestID, boolean bIsLast) {
+		if(reStartFlg == 1){
+			logger.info("重启中，持仓查询回调，以下忽略");
+			logger.info(JSON.toJSONString(pInvestorPosition));
+			return;
+		}
 		logger.info("持仓查询回调");
 		logger.info(JSON.toJSONString(pInvestorPosition));
 
@@ -1661,10 +1693,20 @@ public class CoreappView {
 
 	public void onRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField pSettlementInfoConfirm,
 			CThostFtdcRspInfoField pRspInfo, int nRequestID, boolean bIsLast) {
+		if(reStartFlg == 1){
+			logger.info("重启中，结算单确认回调，以下忽略");
+			logger.info("结算单确认回调");
+			return;
+		}
 		logger.info("结算单确认回调");
 	}
 
 	public void onRspError(CThostFtdcRspInfoField pRspInfo, int nRequestID, boolean bIsLast) {
+		if(reStartFlg == 1){
+			logger.info("重启中，错误回调，以下忽略");
+			logger.info(JSON.toJSONString(pRspInfo));
+			return;
+		}
 		logger.info("错误回调");
 		logger.info(JSON.toJSONString(pRspInfo));
 
@@ -1683,6 +1725,12 @@ public class CoreappView {
 		// OnErrRtnOrderInsert 函数， 而更新后的报单状态会通过调用函数 OnRtnOrder 发送到客 户端。
 		// 如果交易所认为该报单合法，则只返回该报单状态（此时的状态应为：“尚未触发”）。
 
+		if(reStartFlg == 1){
+			logger.info("重启中，报单录入错误回调，以下忽略");
+			logger.info(JSON.toJSONString(pInputOrder));
+			logger.info(JSON.toJSONString(pRspInfo));
+			return;
+		}
 		logger.info("报单录入错误回调");
 		logger.info(JSON.toJSONString(pInputOrder));
 		logger.info(JSON.toJSONString(pRspInfo));
@@ -1892,6 +1940,12 @@ public class CoreappView {
 //		#define TSHFE_FTDC_OST_Touched 'c'
 //		///错单//自定义添加
 //		#define TSHFE_FTDC_OST_Error 'e'
+		
+		if(reStartFlg == 1){
+			logger.info("重启中，报单回调，以下忽略");
+			logger.info(JSON.toJSONString(pOrder));
+			return;
+		}
 		
 		logger.info("报单");
 		logger.info(JSON.toJSONString(pOrder));
@@ -2215,12 +2269,24 @@ public class CoreappView {
 			boolean bIsLast) {
 		// 综合交易平台交易核心返回的包含错误信息的报单响应，对应于上一节中的第 7 步的第 1 种情况。
 		// 第 7 步的第 1 种情况,交易前置从交易核心订阅到错误的报单响应报文，以对话模式将该报文转发给交易终端。
+		if(reStartFlg == 1){
+			logger.info("重启中，onRspOrderInsert，以下忽略");
+			logger.info(pRspInfo.getErrorMsg());
+			logger.info(JSON.toJSONString(pInputOrder));
+			return;
+		}
 		logger.info(pRspInfo.getErrorMsg());
 		logger.info(JSON.toJSONString(pInputOrder));
 	}
 
 	public void onRspOrderAction(CThostFtdcInputOrderActionField pInputOrderAction, CThostFtdcRspInfoField pRspInfo,
 			int nRequestID, boolean bIsLast) {
+		if(reStartFlg == 1){
+			logger.info("重启中，撤单返回，以下忽略");
+			logger.info(JSON.toJSONString(pInputOrderAction));
+			logger.info(JSON.toJSONString(pRspInfo));
+			return;
+		}
 
 		logger.info("撤单返回");
 		logger.info(JSON.toJSONString(pInputOrderAction));
@@ -2363,6 +2429,11 @@ public class CoreappView {
 
 	public void onRspQryTradingAccount(CThostFtdcTradingAccountField pTradingAccount, CThostFtdcRspInfoField pRspInfo,
 			int nRequestID, boolean bIsLast) {
+		if(reStartFlg == 1){
+			logger.info("重启中，资金回调，以下忽略");
+			logger.info(JSON.toJSONString(pTradingAccount));
+			return;
+		}
 		// INSERTＤＢ
 		logger.info("资金回调");
 		logger.info(JSON.toJSONString(pTradingAccount));
@@ -2384,6 +2455,24 @@ public class CoreappView {
 	}
 
 	public void subOrderAction(String subAccount, String strJson) {
+		
+		//重启状态FLG判断
+		if(reStartFlg == 1){
+			// 重启状态FLG判断
+			StringBuffer sb = new StringBuffer();
+			sb.append("onRtnOrder|" + subAccount + "|error|系统正在重启中请等待！！！");
+			SocketPrintOut(sb.toString());
+			// socketStr = ;
+			Display.getDefault().syncExec(new Runnable() {
+
+				@Override
+				public void run() {
+					getTradeResponse().append(sb.toString() + "\r\n");
+				}
+			});
+			return;
+		}
+		
 		logger.info("subOrderAction:" + subAccount + JSON.toJSONString(strJson));
 		nRequestID = nRequestID + 1;
 		JSONObject json = JSON.parseObject(strJson);
