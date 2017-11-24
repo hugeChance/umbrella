@@ -1976,7 +1976,22 @@ public class CoreappView {
 		logger.info("onRtnOrder确定子账号：" + subAccount);
 
 		if (StringUtils.isEmpty(subAccount)) {
-			return;
+			
+			logger.info("再次确定子账号开始====一定前置机重启后现象改修！");
+			try {
+				subAccount = inputOrderService.getSubUserIDFromOrderref( pOrder.getOrderRef());
+			} catch (FutureException e) {
+				//
+				e.printStackTrace();
+			}
+			
+			logger.info("onRtnOrder再次确定子账号：" + subAccount);
+			
+			if (StringUtils.isEmpty(subAccount)) {
+				return;
+			}
+			
+			
 		}
 
 		// 插入T_ORDER数据

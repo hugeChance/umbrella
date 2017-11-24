@@ -1,7 +1,9 @@
 package com.bohai.subAccount.swt.coreapp.help;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.SocketException;
 
@@ -55,7 +57,7 @@ public class CtpConnectThread implements Runnable{
             
 
         
-            BufferedReader in = null;
+            
 //            try {
 ////                in = new BufferedReader(new InputStreamReader(coreappView.getCtpFirst().getInputStream(),"UTF-8"));
 //                
@@ -71,12 +73,19 @@ public class CtpConnectThread implements Runnable{
 //                    e1.printStackTrace();
 //                }
 //            }
+        	BufferedReader in = null;
+        	try {
+				in = new BufferedReader(new InputStreamReader(coreappView.getCtpFirst().getInputStream(),"UTF-8"));
+			} catch (Exception e2) {
+				logger.error("获取输入流失败",e2);
+				
+			}
             
 	        while(true){
 	        	
 	        
 	                try {
-	                	in = new BufferedReader(new InputStreamReader(coreappView.getCtpFirst().getInputStream(),"UTF-8"));
+	                	
 	                    String result = in.readLine();
 	                    logger.info("收到服务器返回信息"+result);
 	                    
@@ -240,6 +249,7 @@ public class CtpConnectThread implements Runnable{
 	                    break;
 	                }catch (Exception e1){
 	                    logger.error("系统异常",e1);
+	                    
 	                    break;
 	                }
 	                
