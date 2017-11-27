@@ -2387,7 +2387,7 @@ public class CoreappView {
 			sessionID = pRspUserLogin.getSessionID();
 			frontID = pRspUserLogin.getFrontID();
 			// orderRef = pRspUserLogin.getMaxOrderRef();
-			atomicInteger.getAndSet(Integer.parseInt(pRspUserLogin.getMaxOrderRef()));
+			
 			this.nRequestID = nRequestID;
 			CTPerrID = pRspInfo.getErrorID();
 			
@@ -2401,6 +2401,7 @@ public class CoreappView {
 				logger.info("重置FrontID,新FrontID:"+frontID);
 				
 			} else {
+				atomicInteger.getAndSet(Integer.parseInt(pRspUserLogin.getMaxOrderRef()));
 				//确认账单
 				CThostFtdcSettlementInfoConfirmField settlementInfoConfirmField = new CThostFtdcSettlementInfoConfirmField();
 				settlementInfoConfirmField.setBrokerID(mainAccount.getBrokerId());
