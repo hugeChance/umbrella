@@ -36,6 +36,8 @@ import com.bohai.subAccount.entity.UserContract;
 import com.bohai.subAccount.swt.admin.oldAdminViewMain;
 import com.bohai.subAccount.swt.admin.MainForm;
 import com.bohai.subAccount.swt.risk.RiskManageView;
+import com.bohai.subAccount.swt.riskfront.RiskControlDialog;
+import com.bohai.subAccount.swt.riskfront.RiskFrontView;
 import com.bohai.subAccount.swt.trader.TraderView;
 import com.bohai.subAccount.utils.ApplicationConfig;
 import com.bohai.subAccount.utils.UserConfig;
@@ -46,6 +48,7 @@ import org.eclipse.swt.events.ModifyEvent;
 
 public class loginMain {
     
+
     static Logger logger = Logger.getLogger(loginMain.class);
     //static final String TRADE_IP = "10.0.0.202";
     static final String TRADE_IP = ApplicationConfig.getProperty("tradeAddr");
@@ -56,6 +59,7 @@ public class loginMain {
     private Text passwd;
     private Combo combo;
     private Button rememberMe;
+    private Button btnCheckButton;
 
     /**
      * Launch the application.
@@ -107,9 +111,9 @@ public class loginMain {
         //username = new Text(composite, SWT.BORDER);
         //add by caojia   20170316 记住密码
         rememberMe = new Button(composite, SWT.CHECK);
-        FormData fd_button_1 = new FormData();
-        fd_button_1.right = new FormAttachment(0, 185);
-        rememberMe.setLayoutData(fd_button_1);
+        FormData fd_btnRead = new FormData();
+        fd_btnRead.right = new FormAttachment(0, 185);
+        rememberMe.setLayoutData(fd_btnRead);
         rememberMe.setText("记住密码");
         if(!StringUtils.isEmpty(UserConfig.getPropertyByKey("rememberMe"))&&
         		UserConfig.getPropertyByKey("rememberMe").equals("true")){
@@ -117,7 +121,7 @@ public class loginMain {
         }
         
         username = new Combo(composite, SWT.DROP_DOWN);
-        fd_button_1.left = new FormAttachment(username, 0, SWT.LEFT);
+        fd_btnRead.left = new FormAttachment(username, 0, SWT.LEFT);
         username.addModifyListener(new ModifyListener() {
         	public void modifyText(ModifyEvent e) {
         		
@@ -182,6 +186,15 @@ public class loginMain {
         loginBt.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+            	
+            	//20171130免责申明
+            	if(!btnCheckButton.getSelection()){
+            		MessageBox box = new MessageBox(shlSubaccount, SWT.APPLICATION_MODAL | SWT.YES);
+                    box.setMessage("请同意《软件使用免责申明》!");
+                    box.setText(CommonConstant.MESSAGE_BOX_ERROR);
+                    box.open();
+                    return;
+            	}
                 
                 if("管理员".equals(combo.getText())){
                     if("admin".equals(username.getText()) && "admin".equals(passwd.getText())){
@@ -425,12 +438,12 @@ public class loginMain {
             }
         });
         FormData fd_loginBt = new FormData();
-        fd_loginBt.left = new FormAttachment(userLabel, 0, SWT.LEFT);
+        fd_loginBt.left = new FormAttachment(0, 48);
+        fd_loginBt.bottom = new FormAttachment(100, -31);
         loginBt.setLayoutData(fd_loginBt);
         loginBt.setText("登录");
         
         Button button = new Button(composite, SWT.NONE);
-        fd_loginBt.top = new FormAttachment(button, 0, SWT.TOP);
         fd_loginBt.right = new FormAttachment(button, -21);
         button.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -440,13 +453,13 @@ public class loginMain {
         });
         button.setText("退出");
         FormData fd_button = new FormData();
+        fd_button.top = new FormAttachment(loginBt, 0, SWT.TOP);
+        fd_button.right = new FormAttachment(username, 0, SWT.RIGHT);
         fd_button.left = new FormAttachment(0, 141);
-        fd_button.right = new FormAttachment(100, -49);
         button.setLayoutData(fd_button);
         
         combo = new Combo(composite, SWT.DROP_DOWN|SWT.READ_ONLY);
-        fd_button_1.bottom = new FormAttachment(combo, -6);
-        fd_button.top = new FormAttachment(combo, 49);
+        fd_btnRead.bottom = new FormAttachment(combo, -6);
         FormData fd_combo = new FormData();
         fd_combo.right = new FormAttachment(username, 0, SWT.RIGHT);
         fd_combo.left = new FormAttachment(username, 0, SWT.LEFT);
@@ -463,6 +476,30 @@ public class loginMain {
         fd_label.left = new FormAttachment(userLabel, 0, SWT.LEFT);
         label.setLayoutData(fd_label);
         label.setText("角色：");
+        
+        Button btnRead = new Button(composite, SWT.NONE);
+        btnRead.addSelectionListener(new SelectionAdapter() {
+        	@Override
+        	public void widgetSelected(SelectionEvent e) {
+        		ReadDisclaimer readDisclaimer = new ReadDisclaimer(shlSubaccount, SWT.CLOSE);
+        		readDisclaimer.open();
+        	}
+        });
+        FormData fm1 = new FormData();
+        fm1.right = new FormAttachment(0, 208);
+        fm1.top = new FormAttachment(combo, 19);
+        fm1.left = new FormAttachment(0, 48);
+        btnRead.setLayoutData(fm1);
+        btnRead.setText("阅读《软件使用免责说明》");
+        
+        btnCheckButton = new Button(composite, SWT.CHECK);
+        FormData fd_btnCheckButton = new FormData();
+        fd_btnCheckButton.right = new FormAttachment(btnRead, 0, SWT.RIGHT);
+        fd_btnCheckButton.bottom = new FormAttachment(btnRead, 23, SWT.BOTTOM);
+        fd_btnCheckButton.top = new FormAttachment(btnRead, 6);
+        fd_btnCheckButton.left = new FormAttachment(userLabel, 0, SWT.LEFT);
+        btnCheckButton.setLayoutData(fd_btnCheckButton);
+        btnCheckButton.setText("我已阅读并同意以上条款");
         
     }
 }
