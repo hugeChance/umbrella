@@ -103,7 +103,7 @@ public class loginMain {
         FormData fd_composite = new FormData();
         fd_composite.bottom = new FormAttachment(100, -32);
         fd_composite.left = new FormAttachment(0, 20);
-        fd_composite.top = new FormAttachment(0, 62);
+        fd_composite.top = new FormAttachment(0, 26);
         fd_composite.right = new FormAttachment(100, -28);
         composite.setLayoutData(fd_composite);
         
@@ -486,18 +486,18 @@ public class loginMain {
         	}
         });
         FormData fm1 = new FormData();
+        fm1.left = new FormAttachment(userLabel, 0, SWT.LEFT);
         fm1.right = new FormAttachment(0, 208);
-        fm1.top = new FormAttachment(combo, 19);
-        fm1.left = new FormAttachment(0, 48);
         btnRead.setLayoutData(fm1);
         btnRead.setText("阅读《软件使用免责说明》");
         
         btnCheckButton = new Button(composite, SWT.CHECK);
+        fm1.bottom = new FormAttachment(btnCheckButton, -17);
         FormData fd_btnCheckButton = new FormData();
-        fd_btnCheckButton.right = new FormAttachment(btnRead, 0, SWT.RIGHT);
-        fd_btnCheckButton.bottom = new FormAttachment(btnRead, 23, SWT.BOTTOM);
-        fd_btnCheckButton.top = new FormAttachment(btnRead, 6);
-        fd_btnCheckButton.left = new FormAttachment(userLabel, 0, SWT.LEFT);
+        fd_btnCheckButton.bottom = new FormAttachment(loginBt, -29);
+        fd_btnCheckButton.top = new FormAttachment(0, 242);
+        fd_btnCheckButton.right = new FormAttachment(100, -55);
+        fd_btnCheckButton.left = new FormAttachment(0, 48);
         btnCheckButton.setLayoutData(fd_btnCheckButton);
         btnCheckButton.setText("我已阅读并同意以上条款");
         
