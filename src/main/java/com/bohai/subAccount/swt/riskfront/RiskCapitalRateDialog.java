@@ -205,12 +205,26 @@ public class RiskCapitalRateDialog extends Dialog {
 					text_3.setText("0");
 				}
 				
+				int setCapitalret =2;
 				// 出入金CHECK
 				if (item !=null && checkCapital(item.getText(0),text.getText(),text_1.getText(),String.valueOf(doublej),"0") == 1){
 					// 出入金操作
 					// 现在质押资金设了常量为0
 //					setCapital(item.getText(0),text.getText(),text_1.getText(),capitalRate.getUserCapitalRate().toString(),text_2.getText(),text_3.getText());
-					setCapital(item.getText(0),text.getText(),text_1.getText(),"0",text_2.getText(),text_3.getText());
+					setCapitalret = setCapital(item.getText(0),text.getText(),text_1.getText(),"0",text_2.getText(),text_3.getText());
+					if(setCapitalret == 0){
+						MessageBox messagebox = new MessageBox(shell, SWT.ICON_QUESTION
+		                        | SWT.YES );
+		                messagebox.setText("提示");
+		                messagebox.setMessage("您设置的出入金已提交！") ;
+		                int message = messagebox.open();
+		                e.doit = message == SWT.YES;
+		                shell.close();
+						return;
+					} else {
+						
+						return;
+					}
 				} else {
 					MessageBox messagebox = new MessageBox(shell, SWT.ICON_QUESTION
 	                        | SWT.YES );
@@ -281,7 +295,7 @@ public class RiskCapitalRateDialog extends Dialog {
 		return 0;
 	}
 	
-	private void setCapital(String userName,String inCapital,String outCapital,String userCapitalRate,String hostInCapital,String hostOutCapital)
+	private int setCapital(String userName,String inCapital,String outCapital,String userCapitalRate,String hostInCapital,String hostOutCapital)
 	{
 		
 		double tmpAdd = 0;
@@ -337,7 +351,7 @@ public class RiskCapitalRateDialog extends Dialog {
                 messagebox.setText("提示");
                 messagebox.setMessage(e.getMessage()) ;
                 messagebox.open();
-				return;
+				return 1;
 			}
 			
 			
@@ -359,7 +373,7 @@ public class RiskCapitalRateDialog extends Dialog {
                 messagebox.setText("错误");
                 messagebox.setMessage("入金更新平仓金额失败"+e.getMessage()) ;
                 messagebox.open();
-				return;
+                return 1;
 			}
 			
 			
@@ -389,7 +403,7 @@ public class RiskCapitalRateDialog extends Dialog {
                 messagebox.setText("错误");
                 messagebox.setMessage(e.getMessage()) ;
                 messagebox.open();
-				return;
+                return 1;
 			}
 			
 			//配资表总览更新数据
@@ -406,7 +420,7 @@ public class RiskCapitalRateDialog extends Dialog {
                 messagebox.setText("错误");
                 messagebox.setMessage(e.getMessage()) ;
                 messagebox.open();
-				return;
+                return 1;
 			}
 			
 			//推送COREAPP
@@ -423,7 +437,7 @@ public class RiskCapitalRateDialog extends Dialog {
                 messagebox.setText("提示");
                 messagebox.setMessage(e.getMessage()) ;
                 messagebox.open();
-				return;
+                return 1;
 			}
 			
 			try {
@@ -443,9 +457,11 @@ public class RiskCapitalRateDialog extends Dialog {
                 messagebox.setText("错误");
                 messagebox.setMessage("出金更新平仓金额失败"+e.getMessage()) ;
                 messagebox.open();
-				return;
+                return 1;
 			}
 		}
+		
+		return 0;
 		
 	}
 
