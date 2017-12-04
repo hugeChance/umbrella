@@ -59,6 +59,7 @@ import com.bohai.subAccount.dao.FutureMarketMapper;
 import com.bohai.subAccount.dao.UserInfoMapper;
 import com.bohai.subAccount.dao.UseravailableindbMapper;
 import com.bohai.subAccount.entity.BuyDetail;
+import com.bohai.subAccount.entity.CapitalRate;
 import com.bohai.subAccount.entity.CloseRule;
 import com.bohai.subAccount.entity.FutureMarket;
 import com.bohai.subAccount.entity.GroupInfo;
@@ -127,6 +128,8 @@ public class MainForm {
 	private Table allRiskTable;
 	
 	private FutureMarketMapper futureMarketMapper;
+	
+	private CapitalRateMapper capitalRateMapper;
 	
 	//add COMPOSITE组件
 	private Composite composite;
@@ -228,6 +231,8 @@ public class MainForm {
         positionsDetailService = (PositionsDetailService) SpringContextUtil.getBean("positionsDetailService");
         
         futureMarketMapper = (FutureMarketMapper) SpringContextUtil.getBean("futureMarketMapper");
+        
+        capitalRateMapper = (CapitalRateMapper) SpringContextUtil.getBean("capitalRateMapper");
         setMemory();
     }
 
@@ -832,6 +837,7 @@ public class MainForm {
 
 		TreeItem treeSysItem2 = new TreeItem(systemTree, SWT.NONE);
 		treeSysItem2.setText("结算设置");
+		treeSysItem2.setExpanded(true);
 		
 		
 		
@@ -875,8 +881,12 @@ public class MainForm {
             List<Useravailableindb> listUseravailableindb = new ArrayList<Useravailableindb>();
             listUseravailableindb = useravailableindbMapper.selectAll();
             
+            
             //循环按每个客户出文件
             for (Useravailableindb useravailableindb : listUseravailableindb) {
+            	
+            	
+            	
             	StringBuffer strB = new StringBuffer();
             	SettlemenetTitleVO settlemenetTitleVO = new SettlemenetTitleVO();
             	settlemenetTitleVO.setCompanyName("交易软件");
@@ -921,6 +931,17 @@ public class MainForm {
             	} else {
             		settlemenetTitleVO.setMargin_Call("0");
             	}
+            	
+            	CapitalRate capitalRate = new CapitalRate();
+            	capitalRate = capitalRateMapper.selectByPrimaryKey(useravailableindb.getUsername());
+            	BigDecimal host_availible = capitalRate.getHostCapital1();
+            	BigDecimal cust_availible = fund_availBDec.subtract(host_availible);
+            	//其中客户自有资金可用
+            	settlemenetTitleVO.setCust_availible(String.valueOf(cust_availible));
+            	//其中配资资金可用
+            	settlemenetTitleVO.setHost_availible(String.valueOf(host_availible));
+            	
+            	
 				//账单头部
             	strB.append(settlemenetTitleVO.getRetStr());
             	strB.append("\r\n");
