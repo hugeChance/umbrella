@@ -194,10 +194,10 @@ public class MarketReceiveThread implements Runnable {
                                         BigDecimal d = new BigDecimal("0");
                                         String lastPrice = json.getString("lastPrice");
                                         //logger.debug("最新价："+lastPrice);
-                                        String positionPrice = item.getText(5);
+                                        String positionPrice = item.getText(2);
                                         //logger.debug("持仓价："+positionPrice);
                                         //logger.debug("合约单位："+contractUnit.toString());
-                                        String volumn = item.getText(2);
+                                        String volumn = item.getText(3);
                                         //logger.debug("手数："+volumn);
                                         
                                         d = (new BigDecimal(lastPrice).subtract(new BigDecimal(positionPrice)))
