@@ -232,43 +232,43 @@ public class TraderView {
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
         
-        TableColumn tblclmnNewColumn = new TableColumn(table, SWT.CENTER);
+        TableColumn tblclmnNewColumn = new TableColumn(table, SWT.CENTER, ColumnIndex.CAPITAL_TABLE_STATICPROFIT_INDEX);
         tblclmnNewColumn.setWidth(100);
         tblclmnNewColumn.setText("静态权益");
         
-        TableColumn tableColumn_7 = new TableColumn(table, SWT.CENTER);
+        TableColumn tableColumn_7 = new TableColumn(table, SWT.CENTER, ColumnIndex.CAPITAL_TABLE_DYNAMICPROFIT_INDEX);
         tableColumn_7.setWidth(100);
         tableColumn_7.setText("动态权益");
         
-        TableColumn tableColumn_3 = new TableColumn(table, SWT.CENTER);
+        TableColumn tableColumn_3 = new TableColumn(table, SWT.CENTER, ColumnIndex.CAPITAL_TABLE_CLOSEWIN_INDEX);
         tableColumn_3.setWidth(100);
         tableColumn_3.setText("平仓盈亏");
         
-        TableColumn tableColumn_4 = new TableColumn(table, SWT.CENTER);
+        TableColumn tableColumn_4 = new TableColumn(table, SWT.CENTER, ColumnIndex.CAPITAL_TABLE_POSITIONWIN_INDEX);
         tableColumn_4.setWidth(100);
         tableColumn_4.setText("持仓盈亏");
         
-        TableColumn tableColumn = new TableColumn(table, SWT.CENTER);
+        TableColumn tableColumn = new TableColumn(table, SWT.CENTER, ColumnIndex.CAPITAL_TABLE_AVAILABLE_INDEX);
         tableColumn.setWidth(100);
         tableColumn.setText("可用资金");
         
-        TableColumn tableColumn_5 = new TableColumn(table, SWT.CENTER);
+        TableColumn tableColumn_5 = new TableColumn(table, SWT.CENTER, ColumnIndex.CAPITAL_TABLE_FROZENCAPITAL_INDEX);
         tableColumn_5.setWidth(100);
         tableColumn_5.setText("冻结资金");
         
-        TableColumn tableColumn_2 = new TableColumn(table, SWT.CENTER);
+        TableColumn tableColumn_2 = new TableColumn(table, SWT.CENTER, ColumnIndex.CAPITAL_TABLE_MARGIN_INDEX);
         tableColumn_2.setWidth(100);
         tableColumn_2.setText("占用保证金");
         
-        TableColumn tableColumn_1 = new TableColumn(table, SWT.CENTER);
+        TableColumn tableColumn_1 = new TableColumn(table, SWT.CENTER, ColumnIndex.CAPITAL_TABLE_COMMISSION_INDEX);
         tableColumn_1.setWidth(100);
         tableColumn_1.setText("手续费");
         
-        TableColumn tableColumn_6 = new TableColumn(table, SWT.CENTER);
+        TableColumn tableColumn_6 = new TableColumn(table, SWT.CENTER, ColumnIndex.CAPITAL_TABLE_INOUT_INDEX);
         tableColumn_6.setWidth(100);
         tableColumn_6.setText("出入金");
         
-        TableColumn tableColumn_8 = new TableColumn(table, SWT.CENTER);
+        TableColumn tableColumn_8 = new TableColumn(table, SWT.CENTER, ColumnIndex.CAPITAL_TABLE_RISK_INDEX);
         tableColumn_8.setWidth(100);
         tableColumn_8.setText("风险度");
         sashForm.setWeights(new int[] {1});
@@ -278,40 +278,40 @@ public class TraderView {
             
             //静态资金
             BigDecimal staticMoney = initAvailable.getAvailable()==null ? new BigDecimal("0.00") : new BigDecimal(initAvailable.getAvailable()).setScale(2, RoundingMode.HALF_UP);
-            newItem.setText(0, staticMoney.toString());
+            newItem.setText(ColumnIndex.CAPITAL_TABLE_STATICPROFIT_INDEX, staticMoney.toString());
             
             //平仓盈亏
             BigDecimal closeWin = initAvailable.getCloseWin()==null ? new BigDecimal("0.00") : new BigDecimal(initAvailable.getCloseWin()).setScale(2, RoundingMode.HALF_UP);
-            newItem.setText(2, closeWin.toString());
+            newItem.setText(ColumnIndex.CAPITAL_TABLE_CLOSEWIN_INDEX, closeWin.toString());
             
             //持仓盈亏
             BigDecimal positionWin = initAvailable.getPositionWin()==null ? new BigDecimal("0.00") : new BigDecimal(initAvailable.getPositionWin()).setScale(2, RoundingMode.HALF_UP);
-            newItem.setText(3, positionWin.toString());//持仓盈亏
+            newItem.setText(ColumnIndex.CAPITAL_TABLE_POSITIONWIN_INDEX, positionWin.toString());//持仓盈亏
             
             
-            newItem.setText(4, available==null ? "0.00" : new BigDecimal(available).setScale(2, RoundingMode.HALF_UP).toString());   //可用资金
-            newItem.setText(5, initAvailable.getFrozenAvailable()==null ? "0.00" : new BigDecimal(initAvailable.getFrozenAvailable()).setScale(2, RoundingMode.HALF_UP).toString());//冻结资金
+            newItem.setText(ColumnIndex.CAPITAL_TABLE_AVAILABLE_INDEX, available==null ? "0.00" : new BigDecimal(available).setScale(2, RoundingMode.HALF_UP).toString());   //可用资金
+            newItem.setText(ColumnIndex.CAPITAL_TABLE_FROZENCAPITAL_INDEX, initAvailable.getFrozenAvailable()==null ? "0.00" : new BigDecimal(initAvailable.getFrozenAvailable()).setScale(2, RoundingMode.HALF_UP).toString());//冻结资金
             
             //持仓保证金
             BigDecimal deposit = initAvailable.getMargin()==null ? new BigDecimal("0.00") : new BigDecimal(initAvailable.getMargin()).setScale(2, RoundingMode.HALF_UP);
-            newItem.setText(6, deposit.toString());//占用保证金
+            newItem.setText(ColumnIndex.CAPITAL_TABLE_MARGIN_INDEX, deposit.toString());//占用保证金
             
             //手续费
             BigDecimal commission = initAvailable.getCommission()==null ? new BigDecimal("0.00") : new BigDecimal(initAvailable.getCommission()).setScale(2, RoundingMode.HALF_UP);
-            newItem.setText(7, commission.toString());//手续费
+            newItem.setText(ColumnIndex.CAPITAL_TABLE_COMMISSION_INDEX, commission.toString());//手续费
             
             //出入金
             BigDecimal inoutMoney = initAvailable.getInOutMoney()==null? new BigDecimal("0.00") : new BigDecimal(initAvailable.getInOutMoney()).setScale(2, RoundingMode.HALF_UP);
-            newItem.setText(8, inoutMoney.toString());
+            newItem.setText(ColumnIndex.CAPITAL_TABLE_INOUT_INDEX, inoutMoney.toString());
             
             //动态权益 = 静态权益 +平仓盈亏+持仓盈亏-手续费+出入金
             BigDecimal dynamicMoney = staticMoney.add(closeWin).add(positionWin).subtract(commission).add(inoutMoney); 
-            newItem.setText(1, dynamicMoney.toString());//动态权益
+            newItem.setText(ColumnIndex.CAPITAL_TABLE_DYNAMICPROFIT_INDEX, dynamicMoney.toString());//动态权益
             
             if(dynamicMoney.compareTo(new BigDecimal("0")) != 0){
                 //风险度
-                BigDecimal risk = deposit.divide(dynamicMoney, RoundingMode.HALF_UP);
-                newItem.setText(9, risk.toString());
+                BigDecimal risk = deposit.divide(dynamicMoney, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100)).setScale(2, RoundingMode.HALF_UP);
+                newItem.setText(9, risk.toString()+"%");
             }
             
         }
@@ -548,46 +548,46 @@ public class TraderView {
         /* 第三步:建立TableViewer中的列
            */
         tLayout.addColumnData(new ColumnWeightData(30));//这个是设置ID列的列宽为10像素
-        new TableColumn(marketTable, SWT.NONE).setText("合约");
+        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_INSTRUMENT_INDEX).setText("合约");
         
         tLayout.addColumnData(new ColumnWeightData(30));//这个是设置ID列的列宽为40像素
-        new TableColumn(marketTable, SWT.NONE).setText("最新价");
+        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_LASTPRICE_INDEX).setText("最新价");
           
         tLayout.addColumnData(new ColumnWeightData(30));
-        new TableColumn(marketTable, SWT.NONE).setText("买量");
+        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_BIDVOLUME1_INDEX).setText("买量");
         
         tLayout.addColumnData(new ColumnWeightData(35));//这个是设置ID列的列宽为10像素
-        new TableColumn(marketTable, SWT.NONE).setText("买价");
+        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_BIDPRICE1_INDEX).setText("买价");
         
         tLayout.addColumnData(new ColumnWeightData(35));//这个是设置ID列的列宽为70像素
-        new TableColumn(marketTable, SWT.NONE).setText("卖价");
+        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_ASKPRICE1_INDEX).setText("卖价");
 
         tLayout.addColumnData(new ColumnWeightData(30));
-        new TableColumn(marketTable, SWT.NONE).setText("卖量");
+        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_ASKVOLUME1_INDEX).setText("卖量");
         
         tLayout.addColumnData(new ColumnWeightData(30));//这个是设置ID列的列宽为10像素
-        new TableColumn(marketTable, SWT.NONE).setText("涨跌");
+        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_RISE_INDEX).setText("涨跌");
         
         tLayout.addColumnData(new ColumnWeightData(30));
-        new TableColumn(marketTable, SWT.NONE).setText("涨跌幅");
+        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_RISERATE_INDEX).setText("涨跌幅");
         
         tLayout.addColumnData(new ColumnWeightData(35));
-        new TableColumn(marketTable, SWT.NONE).setText("涨停价");
+        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_UPPERPRICE_INDEX).setText("涨停价");
         
         tLayout.addColumnData(new ColumnWeightData(35));
-        new TableColumn(marketTable, SWT.NONE).setText("跌停价");
+        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_LOWERPRICE_INDEX).setText("跌停价");
         
         tLayout.addColumnData(new ColumnWeightData(35));
-        new TableColumn(marketTable, SWT.NONE).setText("最高价");
+        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_HIGHESTPRICE_INDEX).setText("最高价");
         
         tLayout.addColumnData(new ColumnWeightData(35));
-        new TableColumn(marketTable, SWT.NONE).setText("最低价");
+        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_LOWESTPRICE_INDEX).setText("最低价");
         
         tLayout.addColumnData(new ColumnWeightData(40));
-        new TableColumn(marketTable, SWT.NONE).setText("成交量");
+        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_VOLUME_INDEX).setText("成交量");
         
         tLayout.addColumnData(new ColumnWeightData(40));
-        new TableColumn(marketTable, SWT.NONE).setText("持仓量");
+        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_OPENINTEREST_INDEX).setText("持仓量");
         
     }
     
@@ -607,16 +607,16 @@ public class TraderView {
             for (UserContract userContract : contracts) {
                 TableItem item = new TableItem(marketTable, SWT.NONE);
                 item.setData(userContract);
-                item.setText(0, userContract.getContractNo());
+                item.setText(ColumnIndex.MARKET_TABLE_INSTRUMENT_INDEX, userContract.getContractNo());
                 
                 //涨停价红色
-                item.setForeground(8, SWTResourceManager.getColor(242,14,14));
+                item.setForeground(ColumnIndex.MARKET_TABLE_UPPERPRICE_INDEX, SWTResourceManager.getColor(242,14,14));
                 //最高价红色
-                item.setForeground(10, SWTResourceManager.getColor(242,14,14));
+                item.setForeground(ColumnIndex.MARKET_TABLE_HIGHESTPRICE_INDEX, SWTResourceManager.getColor(242,14,14));
                 //跌停价绿色
-                item.setForeground(9, SWTResourceManager.getColor(78,178,88));
+                item.setForeground(ColumnIndex.MARKET_TABLE_LOWERPRICE_INDEX, SWTResourceManager.getColor(78,178,88));
                 //最低价绿色
-                item.setForeground(11, SWTResourceManager.getColor(78,178,88));
+                item.setForeground(ColumnIndex.MARKET_TABLE_LOWESTPRICE_INDEX, SWTResourceManager.getColor(78,178,88));
             }
         }
     }
@@ -1414,29 +1414,29 @@ public class TraderView {
         positionTable.setLayout(tLayout);
         
         tLayout.addColumnData(new ColumnWeightData(30));
-        new TableColumn(positionTable, SWT.NONE).setText("合约");
+        new TableColumn(positionTable, SWT.NONE, ColumnIndex.POSITION_TABLE_INSTRUMENT_INDEX).setText("合约");
         
         tLayout.addColumnData(new ColumnWeightData(30));
-        new TableColumn(positionTable, SWT.NONE).setText("买卖");
+        new TableColumn(positionTable, SWT.NONE, ColumnIndex.POSITION_TABLE_DIRECTION_INDEX).setText("买卖");
         
         tLayout.addColumnData(new ColumnWeightData(30));
-        new TableColumn(positionTable, SWT.NONE).setText("持仓均价");
+        new TableColumn(positionTable, SWT.NONE, ColumnIndex.POSITION_TABLE_OPENPRICE_INDEX).setText("持仓均价");
         
         tLayout.addColumnData(new ColumnWeightData(30));
-        new TableColumn(positionTable, SWT.NONE).setText("数量");
+        new TableColumn(positionTable, SWT.NONE, ColumnIndex.POSITION_TABLE_VOLUME_INDEX).setText("数量");
         
         tLayout.addColumnData(new ColumnWeightData(30));
-        new TableColumn(positionTable, SWT.NONE).setText("昨仓");
+        new TableColumn(positionTable, SWT.NONE, ColumnIndex.POSITION_TABLE_YPOSITION_INDEX).setText("昨仓");
         
         tLayout.addColumnData(new ColumnWeightData(30));
-        new TableColumn(positionTable, SWT.NONE).setText("今仓");
+        new TableColumn(positionTable, SWT.NONE, ColumnIndex.POSITION_TABLE_TPOSITION_INDEX).setText("今仓");
 
         
         tLayout.addColumnData(new ColumnWeightData(30));
-        new TableColumn(positionTable, SWT.NONE).setText("现价");
+        new TableColumn(positionTable, SWT.NONE, ColumnIndex.POSITION_TABLE_LASTPRICE_INDEX).setText("现价");
         
         tLayout.addColumnData(new ColumnWeightData(30));
-        new TableColumn(positionTable, SWT.NONE).setText("持仓盈亏");
+        new TableColumn(positionTable, SWT.NONE, ColumnIndex.POSITION_TABLE_POSITOINWIN_INDEX).setText("持仓盈亏");
         
     }
     
@@ -1818,10 +1818,10 @@ public class TraderView {
         String askPrice1 = "";
         
         for (TableItem item : marketTable.getItems()) {
-            if(contractNo.equals(item.getText(0))){
+            if(contractNo.equals(item.getText(ColumnIndex.MARKET_TABLE_INSTRUMENT_INDEX))){
                 contract = (UserContract) item.getData();
-                bidPrice1 = item.getText(3);
-                askPrice1 = item.getText(4);
+                bidPrice1 = item.getText(ColumnIndex.MARKET_TABLE_BIDPRICE1_INDEX);
+                askPrice1 = item.getText(ColumnIndex.MARKET_TABLE_ASKPRICE1_INDEX);
                 break;
             }
         }
@@ -1966,9 +1966,9 @@ public class TraderView {
         
         //获取涨跌停价格
         for (TableItem item : marketTable.getItems()) {
-            if(instrumentid.equals(item.getText(0))){
-                lowerLimitPrice = item.getText(9);
-                upperLimitPrice = item.getText(8);
+            if(instrumentid.equals(item.getText(ColumnIndex.MARKET_TABLE_INSTRUMENT_INDEX))){
+                lowerLimitPrice = item.getText(ColumnIndex.MARKET_TABLE_LOWERPRICE_INDEX);
+                upperLimitPrice = item.getText(ColumnIndex.MARKET_TABLE_UPPERPRICE_INDEX);
                 break;
             }
         }
@@ -2060,12 +2060,12 @@ public class TraderView {
         
         //获取涨跌停价格
         for (TableItem item : marketTable.getItems()) {
-            if(instrumentid.equals(item.getText(0))){
-                if(!StringUtils.isEmpty(item.getText(9))){
-                    lowerLimitPrice = item.getText(9);
+            if(instrumentid.equals(item.getText(ColumnIndex.MARKET_TABLE_INSTRUMENT_INDEX))){
+                if(!StringUtils.isEmpty(item.getText(ColumnIndex.MARKET_TABLE_LOWERPRICE_INDEX))){
+                    lowerLimitPrice = item.getText(ColumnIndex.MARKET_TABLE_LOWERPRICE_INDEX);
                 }
-                if(!StringUtils.isEmpty(item.getText(8))){
-                    upperLimitPrice = item.getText(8);
+                if(!StringUtils.isEmpty(item.getText(ColumnIndex.MARKET_TABLE_UPPERPRICE_INDEX))){
+                    upperLimitPrice = item.getText(ColumnIndex.MARKET_TABLE_UPPERPRICE_INDEX);
                 }
                 break;
             }
