@@ -3,6 +3,7 @@ package com.bohai.subAccount.swt.getWay;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
@@ -113,17 +114,17 @@ public class MyMdSpi extends JCTPMdSpi {
 		logger.debug("订阅合约信息:"+JSON.toJSONString(contractNo));
 		
 		try {
-            String s = FileUtil.read("/合约.txt");
+            String s = FileUtil.read("合约.txt");
             String s1 = s.replaceAll("\r\n", "");
             String[] ss = s1.split(",");
             if(ss != null && ss.length >0){
-                contractNo = Arrays.copyOf(contractNo, contractNo.length+ss.length);//数组扩容
-                System.arraycopy(ss, 0, contractNo, contractNo.length, ss.length);
+                
+                contractNo = (String[]) ArrayUtils.addAll(contractNo, ss);
                 
                 logger.debug("订阅合约信息:"+JSON.toJSONString(contractNo));
             }
         } catch (Exception e) {
-            logger.error("读取文件失败");
+            logger.error("读取文件失败",e);
         }
 		//logger.debug("读取文件合约信息："+JSON.toJSONString(ss));
 		

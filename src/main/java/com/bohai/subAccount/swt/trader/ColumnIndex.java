@@ -67,64 +67,67 @@ public class ColumnIndex {
     public static int MARKET_TABLE_LASTPRICE_INDEX = 1;
     
     /**
-     * 行情-买量
-     */
-    public static int MARKET_TABLE_BIDVOLUME1_INDEX = 2;
-    
-    /**
-     * 行情-买价
-     */
-    public static int MARKET_TABLE_BIDPRICE1_INDEX = 3;
-    
-    /**
-     * 行情-卖价
-     */
-    public static int MARKET_TABLE_ASKPRICE1_INDEX = 4; 
-    
-    /**
-     * 行情-卖量
-     */
-    public static int MARKET_TABLE_ASKVOLUME1_INDEX = 5;
-    
-    /**
      * 行情-涨跌
      */
-    public static int MARKET_TABLE_RISE_INDEX = 6;
+    public static int MARKET_TABLE_RISE_INDEX = 2;
     
     /**
      * 行情-涨跌幅
      */
-    public static int MARKET_TABLE_RISERATE_INDEX = 7;
-    
-    /**
-     * 行情-涨停价
-     */
-    public static int MARKET_TABLE_UPPERPRICE_INDEX = 8;
-    
-    /**
-     * 行情-跌停价
-     */
-    public static int MARKET_TABLE_LOWERPRICE_INDEX = 9;
-    
-    /**
-     * 行情-最高价
-     */
-    public static int MARKET_TABLE_HIGHESTPRICE_INDEX = 10;
-    
-    /**
-     * 行情-最低价
-     */
-    public static int MARKET_TABLE_LOWESTPRICE_INDEX = 11;
-    
-    /**
-     * 行情-成交量
-     */
-    public static int MARKET_TABLE_VOLUME_INDEX = 12;
+    public static int MARKET_TABLE_RISERATE_INDEX = 3;
     
     /**
      * 行情-持仓量
      */
-    public static int MARKET_TABLE_OPENINTEREST_INDEX = 13;
+    public static int MARKET_TABLE_OPENINTEREST_INDEX = 4;
+    
+    /**
+     * 行情-买量
+     */
+    public static int MARKET_TABLE_BIDVOLUME1_INDEX = 5;
+    
+    /**
+     * 行情-买价
+     */
+    public static int MARKET_TABLE_BIDPRICE1_INDEX = 6;
+    
+    /**
+     * 行情-卖价
+     */
+    public static int MARKET_TABLE_ASKPRICE1_INDEX = 7; 
+    
+    /**
+     * 行情-卖量
+     */
+    public static int MARKET_TABLE_ASKVOLUME1_INDEX = 8;
+    
+    
+    
+    /**
+     * 行情-涨停价
+     */
+    public static int MARKET_TABLE_UPPERPRICE_INDEX = 9;
+    
+    /**
+     * 行情-跌停价
+     */
+    public static int MARKET_TABLE_LOWERPRICE_INDEX = 10;
+    
+    /**
+     * 行情-最高价
+     */
+    public static int MARKET_TABLE_HIGHESTPRICE_INDEX = 11;
+    
+    /**
+     * 行情-最低价
+     */
+    public static int MARKET_TABLE_LOWESTPRICE_INDEX = 12;
+    
+    /**
+     * 行情-成交量
+     */
+    public static int MARKET_TABLE_VOLUME_INDEX = 13;
+    
     
     /*------------------------------- 持仓表格 ----------------------------------*/
     
