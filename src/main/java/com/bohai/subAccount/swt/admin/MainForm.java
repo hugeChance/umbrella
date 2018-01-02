@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.ExpandBar;
 import org.eclipse.swt.widgets.ExpandItem;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -76,6 +77,7 @@ import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.service.BuyDetailService;
 import com.bohai.subAccount.service.ClearService;
 import com.bohai.subAccount.service.CloseRuleService;
+import com.bohai.subAccount.service.FileService;
 import com.bohai.subAccount.service.FutureMarketService;
 import com.bohai.subAccount.service.GroupInfoService;
 import com.bohai.subAccount.service.GroupRuleService;
@@ -88,6 +90,7 @@ import com.bohai.subAccount.service.TradeService;
 import com.bohai.subAccount.service.UserAvailableInDbService;
 import com.bohai.subAccount.service.UserContractService;
 import com.bohai.subAccount.service.UserInfoService;
+import com.bohai.subAccount.service.impl.InstrumentFileServiceImpl;
 import com.bohai.subAccount.utils.ApplicationConfig;
 import com.bohai.subAccount.utils.SpringContextUtil;
 import com.bohai.subAccount.vo.SettlemenetPart1Body;
@@ -160,6 +163,8 @@ public class MainForm {
 	private SellDetailService sellDetailService;
 	private UserAvailableInDbService userAvailableInDbService;
 	
+	private FileService instrumentFileService;
+	
 	private Map<String,UserContract> mapUserContractMemorySave;
 	
 	private Composite composite_button;
@@ -228,6 +233,8 @@ public class MainForm {
         positionsDetailService = (PositionsDetailService) SpringContextUtil.getBean("positionsDetailService");
         
         futureMarketMapper = (FutureMarketMapper) SpringContextUtil.getBean("futureMarketMapper");
+        
+        instrumentFileService = (FileService) SpringContextUtil.getBean("instrumentFileService");
         setMemory();
     }
 
@@ -807,6 +814,25 @@ public class MainForm {
 						}
 						
 					}
+                }else if ("导入合约".equals(selection.getText())) {
+                    
+                    FileDialog filedlg=new FileDialog(shell,SWT.SINGLE);
+                    String openFile = filedlg.open();
+                    if(openFile != null){
+                        try {
+                            instrumentFileService.Import(openFile);
+                            MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                            box.setMessage("导入完成");
+                            box.setText(CommonConstant.MESSAGE_BOX_NOTICE);
+                            box.open();
+                        } catch (FutureException e1) {
+                            MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                            box.setMessage(e1.getMessage());
+                            box.setText(CommonConstant.MESSAGE_BOX_ERROR);
+                            box.open();
+                        }
+                        
+                    }
                 }
 				
 				
@@ -832,6 +858,10 @@ public class MainForm {
 
 		TreeItem treeSysItem2 = new TreeItem(systemTree, SWT.NONE);
 		treeSysItem2.setText("结算设置");
+		
+		TreeItem treeItem_1 = new TreeItem(systemTree, 0);
+		treeItem_1.setText("导入合约");
+		treeItem_1.setExpanded(true);
 		
 		
 		

@@ -43,6 +43,8 @@ public interface UserInfoMapper {
      */
     UserInfo selectByPrimaryKey(String id);
     
+    UserInfo selectByUserName(String userName);
+    
     
     List<UserInfo> selectByGroupId(String groupId);
     

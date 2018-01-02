@@ -42,6 +42,13 @@
     where ID = #{id,jdbcType=VARCHAR}
   </select>
   
+  <select id="selectByUserName" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select 
+    <include refid="Base_Column_List" />
+    from T_USER_INFO
+    where USER_NAME = #{userName,jdbcType=VARCHAR}
+  </select>
+  
   <!-- 根据组id查询用户 -->
   <select id="selectByGroupId" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
