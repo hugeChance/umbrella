@@ -69,6 +69,10 @@ public class Test {
 		test.test3();
 	}
 	
+	public void test4(){
+	    System.out.println("123:"+null);
+	}
+	
 	
 	public void test() throws ParseException{
 		
@@ -124,11 +128,9 @@ public class Test {
 	}
 	
 	public void test3(){
-	    String s = "1.2346456734567841E11";
+	    String s = null;
 	    
-	    BigDecimal bs = new BigDecimal(s).setScale(2, RoundingMode.HALF_UP);
-	    
-	    System.out.println(bs.toString());
+	    System.out.println(s);
 	}
 
 }

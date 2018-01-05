@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.bohai.subAccount.entity.UserContract;
+import com.bohai.subAccount.swt.trader.ColumnIndex;
 import com.bohai.subAccount.swt.trader.TraderView;
 
 public class MarketReceiveThread implements Runnable {
@@ -92,22 +93,22 @@ public class MarketReceiveThread implements Runnable {
                             TableItem[] tableItems = table.getItems();
                             if(tableItems.length  > 0){
                                 for (TableItem tableItem : tableItems) {
-                                    if(tableItem.getText(0).equals(json.getString("instrumentID"))){
+                                    if(tableItem.getText(ColumnIndex.MARKET_TABLE_INSTRUMENT_INDEX).equals(json.getString("instrumentID"))){
                                         //最新价
-                                        tableItem.setText(1, json.getBigDecimal("lastPrice").setScale(2, RoundingMode.HALF_UP).toString());
+                                        tableItem.setText(ColumnIndex.MARKET_TABLE_LASTPRICE_INDEX, json.getBigDecimal("lastPrice").setScale(2, RoundingMode.HALF_UP).toString());
                                         
                                         //买量
                                         Integer bidVolume1 = json.getInteger("bidVolume1");
-                                        tableItem.setText(2, bidVolume1.toString());
-                                        tableItem.setForeground(2, SWTResourceManager.getColor(242,14,14));
+                                        tableItem.setText(ColumnIndex.MARKET_TABLE_BIDVOLUME1_INDEX, bidVolume1.toString());
+                                        tableItem.setForeground(ColumnIndex.MARKET_TABLE_BIDVOLUME1_INDEX, SWTResourceManager.getColor(242,14,14));
                                         //买价
                                         Double buyPrice = json.getDouble("bidPrice1");
                                         if(buyPrice.equals(Double.MAX_VALUE)||buyPrice.equals(Double.MIN_VALUE)){
                                         	//如果是极限值 买价等于跌停价
                                         	buyPrice = json.getDouble("lowerLimitPrice");
                                         }
-                                        tableItem.setText(3, new BigDecimal(buyPrice).setScale(2, RoundingMode.HALF_UP).toString());
-                                        tableItem.setForeground(3, SWTResourceManager.getColor(242,14,14));
+                                        tableItem.setText(ColumnIndex.MARKET_TABLE_BIDPRICE1_INDEX, new BigDecimal(buyPrice).setScale(2, RoundingMode.HALF_UP).toString());
+                                        tableItem.setForeground(ColumnIndex.MARKET_TABLE_BIDPRICE1_INDEX, SWTResourceManager.getColor(242,14,14));
                                         
                                         //卖价
                                         Double sellPrice = json.getDouble("askPrice1");
@@ -115,47 +116,47 @@ public class MarketReceiveThread implements Runnable {
                                         	//如果是极限值   卖价就是涨停价
                                         	sellPrice = json.getDouble("upperLimitPrice");
                                         }
-                                        tableItem.setText(4, new BigDecimal(sellPrice).setScale(2, RoundingMode.HALF_UP).toString());
-                                        tableItem.setForeground(4, SWTResourceManager.getColor(78,178,88));
+                                        tableItem.setText(ColumnIndex.MARKET_TABLE_ASKPRICE1_INDEX, new BigDecimal(sellPrice).setScale(2, RoundingMode.HALF_UP).toString());
+                                        tableItem.setForeground(ColumnIndex.MARKET_TABLE_ASKPRICE1_INDEX, SWTResourceManager.getColor(78,178,88));
                                         //卖量
                                         Integer askVolume1 = json.getInteger("askVolume1");
-                                        tableItem.setText(5, askVolume1.toString());
-                                        tableItem.setForeground(5, SWTResourceManager.getColor(78,178,88));
+                                        tableItem.setText(ColumnIndex.MARKET_TABLE_ASKVOLUME1_INDEX, askVolume1.toString());
+                                        tableItem.setForeground(ColumnIndex.MARKET_TABLE_ASKVOLUME1_INDEX, SWTResourceManager.getColor(78,178,88));
                                         //涨跌 = 最新价 - 昨收盘
                                         BigDecimal change= new BigDecimal(json.getString("lastPrice")).subtract(new BigDecimal(json.getString("preSettlementPrice"))).setScale(2, RoundingMode.HALF_UP);
-                                        tableItem.setText(6, String.valueOf(change));
+                                        tableItem.setText(ColumnIndex.MARKET_TABLE_RISE_INDEX, String.valueOf(change));
                                         if(change.compareTo(new BigDecimal("0"))>0){
                                         	//红色
-                                            tableItem.setForeground(6, SWTResourceManager.getColor(242,14,14));
-                                            tableItem.setForeground(7, SWTResourceManager.getColor(242,14,14));
+                                            tableItem.setForeground(ColumnIndex.MARKET_TABLE_RISE_INDEX, SWTResourceManager.getColor(242,14,14));
+                                            tableItem.setForeground(ColumnIndex.MARKET_TABLE_RISERATE_INDEX, SWTResourceManager.getColor(242,14,14));
                                         }else if(change.compareTo(new BigDecimal("0")) < 0){
                                         	//绿色
-                                            tableItem.setForeground(6, SWTResourceManager.getColor(78,178,88));
-                                            tableItem.setForeground(7, SWTResourceManager.getColor(78,178,88));
+                                            tableItem.setForeground(ColumnIndex.MARKET_TABLE_RISE_INDEX, SWTResourceManager.getColor(78,178,88));
+                                            tableItem.setForeground(ColumnIndex.MARKET_TABLE_RISERATE_INDEX, SWTResourceManager.getColor(78,178,88));
                                         }
                                         //涨跌幅
                                         BigDecimal changeRate = change.divide(new BigDecimal(json.getString("preSettlementPrice")), 4, RoundingMode.HALF_UP);
                                         changeRate = changeRate.multiply(new BigDecimal("100")).setScale(2, RoundingMode.HALF_UP);;
-                                        tableItem.setText(7, changeRate+"%");
+                                        tableItem.setText(ColumnIndex.MARKET_TABLE_RISERATE_INDEX, changeRate+"%");
                                         //涨停价
                                         BigDecimal upperLimitPrice = json.getBigDecimal("upperLimitPrice").setScale(2, RoundingMode.HALF_UP);
-                                        tableItem.setText(8, upperLimitPrice.toString());
+                                        tableItem.setText(ColumnIndex.MARKET_TABLE_UPPERPRICE_INDEX, upperLimitPrice.toString());
                                         //跌停价
                                         BigDecimal lowerLimitPrice = json.getBigDecimal("lowerLimitPrice").setScale(2, RoundingMode.HALF_UP);
-                                        tableItem.setText(9, lowerLimitPrice.toString());
+                                        tableItem.setText(ColumnIndex.MARKET_TABLE_LOWERPRICE_INDEX, lowerLimitPrice.toString());
                                         
                                         //最高价
                                         BigDecimal highestPrice = json.getBigDecimal("highestPrice").setScale(2, RoundingMode.HALF_UP);
-                                        tableItem.setText(10, highestPrice.toString());
+                                        tableItem.setText(ColumnIndex.MARKET_TABLE_HIGHESTPRICE_INDEX, highestPrice.toString());
                                         //最低价
                                         BigDecimal lowestPrice = json.getBigDecimal("lowestPrice").setScale(2, RoundingMode.HALF_UP);
-                                        tableItem.setText(11, lowestPrice.toString());
+                                        tableItem.setText(ColumnIndex.MARKET_TABLE_LOWESTPRICE_INDEX, lowestPrice.toString());
                                         //成交量
                                         Integer volume = json.getInteger("volume");
-                                        tableItem.setText(12, volume.toString());
+                                        tableItem.setText(ColumnIndex.MARKET_TABLE_VOLUME_INDEX, volume.toString());
                                         //持仓量
                                         BigDecimal openInterest = json.getBigDecimal("openInterest").setScale(0);
-                                        tableItem.setText(13, openInterest.toString());
+                                        tableItem.setText(ColumnIndex.MARKET_TABLE_OPENINTEREST_INDEX, openInterest.toString());
                                     }
                                 }
                             }
@@ -184,7 +185,7 @@ public class MarketReceiveThread implements Runnable {
                                 for(TableItem item : items){
                                     if(item.getText(0).equals(json.getString("instrumentID"))){
                                         //最新价
-                                        item.setText(6,json.getBigDecimal("lastPrice").setScale(2, RoundingMode.HALF_UP).toString());
+                                        item.setText(ColumnIndex.POSITION_TABLE_LASTPRICE_INDEX,json.getBigDecimal("lastPrice").setScale(2, RoundingMode.HALF_UP).toString());
                                         UserContract contract = traderView.getContractByContractNo(json.getString("instrumentID"));
                                         
                                         //合约单位
@@ -194,31 +195,31 @@ public class MarketReceiveThread implements Runnable {
                                         BigDecimal d = new BigDecimal("0");
                                         String lastPrice = json.getString("lastPrice");
                                         //logger.debug("最新价："+lastPrice);
-                                        String positionPrice = item.getText(5);
+                                        String positionPrice = item.getText(ColumnIndex.POSITION_TABLE_OPENPRICE_INDEX);
                                         //logger.debug("持仓价："+positionPrice);
                                         //logger.debug("合约单位："+contractUnit.toString());
-                                        String volumn = item.getText(2);
+                                        String volumn = item.getText(ColumnIndex.POSITION_TABLE_VOLUME_INDEX);
                                         //logger.debug("手数："+volumn);
                                         
                                         d = (new BigDecimal(lastPrice).subtract(new BigDecimal(positionPrice)))
                                         		.multiply(new BigDecimal(contractUnit.toString())).multiply(new BigDecimal(volumn)).setScale(0, RoundingMode.HALF_UP);
-                                        if(item.getText(1).equals("买")){
+                                        if(item.getText(ColumnIndex.POSITION_TABLE_DIRECTION_INDEX).equals("买")){
                                             //logger.debug("买入开仓盈亏 = （最新价-持仓价）*合约单位*手数 ");
                                             //logger.debug("持仓盈亏："+d.toString());
-                                            item.setText(7, d.toString());
+                                            item.setText(ColumnIndex.POSITION_TABLE_POSITOINWIN_INDEX, d.toString());
                                         }else {
                                             //logger.debug("卖出开仓盈亏 = （持仓价-最新价）*合约单位*手数 ");
                                             d = d.multiply(new BigDecimal("-1"));
                                             //logger.debug("持仓盈亏："+ d.toString());
-                                            item.setText(7, d.toString());
+                                            item.setText(ColumnIndex.POSITION_TABLE_POSITOINWIN_INDEX, d.toString());
                                         }
                                         
                                         if(d.compareTo(new BigDecimal("0"))>0){
                                             //item.setBackground(5, SWTResourceManager.getColor(249,204,226));
-                                            item.setForeground(7, SWTResourceManager.getColor(242,14,14));
+                                            item.setForeground(ColumnIndex.POSITION_TABLE_POSITOINWIN_INDEX, SWTResourceManager.getColor(242,14,14));
                                         }else {
                                             //item.setBackground(5, SWTResourceManager.getColor(117,243,83));
-                                            item.setForeground(7, SWTResourceManager.getColor(78,178,88));
+                                            item.setForeground(ColumnIndex.POSITION_TABLE_POSITOINWIN_INDEX, SWTResourceManager.getColor(78,178,88));
                                         }
                                     }
                                 }
