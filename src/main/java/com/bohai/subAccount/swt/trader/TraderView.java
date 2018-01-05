@@ -552,6 +552,16 @@ public class TraderView {
         
         tLayout.addColumnData(new ColumnWeightData(30));//这个是设置ID列的列宽为40像素
         new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_LASTPRICE_INDEX).setText("最新价");
+        
+        tLayout.addColumnData(new ColumnWeightData(30));//这个是设置ID列的列宽为10像素
+        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_RISE_INDEX).setText("涨跌");
+        
+        
+        tLayout.addColumnData(new ColumnWeightData(30));
+        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_RISERATE_INDEX).setText("涨跌幅");
+        
+        tLayout.addColumnData(new ColumnWeightData(40));
+        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_OPENINTEREST_INDEX).setText("持仓量");
           
         tLayout.addColumnData(new ColumnWeightData(30));
         new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_BIDVOLUME1_INDEX).setText("买量");
@@ -565,11 +575,8 @@ public class TraderView {
         tLayout.addColumnData(new ColumnWeightData(30));
         new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_ASKVOLUME1_INDEX).setText("卖量");
         
-        tLayout.addColumnData(new ColumnWeightData(30));//这个是设置ID列的列宽为10像素
-        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_RISE_INDEX).setText("涨跌");
-        
-        tLayout.addColumnData(new ColumnWeightData(30));
-        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_RISERATE_INDEX).setText("涨跌幅");
+
+
         
         tLayout.addColumnData(new ColumnWeightData(35));
         new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_UPPERPRICE_INDEX).setText("涨停价");
@@ -586,8 +593,7 @@ public class TraderView {
         tLayout.addColumnData(new ColumnWeightData(40));
         new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_VOLUME_INDEX).setText("成交量");
         
-        tLayout.addColumnData(new ColumnWeightData(40));
-        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_OPENINTEREST_INDEX).setText("持仓量");
+
         
     }
     
