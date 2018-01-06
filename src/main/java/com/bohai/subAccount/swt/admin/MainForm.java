@@ -941,7 +941,7 @@ public class MainForm {
             	settlemenetTitleVO.setDeposit(String.valueOf(useravailableindb.getInoutmoney()));
             	//可用资金
 //            	BigDecimal fund_availBDec = useravailableindb.getAvailable().add(useravailableindb.getFrozenavailable());
-            	BigDecimal fund_availBDec =  balanceBDec.subtract(useravailableindb.getMargin());
+            	BigDecimal fund_availBDec =  balanceBDec.add(useravailableindb.getInoutmoney()).subtract(useravailableindb.getMargin());
             	settlemenetTitleVO.setFund_availible(String.valueOf(fund_availBDec));
             	settlemenetTitleVO.setMargin(String.valueOf(useravailableindb.getMargin()));
             	settlemenetTitleVO.setMTM(String.valueOf(useravailableindb.getPositionwin()));
@@ -967,7 +967,7 @@ public class MainForm {
             	BigDecimal host_availible = capitalRate.getHostCapital1();
             	BigDecimal cust_availible = fund_availBDec.subtract(host_availible);
             	//其中客户自有资金可用
-            	settlemenetTitleVO.setCust_availible(String.valueOf(cust_availible));
+            	settlemenetTitleVO.setCust_availible(String.valueOf(balanceBDec));
             	//其中配资资金可用
             	settlemenetTitleVO.setHost_availible(String.valueOf(host_availible));
             	

@@ -91,7 +91,7 @@ public class ForceCloseDialog extends Dialog {
         forceRateText.setText(tableItem.getText(5));
         
         forceLimitLab = new Label(shell, SWT.NONE);
-        forceLimitLab.setText("强平比例：");
+        forceLimitLab.setText("强平金额：");
         forceLimitLab.setAlignment(SWT.RIGHT);
         forceLimitLab.setBounds(52, 147, 89, 26);
         

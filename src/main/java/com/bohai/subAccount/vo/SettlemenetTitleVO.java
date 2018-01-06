@@ -77,11 +77,11 @@ public class SettlemenetTitleVO {
 		retStr = retStr + tmpStr;
 		retStr = retStr + "保证金占用 Margin Occupied：" + margin;
 		retStr = retStr + tmpStr;
-		retStr = retStr + "可用资金 Fund Avail.：" + fund_availible;
+		retStr = retStr + "总可用资金 Fund Avail.：" + fund_availible;
 		retStr = retStr + tmpStr;
 		retStr = retStr + "其中客户自有资金可用：" + cust_availible;
 		retStr = retStr + tmpStr;
-		retStr = retStr + "其中配资资金可用：" + host_availible;		
+		retStr = retStr + "其中调入资金可用：" + host_availible;		
 		retStr = retStr + tmpStr;
 		retStr = retStr + "风 险 度 Risk Degree：" + risk_Degree;
 		retStr = retStr + tmpStr;

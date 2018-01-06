@@ -52,10 +52,12 @@ import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.bohai.subAccount.constant.ErrorConstant;
+import com.bohai.subAccount.dao.CapitalRateMapper;
 import com.bohai.subAccount.dao.FutureMarketMapper;
 import com.bohai.subAccount.dao.InvestorPositionOldMapper;
 import com.bohai.subAccount.dao.UseravailableindbMapper;
 import com.bohai.subAccount.entity.BuyDetail;
+import com.bohai.subAccount.entity.CapitalRate;
 import com.bohai.subAccount.entity.InputOrder;
 import com.bohai.subAccount.entity.InvestorPosition;
 import com.bohai.subAccount.entity.MainAccount;
@@ -156,6 +158,8 @@ public class CoreappView {
 	private PositionsDetailService positionsDetailService;
 	
 	private InvestorPositionOldMapper investorPositionOldMapper;
+	
+	private CapitalRateMapper capitalRateMapper;
 
 	private Socket CTPsocket;
 	// 买开卖平socket
@@ -188,6 +192,8 @@ public class CoreappView {
 	private Map<String, PositionsDetail> mapSubNoTradeContractSave;
 	
 	static ArrayList<String> HYname = new ArrayList<String>();
+	
+	private CapitalRate capitalRate;
 	
 
 	/**
@@ -772,6 +778,9 @@ public class CoreappView {
 		
 		investorPositionOldMapper = (InvestorPositionOldMapper) SpringContextUtil.getBean("investorPositionOldMapper");
 
+		 //配置用20180106
+        capitalRateMapper = (CapitalRateMapper) SpringContextUtil.getBean("capitalRateMapper");
+        
 		// groupInfoService = (GroupInfoService)
 		// SpringContextUtil.getBean("groupInfoService");
 		// mainAccountService = (MainAccountService)
@@ -4422,6 +4431,24 @@ public class CoreappView {
 	}
 
 	public void riskCRJ(String subUserid, String available) {
+		//去T_CAPITAL_RATE
+		capitalRate = capitalRateMapper.selectByPrimaryKey(subUserid);
+		// 发送给交易员
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append("riskCAPITALRATE|" + subUserid  + "|" + JSON.toJSONString(capitalRate));
+		// logger.debug("可用资金推送："+sb.toString());
+		SocketPrintOut(sb.toString());
+		// socketStr = ;
+		Display.getDefault().syncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				getTradeResponse().append(sb.toString() + "\r\n");
+			}
+		});
+		
+		
 		double getOldInOutMoney = 0;
 		// 出入金推送
 		// logger.info("用户名:"+subUserid+"|持仓盈亏做可用计算:"+JSON.toJSONString(available));

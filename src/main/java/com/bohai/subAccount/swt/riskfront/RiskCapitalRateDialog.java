@@ -148,7 +148,8 @@ public class RiskCapitalRateDialog extends Dialog {
 		
 		//自有资金=动态权益-配资资金1
 		double doublei = Double.valueOf(item.getText(1) == null?"0":item.getText(1));
-		doublei = doublei - capitalRate.getHostCapital1().doubleValue();
+//		doublei = doublei - capitalRate.getHostCapital1().doubleValue(); 20180106
+		doublei = capitalRate.getUserCapital().doubleValue();
 		Label label_5 = new Label(shell, SWT.NONE);
 		label_5.setBounds(77, 44, 96, 17);
 		label_5.setText(String.valueOf(doublei));

@@ -11,20 +11,31 @@ import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.bohai.subAccount.dao.CapitalRateMapper;
 import com.bohai.subAccount.entity.InvestorPosition;
 //import com.bohai.subAccount.entity.InvestorPosition2;
 import com.bohai.subAccount.exception.FutureException;
+import com.bohai.subAccount.service.CloseRuleService;
+import com.bohai.subAccount.service.GroupRuleService;
 import com.bohai.subAccount.service.InvestorPositionService;
+import com.bohai.subAccount.service.MainAccountService;
+import com.bohai.subAccount.service.SubTradingaccountService;
+import com.bohai.subAccount.service.UserContractService;
+import com.bohai.subAccount.service.UserInfoService;
 import com.bohai.subAccount.swt.riskback.RiskManageBackView;
+import com.bohai.subAccount.utils.SpringContextUtil;
 import com.bohai.subAccount.vo.UserPositionVO;
 
 public class RiskMainTradeReceiveThread implements Runnable {
 	
 	static Logger logger = Logger.getLogger(RiskMainTradeReceiveThread.class);
+	
+
 	
 	private RiskManageBackView riskManageView;
 	
@@ -40,6 +51,8 @@ public class RiskMainTradeReceiveThread implements Runnable {
 
 	@Override
 	public void run() {
+		
+
 		
 		BufferedReader in = null;
 		try {
@@ -94,6 +107,9 @@ public class RiskMainTradeReceiveThread implements Runnable {
 											
 											//已亏损金额
 											limit = limit.add(closeWin).add(positionWin);
+											//20180106 配资强平
+											
+											
 											
 											//强平比例
 											String closeRate = tableItem.getText(5);
@@ -252,5 +268,7 @@ public class RiskMainTradeReceiveThread implements Runnable {
 		}
 		
 	}
+	
+	
 
 }
