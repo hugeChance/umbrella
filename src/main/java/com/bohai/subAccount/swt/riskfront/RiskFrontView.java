@@ -24,8 +24,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -46,20 +44,17 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcInputOrderField;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
-import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.bohai.subAccount.constant.CommonConstant;
+import com.bohai.subAccount.dao.CapitalRateMapper;
+import com.bohai.subAccount.entity.CapitalRate;
 import com.bohai.subAccount.entity.CloseRule;
 import com.bohai.subAccount.entity.GroupRule;
 import com.bohai.subAccount.entity.InvestorPosition;
 import com.bohai.subAccount.entity.MainAccount;
-import com.bohai.subAccount.entity.SubTradingaccount;
 import com.bohai.subAccount.entity.UserContract;
 import com.bohai.subAccount.entity.UserInfo;
 import com.bohai.subAccount.exception.FutureException;
@@ -93,6 +88,7 @@ public class RiskFrontView {
 	
 	protected Shell shell;
 	private Table mainAccountTable;
+	private CapitalRateMapper capitalRateMapper;
 	private Table subAccountTable;
 	private MainAccountService mainAccountService;
 	private UserInfoService userInfoService;
@@ -103,6 +99,7 @@ public class RiskFrontView {
 	private CloseRuleService closeRuleService;
     private Socket socket;
     private Socket tradeSocket;
+    private CapitalRate capitalRate;
     private Datecalculate dateCalcuate = new Datecalculate();
     private HashMap<Object, Object> investorPositionsInfos;
     private List<UserContract> userContracts = new ArrayList<UserContract>();    
@@ -192,6 +189,9 @@ public class RiskFrontView {
         subTradingaccountService = (SubTradingaccountService) SpringContextUtil.getBean("subTradingaccountService");
         groupRuleService = (GroupRuleService) SpringContextUtil.getBean("groupRuleService");
         closeRuleService = (CloseRuleService) SpringContextUtil.getBean("closeRuleService");
+        
+        //配置用20180106
+        capitalRateMapper = (CapitalRateMapper) SpringContextUtil.getBean("capitalRateMapper");
 	}
 
 	/**
@@ -348,6 +348,9 @@ public class RiskFrontView {
 			investorPositionsInfos = new HashMap<Object, Object>();
 
 			for (UserInfo userInfo : userInfos) {
+				//调配资金
+            	capitalRate = capitalRateMapper.selectByPrimaryKey(userInfo.getUserName());
+				
 				//CTP成交信息取得
 				//List<Trade> trades = null;
 				//投资者持仓信息取得
@@ -388,6 +391,11 @@ public class RiskFrontView {
 					//强平金额
 					userInfoTableItem.setText(6, StringUtils.isEmpty(userInfo.getForceLimit())?"":userInfo.getForceLimit());
 
+					//自有资金
+                    userInfoTableItem.setText(7, StringUtils.isEmpty(capitalRate.getUserCapital())?"":String.valueOf(capitalRate.getUserCapital()));
+                    //调配资金
+                    userInfoTableItem.setText(8, StringUtils.isEmpty(capitalRate.getHostCapital1())?"":String.valueOf(capitalRate.getHostCapital1()));
+                    
 				} catch (FutureException e) {
 					logger.error("查询用户持仓失败",e);
 				}
@@ -501,6 +509,12 @@ public class RiskFrontView {
         
         tLayout.addColumnData(new ColumnWeightData(60));
         new TableColumn(subAccountTable, SWT.NONE).setText("强平金额");
+        
+        tLayout.addColumnData(new ColumnWeightData(60));
+        new TableColumn(subAccountTable, SWT.NONE).setText("自由资金");
+        
+        tLayout.addColumnData(new ColumnWeightData(60));
+        new TableColumn(subAccountTable, SWT.NONE).setText("调配资金");
 		
 	}
 	
