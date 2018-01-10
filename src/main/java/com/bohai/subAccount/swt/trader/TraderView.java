@@ -520,16 +520,16 @@ public class TraderView {
                     //所在列
                     int column = tableCursor.getColumn();
                     
-                    if(column == 3){
+                    if(column == ColumnIndex.MARKET_TABLE_BIDPRICE1_INDEX){
                         sellButton.setSelection(true);
                         buyButton.setSelection(false);
-                        priceText.setText(row.getText(4));
-                    }else if(column == 4) {
+                        priceText.setText(row.getText(ColumnIndex.MARKET_TABLE_ASKPRICE1_INDEX));
+                    }else if(column == ColumnIndex.MARKET_TABLE_ASKPRICE1_INDEX) {
                         buyButton.setSelection(true);
                         sellButton.setSelection(false);
-                        priceText.setText(row.getText(3));
+                        priceText.setText(row.getText(ColumnIndex.MARKET_TABLE_BIDPRICE1_INDEX));
                     } else {
-                    	priceText.setText(row.getText(1));
+                    	priceText.setText(row.getText(ColumnIndex.MARKET_TABLE_LASTPRICE_INDEX));
                     }
                     
                     
