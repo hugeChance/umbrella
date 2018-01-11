@@ -16,6 +16,7 @@ import java.net.Socket;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -396,6 +397,21 @@ public class CoreappView {
 					userAvailableMemorySave.setMargin("0");
 				}
 				userAvailableMemorySave.setPositionWin("0");
+				
+				//判断时间区域
+				Calendar c = Calendar.getInstance();
+				int hour = c.get(Calendar.HOUR_OF_DAY); 
+				if( hour <= 20){
+					//日盘时间
+					
+				} else {
+					//夜盘时间
+					
+				}
+				
+				
+				userAvailableMemorySave.setInOutMoney(inOutMoney);
+				
 
 				logger.info("可用资金初始化计算 SubTradingaccount=" + JSON.toJSONString(userAvailableMemorySave));
 //				String availableCalc = availableCalc(userAvailableMemorySave);

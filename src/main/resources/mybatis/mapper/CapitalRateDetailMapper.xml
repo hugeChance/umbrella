@@ -136,4 +136,6 @@
   	where USER_NAME = #{0,jdbcType=VARCHAR}
   
   </select>
+  
+   
 </mapper>
