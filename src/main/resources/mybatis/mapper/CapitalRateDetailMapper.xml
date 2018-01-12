@@ -137,5 +137,13 @@
   
   </select>
   
+   <select id="selectByPrimaryKeyOneday" resultMap="java.math.BigDecimal" parameterType="java.util.Map">
+  	select  sum(USER_CAPITAL) + sum(HOST_CAPITAL)  as inoutmoney  from T_CAPITAL_RATE_DETAIL 
+  	where to_date(INSERT_TIME,'yyyymmdd hh24miss')  > to_date(#{starttime,jdbcType=VARCHAR},'yyyymmdd hh24miss')
+  	and to_date(INSERT_TIME,'yyyymmdd hh24miss') < to_date(#{endtime,jdbcType=VARCHAR},'yyyymmdd hh24miss') 
+  	group by USER_NAME having USER_NAME = #{username,jdbcType=VARCHAR}
+  
+  </select>
+  
    
 </mapper>

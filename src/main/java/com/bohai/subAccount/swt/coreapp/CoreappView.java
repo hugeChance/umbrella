@@ -7,7 +7,6 @@ import static org.hraink.futures.ctp.thostftdcuserapidatatype.ThostFtdcUserApiDa
 import static org.hraink.futures.ctp.thostftdcuserapidatatype.ThostFtdcUserApiDataTypeLibrary.THOST_FTDC_TC_GFD;
 import static org.hraink.futures.ctp.thostftdcuserapidatatype.ThostFtdcUserApiDataTypeLibrary.THOST_FTDC_VC_AV;
 
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
@@ -27,6 +26,9 @@ import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
@@ -53,6 +55,7 @@ import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.bohai.subAccount.constant.ErrorConstant;
+import com.bohai.subAccount.dao.CapitalRateDetailMapper;
 import com.bohai.subAccount.dao.CapitalRateMapper;
 import com.bohai.subAccount.dao.FutureMarketMapper;
 import com.bohai.subAccount.dao.InvestorPositionOldMapper;
@@ -95,9 +98,6 @@ import com.bohai.subAccount.utils.SpringContextUtil;
 import com.bohai.subAccount.vo.UserAvailableMemorySave;
 import com.bohai.subAccount.vo.UserFlgMemorySave;
 import com.bohai.subAccount.vo.UserTradeRuleMemorySave;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 
 public class CoreappView {
 
@@ -161,6 +161,8 @@ public class CoreappView {
 	private InvestorPositionOldMapper investorPositionOldMapper;
 	
 	private CapitalRateMapper capitalRateMapper;
+	
+	private CapitalRateDetailMapper capitalRateDetailMapper;
 
 	private Socket CTPsocket;
 	// 买开卖平socket
@@ -400,17 +402,38 @@ public class CoreappView {
 				
 				//判断时间区域
 				Calendar c = Calendar.getInstance();
-				int hour = c.get(Calendar.HOUR_OF_DAY); 
+				int year=c.get(Calendar.YEAR);
+				int mouth=c.get(Calendar.MONTH)+1;
+				int day=c.get(Calendar.DAY_OF_MONTH);
+				int hour = c.get(Calendar.HOUR_OF_DAY);
+				int minute=c.get(Calendar.MINUTE);
+				int second=c.get(Calendar.SECOND);
+				String startYYYYMMDD = "";
+				String endYYYYMMDD = "";
+				BigDecimal inOutMoney;
+				inOutMoney = new BigDecimal(0);
 				if( hour <= 20){
 					//日盘时间
-					
+					startYYYYMMDD = String.valueOf(year) + String.valueOf(mouth) + String.valueOf(day - 1) + "  203501";
+					endYYYYMMDD = String.valueOf(year) + String.valueOf(mouth) + String.valueOf(day) + "  200101";
+					Map map = new HashMap<String,Object>();
+					map.put("username", subTradingaccount2.getAccountid());
+					map.put("starttime", startYYYYMMDD);
+					map.put("endtime", endYYYYMMDD);
+					inOutMoney = capitalRateDetailMapper.selectByPrimaryKeyOneday(map);
 				} else {
 					//夜盘时间
-					
+					startYYYYMMDD = String.valueOf(year) + String.valueOf(mouth) + String.valueOf(day) + "  203501";
+					endYYYYMMDD = String.valueOf(year) + String.valueOf(mouth) + String.valueOf(day) + "  240000";
+					Map map = new HashMap<String,Object>();
+					map.put("username", subTradingaccount2.getAccountid());
+					map.put("starttime", startYYYYMMDD);
+					map.put("endtime", endYYYYMMDD);
+					inOutMoney = capitalRateDetailMapper.selectByPrimaryKeyOneday(map);
 				}
 				
 				
-				userAvailableMemorySave.setInOutMoney(inOutMoney);
+				userAvailableMemorySave.setInOutMoney(inOutMoney.toString());
 				
 
 				logger.info("可用资金初始化计算 SubTradingaccount=" + JSON.toJSONString(userAvailableMemorySave));
@@ -797,6 +820,8 @@ public class CoreappView {
 		 //配置用20180106
         capitalRateMapper = (CapitalRateMapper) SpringContextUtil.getBean("capitalRateMapper");
         
+        
+        capitalRateDetailMapper= (CapitalRateDetailMapper) SpringContextUtil.getBean("capitalRateDetailMapper");
 		// groupInfoService = (GroupInfoService)
 		// SpringContextUtil.getBean("groupInfoService");
 		// mainAccountService = (MainAccountService)
