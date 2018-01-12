@@ -101,13 +101,14 @@ public class RiskMainTradeReceiveThread implements Runnable {
 										
 										UserPositionVO positionVO = (UserPositionVO) tableItem.getData();
 										if(positionVO.getUserName().equals(userName)){
+											//20180106 配资强平
+//											BigDecimal limit = positionVO.getSubTradingaccount().getUSER_CAPITAL().subtract(
+//													positionVO.getSubTradingaccount().getUSER_CAPITAL_YESTORDAY()==null?new BigDecimal("0"):positionVO.getSubTradingaccount().getUSER_CAPITAL_YESTORDAY());
 											
-											BigDecimal limit = positionVO.getSubTradingaccount().getUSER_CAPITAL().subtract(
-													positionVO.getSubTradingaccount().getUSER_CAPITAL_YESTORDAY()==null?new BigDecimal("0"):positionVO.getSubTradingaccount().getUSER_CAPITAL_YESTORDAY());
-											
+											BigDecimal limit = new BigDecimal(0);
 											//已亏损金额
 											limit = limit.add(closeWin).add(positionWin);
-											//20180106 配资强平
+											
 											
 											
 											
@@ -118,9 +119,9 @@ public class RiskMainTradeReceiveThread implements Runnable {
 												//允许亏损的最大值 = 自有资金*强平比例
 												BigDecimal closeAmountBig = closeRateBig.multiply(positionVO.getSubTradingaccount().getUSER_CAPITAL());
 												
-												if(closeAmountBig.compareTo(limit) <= 0){
-													riskManageView.forceCloseByUserName(userName);
-												}
+//												if(closeAmountBig.compareTo(limit) <= 0){
+//													riskManageView.forceCloseByUserName(userName);
+//												}
 											}
 											//强平金额
 											String closeAmount = tableItem.getText(6);

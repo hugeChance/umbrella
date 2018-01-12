@@ -62,6 +62,7 @@ import com.bohai.subAccount.dao.InvestorPositionOldMapper;
 import com.bohai.subAccount.dao.UseravailableindbMapper;
 import com.bohai.subAccount.entity.BuyDetail;
 import com.bohai.subAccount.entity.CapitalRate;
+import com.bohai.subAccount.entity.CapitalRateDetail2;
 import com.bohai.subAccount.entity.InputOrder;
 import com.bohai.subAccount.entity.InvestorPosition;
 import com.bohai.subAccount.entity.MainAccount;
@@ -414,22 +415,31 @@ public class CoreappView {
 				inOutMoney = new BigDecimal(0);
 				if( hour <= 20){
 					//日盘时间
-					startYYYYMMDD = String.valueOf(year) + String.valueOf(mouth) + String.valueOf(day - 1) + "  203501";
-					endYYYYMMDD = String.valueOf(year) + String.valueOf(mouth) + String.valueOf(day) + "  200101";
+					startYYYYMMDD = String.valueOf(year) + String.format("%02d", mouth) + String.format("%02d", day - 1) + " 203501";
+					endYYYYMMDD = String.valueOf(year) + String.format("%02d", mouth) + String.format("%02d", day) + " 200101";
 					Map map = new HashMap<String,Object>();
 					map.put("username", subTradingaccount2.getAccountid());
 					map.put("starttime", startYYYYMMDD);
 					map.put("endtime", endYYYYMMDD);
-					inOutMoney = capitalRateDetailMapper.selectByPrimaryKeyOneday(map);
+					CapitalRateDetail2 capitalRateDetail2 = new CapitalRateDetail2();
+					capitalRateDetail2 = capitalRateDetailMapper.selectByPrimaryKeyOneday(map);
+					if(capitalRateDetail2 != null ) {
+						inOutMoney = capitalRateDetail2.getInoutmoney();
+					}
+					
 				} else {
 					//夜盘时间
-					startYYYYMMDD = String.valueOf(year) + String.valueOf(mouth) + String.valueOf(day) + "  203501";
-					endYYYYMMDD = String.valueOf(year) + String.valueOf(mouth) + String.valueOf(day) + "  240000";
+					startYYYYMMDD = String.valueOf(year) + String.format("%02d", mouth) + String.format("%02d", day) + " 203501";
+					endYYYYMMDD = String.valueOf(year) + String.format("%02d", mouth) + String.format("%02d", day) + " 240000";
 					Map map = new HashMap<String,Object>();
 					map.put("username", subTradingaccount2.getAccountid());
 					map.put("starttime", startYYYYMMDD);
 					map.put("endtime", endYYYYMMDD);
-					inOutMoney = capitalRateDetailMapper.selectByPrimaryKeyOneday(map);
+					CapitalRateDetail2 capitalRateDetail2 = new CapitalRateDetail2();
+					capitalRateDetail2 = capitalRateDetailMapper.selectByPrimaryKeyOneday(map);
+					if(capitalRateDetail2 != null ) {
+						inOutMoney = capitalRateDetail2.getInoutmoney();
+					}
 				}
 				
 				
