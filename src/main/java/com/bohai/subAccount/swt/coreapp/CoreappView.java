@@ -442,7 +442,7 @@ public class CoreappView {
 					}
 				}
 				
-				
+				//盘中重连时用。不然出入金不会加载到可用资金里
 				userAvailableMemorySave.setInOutMoney(inOutMoney.toString());
 				
 
