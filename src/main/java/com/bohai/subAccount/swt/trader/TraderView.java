@@ -562,6 +562,13 @@ public class TraderView {
         
         tLayout.addColumnData(new ColumnWeightData(40));
         new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_OPENINTEREST_INDEX).setText("持仓量");
+        
+
+        tLayout.addColumnData(new ColumnWeightData(35));
+        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_UPPERPRICE_INDEX).setText("涨停价");
+        
+        tLayout.addColumnData(new ColumnWeightData(35));
+        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_LOWERPRICE_INDEX).setText("跌停价");
           
         //tLayout.addColumnData(new ColumnWeightData(30));
         new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_BIDVOLUME1_INDEX).setText("买量");
@@ -575,14 +582,6 @@ public class TraderView {
         //tLayout.addColumnData(new ColumnWeightData(30));
         new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_ASKVOLUME1_INDEX).setText("卖量");
         
-
-
-        
-        tLayout.addColumnData(new ColumnWeightData(35));
-        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_UPPERPRICE_INDEX).setText("涨停价");
-        
-        tLayout.addColumnData(new ColumnWeightData(35));
-        new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_LOWERPRICE_INDEX).setText("跌停价");
         
         //tLayout.addColumnData(new ColumnWeightData(35));
         new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_HIGHESTPRICE_INDEX).setText("最高价");

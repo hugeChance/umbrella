@@ -82,36 +82,36 @@ public class ColumnIndex {
     public static int MARKET_TABLE_OPENINTEREST_INDEX = 4;
     
     /**
-     * 行情-买量
-     */
-    public static int MARKET_TABLE_BIDVOLUME1_INDEX = 5;
-    
-    /**
-     * 行情-买价
-     */
-    public static int MARKET_TABLE_BIDPRICE1_INDEX = 6;
-    
-    /**
-     * 行情-卖价
-     */
-    public static int MARKET_TABLE_ASKPRICE1_INDEX = 7; 
-    
-    /**
-     * 行情-卖量
-     */
-    public static int MARKET_TABLE_ASKVOLUME1_INDEX = 8;
-    
-    
-    
-    /**
      * 行情-涨停价
      */
-    public static int MARKET_TABLE_UPPERPRICE_INDEX = 9;
+    public static int MARKET_TABLE_UPPERPRICE_INDEX = 5;
     
     /**
      * 行情-跌停价
      */
-    public static int MARKET_TABLE_LOWERPRICE_INDEX = 10;
+    public static int MARKET_TABLE_LOWERPRICE_INDEX = 6;
+    
+    /**
+     * 行情-买量
+     */
+    public static int MARKET_TABLE_BIDVOLUME1_INDEX = 7;
+    
+    /**
+     * 行情-买价
+     */
+    public static int MARKET_TABLE_BIDPRICE1_INDEX = 8;
+    
+    /**
+     * 行情-卖价
+     */
+    public static int MARKET_TABLE_ASKPRICE1_INDEX = 9; 
+    
+    /**
+     * 行情-卖量
+     */
+    public static int MARKET_TABLE_ASKVOLUME1_INDEX = 10;
+    
+    
     
     /**
      * 行情-最高价
