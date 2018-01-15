@@ -563,16 +563,16 @@ public class TraderView {
         tLayout.addColumnData(new ColumnWeightData(40));
         new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_OPENINTEREST_INDEX).setText("持仓量");
           
-        tLayout.addColumnData(new ColumnWeightData(30));
+        //tLayout.addColumnData(new ColumnWeightData(30));
         new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_BIDVOLUME1_INDEX).setText("买量");
         
-        tLayout.addColumnData(new ColumnWeightData(35));//这个是设置ID列的列宽为10像素
+        //tLayout.addColumnData(new ColumnWeightData(35));//这个是设置ID列的列宽为10像素
         new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_BIDPRICE1_INDEX).setText("买价");
         
-        tLayout.addColumnData(new ColumnWeightData(35));//这个是设置ID列的列宽为70像素
+        //tLayout.addColumnData(new ColumnWeightData(35));//这个是设置ID列的列宽为70像素
         new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_ASKPRICE1_INDEX).setText("卖价");
 
-        tLayout.addColumnData(new ColumnWeightData(30));
+        //tLayout.addColumnData(new ColumnWeightData(30));
         new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_ASKVOLUME1_INDEX).setText("卖量");
         
 
@@ -584,13 +584,13 @@ public class TraderView {
         tLayout.addColumnData(new ColumnWeightData(35));
         new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_LOWERPRICE_INDEX).setText("跌停价");
         
-        tLayout.addColumnData(new ColumnWeightData(35));
+        //tLayout.addColumnData(new ColumnWeightData(35));
         new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_HIGHESTPRICE_INDEX).setText("最高价");
         
-        tLayout.addColumnData(new ColumnWeightData(35));
+        //tLayout.addColumnData(new ColumnWeightData(35));
         new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_LOWESTPRICE_INDEX).setText("最低价");
         
-        tLayout.addColumnData(new ColumnWeightData(40));
+        //tLayout.addColumnData(new ColumnWeightData(40));
         new TableColumn(marketTable, SWT.NONE, ColumnIndex.MARKET_TABLE_VOLUME_INDEX).setText("成交量");
         
 
