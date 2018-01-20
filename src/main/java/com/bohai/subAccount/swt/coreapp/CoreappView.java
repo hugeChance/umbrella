@@ -1205,7 +1205,7 @@ public class CoreappView {
 			}
 		}
 
-		if (pTrade.getOffsetFlag() == '3') {
+		if (pTrade.getOffsetFlag() == '3' || pTrade.getOffsetFlag() == '4' || pTrade.getOffsetFlag() == '1') {
 			SellDetail sellDetail = new SellDetail();
 			sellDetail.setBrokerid(pTrade.getBrokerID());
 			sellDetail.setInvestorid(pTrade.getInvestorID());
@@ -3717,7 +3717,8 @@ public class CoreappView {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 		String dateString = formatter.format(currentTime);
 		long retInt = 0;
-		// 取得结算日平仓数据
+		//20180120 开始结算分上海 及 其他 其他继续用优先平仓方式结算。上海的方法重写
+		// 上海以外取得结算日平仓数据
 		try {
 			List<SellDetail> listSellDetail = sellDetailService.getSellDetail(dateString);
 			for (SellDetail sellDetail : listSellDetail) {
@@ -3757,6 +3758,42 @@ public class CoreappView {
 						e.printStackTrace();
 					}
 				}
+			}
+
+		} catch (FutureException e) {
+			// TODO Auto-generated catch block
+			logger.error("sellDetailService.getSellDetail(dateString);", e);
+			e.printStackTrace();
+		}
+		logger.info("上海以外逐笔对冲清算完成！");
+		logger.info("上海平昨4逐笔对冲清算开始！");
+		try {
+			//上海只平昨仓操作。
+			List<SellDetail> listSellDetail = sellDetailService.getSellDetail(dateString);
+			for (SellDetail sellDetail : listSellDetail) {
+				retInt = 0;
+				// 根据平仓数据 先查找历史持仓表中有无，再查找今日开仓表
+				// 子用户
+				// sellDetail.getSubuserid();
+				// COMBOKEY
+				// sellDetail.getCombokey();
+				// 方向
+				// sellDetail.getDirection();
+				// 合约
+				// sellDetail.getInstrumentid();
+				// 平仓数量
+				// sellDetail.getVolume();
+
+				long tmplong = sellDetail.getVolume();
+				try {
+					retInt = positionsDetailService.doFindPositionsDetailSH4(sellDetail.getSubuserid(),
+							sellDetail.getCombokey(), sellDetail.getDirection(), sellDetail.getInstrumentid(), tmplong);
+
+				} catch (Exception e) {
+
+					logger.error("positionsDetailService.doFindPositionsDetail;", e);
+					e.printStackTrace();
+				}
 
 			}
 
@@ -3765,7 +3802,46 @@ public class CoreappView {
 			logger.error("sellDetailService.getSellDetail(dateString);", e);
 			e.printStackTrace();
 		}
+		
+		logger.info("上海平昨4逐笔对冲清算完成！");
+		logger.info("上海平今3逐笔对冲清算开始！");
+		
+		try {
+			//上海只平今仓操作
+			List<SellDetail> listSellDetail = sellDetailService.getSellDetail(dateString);
+			for (SellDetail sellDetail : listSellDetail) {
+				retInt = 0;
+				// 根据平仓数据 先查找历史持仓表中有无，再查找今日开仓表
+				// 子用户
+				// sellDetail.getSubuserid();
+				// COMBOKEY
+				// sellDetail.getCombokey();
+				// 方向
+				// sellDetail.getDirection();
+				// 合约
+				// sellDetail.getInstrumentid();
+				// 平仓数量
+				// sellDetail.getVolume();
 
+				long tmplong = sellDetail.getVolume();
+				
+				try {
+					buyDetailService.doFindPositionsDetail(sellDetail.getSubuserid(), sellDetail.getCombokey(),
+							sellDetail.getDirection(), sellDetail.getInstrumentid(), tmplong);
+				} catch (Exception e) {
+					logger.error("buyDetailService.doFindPositionsDetail;", e);
+					e.printStackTrace();
+				}
+				
+			}
+
+		} catch (FutureException e) {
+			// TODO Auto-generated catch block
+			logger.error("sellDetailService.getSellDetail(dateString);", e);
+			e.printStackTrace();
+		}
+
+		logger.info("上海平今3逐笔对冲清算完成！");
 		logger.info("逐笔对冲清算完成！");
 
 		logger.info("把今日持仓表重新计算一遍。开始！");

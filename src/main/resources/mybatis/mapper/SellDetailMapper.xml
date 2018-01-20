@@ -292,7 +292,22 @@
   
   <select id="getUserByDate" resultMap="BaseResultMap" parameterType="java.lang.String">
   	select * from T_SELL_DETAIL
-    where TRADINGDAY = #{strdate,jdbcType=VARCHAR} 
+    where TRADINGDAY = #{strdate,jdbcType=VARCHAR}
+    and OFFSETFLAG = '1' 
+    order by COMBOKEY asc
+  </select>
+  
+  <select id="getUserByDateForSH3" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select * from T_SELL_DETAIL
+    where TRADINGDAY = #{strdate,jdbcType=VARCHAR}
+    and OFFSETFLAG = '3'  
+    order by COMBOKEY asc
+  </select>
+  
+  <select id="getUserByDateForSH4" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select * from T_SELL_DETAIL
+    where TRADINGDAY = #{strdate,jdbcType=VARCHAR}
+    and OFFSETFLAG = '4'  
     order by COMBOKEY asc
   </select>
   

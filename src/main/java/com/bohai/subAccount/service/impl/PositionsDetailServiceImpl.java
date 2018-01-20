@@ -75,7 +75,9 @@ public class PositionsDetailServiceImpl implements PositionsDetailService {
 		}
 		return retVolume;
 	}
-
+	
+	
+	
 	@Override
 	public void updateVolumn(String subuserid, String Combokey,long volume) {
 		logger.info("updateVolumn updateVolumn入參：subuserid = "+subuserid + ",Combokey = " + Combokey + ",volume = " + volume);
@@ -145,6 +147,60 @@ public class PositionsDetailServiceImpl implements PositionsDetailService {
 		
 		return list;
 	}
+
+
+
+	@Override
+	public long doFindPositionsDetailSH3(String Subuserid, String Combokey, String Direction, String Instrumentid,
+			long Volume) throws FutureException {
+		logger.info("doFindPositionsDetailSH3 doFindPositionsDetailSH3入參：Subuserid = "+Subuserid + ",Combokey = " + Combokey + ",Direction =" + Direction + ",Instrumentid = " + Instrumentid + ",Volume = " + Volume);
+
+		
+		
+		
+		//平今仓的操作，这里什么都不做。
+		return Volume;
+	}
+
+
+
+	@Override
+	public long doFindPositionsDetailSH4(String Subuserid, String Combokey, String Direction, String Instrumentid,
+			long Volume) throws FutureException {
+		logger.info("doFindPositionsDetailSH4 doFindPositionsDetailSH4入參：Subuserid = "+Subuserid + ",Combokey = " + Combokey + ",Direction =" + Direction + ",Instrumentid = " + Instrumentid + ",Volume = " + Volume);
+		List<PositionsDetail> listPositionsDetail = null;
+		
+		//买开，卖平。卖开，买平。
+		if(Direction.equals("0")){
+			Direction = "1";
+		} else {
+			Direction = "0";
+		}
+		long retVolume = Volume;
+		
+		listPositionsDetail = positionsDetailMapper.findPositionsDetail(Subuserid, Direction, Instrumentid);
+		
+		for (PositionsDetail positionsDetail : listPositionsDetail) {
+			//上海平昨。只有一种可能 ，昨仓持仓一定大于平昨下单数
+			//更新positionsDetail表 有余数 positionsDetail - retVolume
+			updateVolumn(positionsDetail.getSubuserid(),positionsDetail.getCombokey(),positionsDetail.getVolume() - retVolume);
+			
+			//更新对应的BUY表让平仓和其对应
+			BuyDetail buyDetail = new BuyDetail();
+			buyDetail.setCombokey(positionsDetail.getCombokey());
+			buyDetail.setSellcombokey(Combokey);
+			buyDetail.setSellvolume(Long.valueOf(String.valueOf(retVolume)));
+			//更新buyDetail表对应关系
+			buyDetailMapper.updateBuyDetail(buyDetail);
+			retVolume = 0;
+			break;
+		
+		}
+		return retVolume;
+	}
+
+
+
 
 	
 

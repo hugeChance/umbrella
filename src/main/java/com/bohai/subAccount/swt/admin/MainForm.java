@@ -863,7 +863,6 @@ public class MainForm {
 
 		TreeItem treeSysItem2 = new TreeItem(systemTree, SWT.NONE);
 		treeSysItem2.setText("结算设置");
-		treeSysItem2.setExpanded(true);
 		
 		TreeItem treeItem_1 = new TreeItem(systemTree, 0);
 		treeItem_1.setText("导入合约");

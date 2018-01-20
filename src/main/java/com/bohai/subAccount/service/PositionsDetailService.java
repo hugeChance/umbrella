@@ -26,4 +26,10 @@ public interface PositionsDetailService {
 	public List<PositionsDetail2> findGroupByPositionsDetail() throws FutureException;
 	
 	public List<PositionsDetail> findUserPositionsDetail() throws FutureException;
+	
+	public long doFindPositionsDetailSH3(String  Subuserid,String Combokey,String Direction,String Instrumentid,long tmplong) throws FutureException;
+	
+	public long doFindPositionsDetailSH4(String  Subuserid,String Combokey,String Direction,String Instrumentid,long tmplong) throws FutureException;
+	
+	
 }
