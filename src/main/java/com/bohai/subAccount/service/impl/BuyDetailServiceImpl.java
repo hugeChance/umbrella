@@ -66,11 +66,17 @@ public class BuyDetailServiceImpl implements BuyDetailService {
 		
 		for (BuyDetail buyDetail : listBuyDetail) {
 			long nowVolume = 0;
+			long getsellVolume = 0;
 			//buy 表中的余额比平仓数量大
-			nowVolume = buyDetail.getVolume() - buyDetail.getSellvolume();
+			if(buyDetail.getSellvolume() == null ){
+				getsellVolume = 0;
+			} else {
+				getsellVolume = buyDetail.getSellvolume();
+			}
+			nowVolume = buyDetail.getVolume() - getsellVolume;
 			if (nowVolume >= retVolume) {
 				buyDetail.setSellcombokey(Combokey);
-				nowVolume = buyDetail.getSellvolume() + retVolume;
+				nowVolume = getsellVolume + retVolume;
 				buyDetail.setSellvolume(Long.valueOf(String.valueOf(nowVolume)));
 				updateBuySell(buyDetail);
 				break;
@@ -78,7 +84,7 @@ public class BuyDetailServiceImpl implements BuyDetailService {
 				//一条开仓还不够平仓的。
 				retVolume = retVolume - nowVolume;
 				buyDetail.setSellcombokey(Combokey);
-				nowVolume = buyDetail.getSellvolume() + nowVolume;
+				nowVolume = getsellVolume + nowVolume;
 				buyDetail.setSellvolume(Long.valueOf(String.valueOf(nowVolume)));
 				updateBuySell(buyDetail);
 			}

@@ -430,7 +430,7 @@ public class CoreappView {
 				} else {
 					//夜盘时间
 					startYYYYMMDD = String.valueOf(year) + String.format("%02d", mouth) + String.format("%02d", day) + " 203501";
-					endYYYYMMDD = String.valueOf(year) + String.format("%02d", mouth) + String.format("%02d", day) + " 240000";
+					endYYYYMMDD = String.valueOf(year) + String.format("%02d", mouth) + String.format("%02d", day) + " 235959";
 					Map map = new HashMap<String,Object>();
 					map.put("username", subTradingaccount2.getAccountid());
 					map.put("starttime", startYYYYMMDD);
@@ -3769,7 +3769,7 @@ public class CoreappView {
 		logger.info("上海平昨4逐笔对冲清算开始！");
 		try {
 			//上海只平昨仓操作。
-			List<SellDetail> listSellDetail = sellDetailService.getSellDetail(dateString);
+			List<SellDetail> listSellDetail = sellDetailService.getUserByDateForSH4(dateString);
 			for (SellDetail sellDetail : listSellDetail) {
 				retInt = 0;
 				// 根据平仓数据 先查找历史持仓表中有无，再查找今日开仓表
@@ -3808,7 +3808,7 @@ public class CoreappView {
 		
 		try {
 			//上海只平今仓操作
-			List<SellDetail> listSellDetail = sellDetailService.getSellDetail(dateString);
+			List<SellDetail> listSellDetail = sellDetailService.getUserByDateForSH3(dateString);
 			for (SellDetail sellDetail : listSellDetail) {
 				retInt = 0;
 				// 根据平仓数据 先查找历史持仓表中有无，再查找今日开仓表

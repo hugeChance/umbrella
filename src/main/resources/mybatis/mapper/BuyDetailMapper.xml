@@ -336,7 +336,7 @@
     and INSTRUMENTID = #{1,jdbcType=VARCHAR} 
     and DIRECTION = #{2,jdbcType=VARCHAR} 
     and OFFSETFLAG = '0'
-    and SELLVOLUME != VOLUME
+    and nvl(SELLVOLUME,0) &lt; VOLUME
     order by COMBOKEY asc 
   </select>
   
