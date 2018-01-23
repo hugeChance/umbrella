@@ -904,6 +904,11 @@ public class MainForm {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
         String dateString = formatter.format(currentTime);
         
+        //合约单位及属性的MAP生成
+        UserContract userContract = new UserContract();
+        
+
+        
         if(saveFile!=null){
         	File directiory=new File(saveFile);
             logger.info(directiory.getPath());
@@ -992,7 +997,7 @@ public class MainForm {
             	//查询成交表
             	try {
 					List<Trade> listTrade = tradeService.getUserByUserName2(useravailableindb.getUsername());
-					UserContract userContract = new UserContract();
+					
 					
 					if (listTrade.size() > 0) {
 						//有成交则出明细
@@ -1056,7 +1061,7 @@ public class MainForm {
 						
 					}
 				} catch (FutureException e) {
-					logger.info("结算单查询成交表！！");
+					logger.info("结算单查询成交表ERROR！！");
 					e.printStackTrace();
 				}
             	
@@ -1073,7 +1078,9 @@ public class MainForm {
 						strB.append("\r\n");
 					
 					}
-						
+					BigDecimal tempLots = new BigDecimal(0);
+					BigDecimal tempRealized = new BigDecimal(0);
+					
 					
 					for (SellDetail sellDetail : listSellDetail) {
 						//拿着平仓COMBOKEY去查开仓
@@ -1087,21 +1094,32 @@ public class MainForm {
 							settlemenetPart2Body.setProduct(buyDetail.getInstrumentid());
 							settlemenetPart2Body.setInstrument(buyDetail.getInstrumentid());
 							settlemenetPart2Body.setOpenDate(buyDetail.getTradedate());
+							tempLots = new BigDecimal(0);
+							tempRealized = new BigDecimal(0);
 							if(buyDetail.getDirection().equals("0")){
 								settlemenetPart2Body.setBS("买");
+								
+								tempRealized = sellDetail.getPrice().subtract(buyDetail.getPrice());
 							} else {
 								settlemenetPart2Body.setBS("卖");
+//								settlemenetPart2Body.setRealized(buyDetail.getPrice().subtract(sellDetail.getPrice()));
+								tempRealized = buyDetail.getPrice().subtract(sellDetail.getPrice());
 							}
 							if(sellDetail.getVolume() > buyDetail.getVolume()){
 								settlemenetPart2Body.setLots(String.valueOf(buyDetail.getVolume()));
+								tempLots = new BigDecimal(buyDetail.getVolume());
 							} else {
 								settlemenetPart2Body.setLots(String.valueOf(sellDetail.getVolume()));
+								tempLots = new BigDecimal(sellDetail.getVolume());
 							}
 							settlemenetPart2Body.setPos(buyDetail.getPrice().toString());
 							//昨结算 要实装 T_FUTURE_MARKET表PRE_SETTLEMENT_PRICE
 							settlemenetPart2Body.setPrev("");
 							settlemenetPart2Body.setTrans(sellDetail.getPrice().toString());
-							settlemenetPart2Body.setRealized(sellDetail.getPrice().subtract(buyDetail.getPrice()).toString());
+							userContract = mapUserContractMemorySave
+									.get(useravailableindb.getUsername() + buyDetail.getInstrumentid());
+							tempRealized = tempRealized.multiply(tempLots).multiply(new BigDecimal(userContract.getContractUnit()));
+							settlemenetPart2Body.setRealized(tempRealized.toString());
 							settlemenetPart2Body.setPremium("0.00");
 							
 							strB.append(settlemenetPart2Body.getRetStr());
@@ -1111,7 +1129,7 @@ public class MainForm {
 					}
 					
 				} catch (FutureException e1) {
-					// TODO Auto-generated catch block
+					logger.info("结算单查询平仓表ERROR！！");
 					e1.printStackTrace();
 				}
             	
