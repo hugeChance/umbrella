@@ -51,7 +51,7 @@ public class PositionsDetailServiceImpl implements PositionsDetailService {
 				//更新对应的BUY表让平仓和其对应
 				BuyDetail buyDetail = new BuyDetail();
 				buyDetail.setCombokey(positionsDetail.getCombokey());
-				buyDetail.setSellcombokey(Combokey);
+				buyDetail.setSellcombokey(Combokey+"@"+retVolume);
 				buyDetail.setSellvolume(Long.valueOf(String.valueOf(retVolume)));
 				//更新buyDetail表对应关系
 				buyDetailMapper.updateBuyDetail(buyDetail);
@@ -65,7 +65,7 @@ public class PositionsDetailServiceImpl implements PositionsDetailService {
 				//更新对应的BUY表让平仓和其对应
 				BuyDetail buyDetail = new BuyDetail();
 				buyDetail.setCombokey(positionsDetail.getCombokey());
-				buyDetail.setSellcombokey(Combokey);
+				buyDetail.setSellcombokey(Combokey+"@"+positionsDetail.getVolume());
 				buyDetail.setSellvolume(positionsDetail.getVolume());
 				//更新buyDetail表对应关系
 				buyDetailMapper.updateBuyDetail(buyDetail);

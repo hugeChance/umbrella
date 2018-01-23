@@ -75,7 +75,7 @@ public class BuyDetailServiceImpl implements BuyDetailService {
 			}
 			nowVolume = buyDetail.getVolume() - getsellVolume;
 			if (nowVolume >= retVolume) {
-				buyDetail.setSellcombokey(Combokey);
+				buyDetail.setSellcombokey(Combokey + "@" + retVolume);
 				nowVolume = getsellVolume + retVolume;
 				buyDetail.setSellvolume(Long.valueOf(String.valueOf(nowVolume)));
 				updateBuySell(buyDetail);
@@ -83,7 +83,7 @@ public class BuyDetailServiceImpl implements BuyDetailService {
 			} else {
 				//一条开仓还不够平仓的。
 				retVolume = retVolume - nowVolume;
-				buyDetail.setSellcombokey(Combokey);
+				buyDetail.setSellcombokey(Combokey + "@" + nowVolume);
 				nowVolume = getsellVolume + nowVolume;
 				buyDetail.setSellvolume(Long.valueOf(String.valueOf(nowVolume)));
 				updateBuySell(buyDetail);
