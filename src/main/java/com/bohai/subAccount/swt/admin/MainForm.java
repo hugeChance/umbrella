@@ -1344,6 +1344,11 @@ public class MainForm {
 	
 	public String retcombokeynum(String combokey,String sellcombokey){
 		String rettmp = "";
+		
+		if(combokey.equals("") ) {
+			return rettmp;
+		}
+		
 
 		 String[] ss = new String[100];
 		 ss = combokey.split(",");
