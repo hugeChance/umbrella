@@ -1105,13 +1105,21 @@ public class MainForm {
 //								settlemenetPart2Body.setRealized(buyDetail.getPrice().subtract(sellDetail.getPrice()));
 								tempRealized = buyDetail.getPrice().subtract(sellDetail.getPrice());
 							}
-							if(sellDetail.getVolume() > buyDetail.getVolume()){
-								settlemenetPart2Body.setLots(String.valueOf(buyDetail.getVolume()));
-								tempLots = new BigDecimal(buyDetail.getVolume());
+							
+							String retnum = retcombokeynum(buyDetail.getSellcombokey(),sellDetail.getCombokey());
+							if(retnum == "") {
+								tempLots = new BigDecimal(0);
 							} else {
-								settlemenetPart2Body.setLots(String.valueOf(sellDetail.getVolume()));
-								tempLots = new BigDecimal(sellDetail.getVolume());
+								tempLots = new BigDecimal(retnum);
 							}
+							settlemenetPart2Body.setLots(String.valueOf(tempLots));
+//							if(sellDetail.getVolume() > buyDetail.getVolume()){
+//								settlemenetPart2Body.setLots(String.valueOf(buyDetail.getVolume()));
+//								tempLots = new BigDecimal(buyDetail.getVolume());
+//							} else {
+//								settlemenetPart2Body.setLots(String.valueOf(sellDetail.getVolume()));
+//								tempLots = new BigDecimal(sellDetail.getVolume());
+//							}
 							settlemenetPart2Body.setPos(buyDetail.getPrice().toString());
 							//昨结算 要实装 T_FUTURE_MARKET表PRE_SETTLEMENT_PRICE
 							settlemenetPart2Body.setPrev("");
@@ -1154,6 +1162,7 @@ public class MainForm {
 						
 						
 						for (BuyDetail buyDetail : listBuyDetail) {
+							BigDecimal tempRealized = new BigDecimal(0);
 							//输出平仓明细
 							settlemenetPart4Body.setExchange(buyDetail.getExchangeid());
 							settlemenetPart4Body.setProduct(buyDetail.getInstrumentid());
@@ -1182,18 +1191,27 @@ public class MainForm {
 							//Accum 浮动盈亏
 							settlemenetPart4Body.setAccum("0");
 							
+							userContract = mapUserContractMemorySave
+									.get(useravailableindb.getUsername() + buyDetail.getInstrumentid());
+							
 							//盯市盈亏
 							if(buyDetail.getDirection().equals("0")){
 								//买
-								settlement = settlement.subtract(buyDetail.getPrice());
-								settlement = settlement.multiply(new BigDecimal(positionsDetail.getVolume()));
-								settlemenetPart4Body.setMTM(settlement.toString());
+								tempRealized = settlement.subtract(buyDetail.getPrice());
+								tempRealized = tempRealized.multiply(new BigDecimal(positionsDetail.getVolume()));
+								tempRealized = tempRealized.multiply(new BigDecimal(userContract.getContractUnit()));
+//								settlement = settlement.subtract(buyDetail.getPrice());
+//								settlement = settlement.multiply(new BigDecimal(positionsDetail.getVolume()));
+								settlemenetPart4Body.setMTM(tempRealized.toString());
 								
 							} else {
 								//卖
-								settlement = buyDetail.getPrice().subtract(settlement);
-								settlement = settlement.multiply(new BigDecimal(positionsDetail.getVolume()));
-								settlemenetPart4Body.setMTM(settlement.toString());
+								tempRealized =  buyDetail.getPrice().subtract(settlement);
+								tempRealized = tempRealized.multiply(new BigDecimal(positionsDetail.getVolume()));
+								tempRealized = tempRealized.multiply(new BigDecimal(userContract.getContractUnit()));
+//								settlement = buyDetail.getPrice().subtract(settlement);
+//								settlement = settlement.multiply(new BigDecimal(positionsDetail.getVolume()));
+								settlemenetPart4Body.setMTM(tempRealized.toString());
 								
 							}
 							
@@ -1228,6 +1246,8 @@ public class MainForm {
 						strB.append(settlemenetPart3Head.getRetPart3Head1());
 						strB.append("\r\n");
 						
+						
+						
 	            		for (InvestorPosition investorPosition : listInvestorPosition) {
 		            			//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 		            			//|       品种       |      合约      |    买持     |    买均价   |     卖持     |    卖均价    |  昨结算  |  今结算  |持仓盯市盈亏|  保证金占用   |  投/保     |   多头期权市值   |   空头期权市值    |
@@ -1236,6 +1256,9 @@ public class MainForm {
 		            			//|        铝        |     al1706     |            1|    13840.000|             0|         0.000| 13765.000| 13790.000|     -250.00|        6895.00|投          |              0.00|               0.00|
 	            			settlemenetPart3Body.setProduct(getStringDateShort());
 	            			settlemenetPart3Body.setInstrument(investorPosition.getInstrumentid());
+	            			userContract = mapUserContractMemorySave
+									.get(useravailableindb.getUsername() + investorPosition.getInstrumentid());
+	            			
 	            			if(investorPosition.getPosidirection().equals("0"))
 	            			{
 	            				//买
@@ -1267,12 +1290,14 @@ public class MainForm {
 								//买
 								settlement = settlement.subtract(investorPosition.getOpenamount());
 								settlement = settlement.multiply(new BigDecimal(investorPosition.getPosition()));
+								settlement = settlement.multiply(new BigDecimal(userContract.getContractUnit()));
 								settlemenetPart3Body.setMTM(settlement.toString());
 								
 							} else {
 								//卖
 								settlement = investorPosition.getOpenamount().subtract(settlement);
 								settlement = settlement.multiply(new BigDecimal(investorPosition.getPosition()));
+								settlement = settlement.multiply(new BigDecimal(userContract.getContractUnit()));
 								settlemenetPart3Body.setMTM(settlement.toString());
 								
 							}
@@ -1316,6 +1341,22 @@ public class MainForm {
     	
     	return 0;
     }
+	
+	public String retcombokeynum(String combokey,String sellcombokey){
+		String rettmp = "";
+
+		 String[] ss = new String[100];
+		 ss = combokey.split(",");
+		 for (int i = 0;i < ss.length;i ++){
+			 if(ss[i].indexOf(sellcombokey) >= 0){
+				 return ss[i].split("@")[1];
+				 
+			 } 
+		 }
+		
+		
+		return rettmp;
+	}
 	
 	/**
      * 获取现在时间
