@@ -46,6 +46,8 @@ public class SellDetailServiceImpl implements SellDetailService {
 		return list;
 		
 	}
+	
+	
 
 	@Override
 	public List<SellDetail> getSellDetailForUser(String subUserId, String strdate) throws FutureException {
@@ -58,6 +60,38 @@ public class SellDetailServiceImpl implements SellDetailService {
 		} catch (Exception e) {
 			logger.error("查询getSellDetail失败",e);
 			throw new FutureException("","查询getSellDetail失败");
+		}
+		
+		return list;
+	}
+
+	@Override
+	public List<SellDetail> getUserByDateForSH3(String strdate) throws FutureException {
+		logger.info("SellDetailService getUserByDateForSH3入參：strdate = "+strdate);
+		
+		List<SellDetail> list = null;
+		
+		try {
+			list = sellDetailMapper.getUserByDateForSH3(strdate);
+		} catch (Exception e) {
+			logger.error("查询getUserByDateForSH3失败",e);
+			throw new FutureException("","查询getUserByDateForSH3失败");
+		}
+		
+		return list;
+	}
+
+	@Override
+	public List<SellDetail> getUserByDateForSH4(String strdate) throws FutureException {
+		logger.info("SellDetailService getUserByDateForSH4入參：strdate = "+strdate);
+		
+		List<SellDetail> list = null;
+		
+		try {
+			list = sellDetailMapper.getUserByDateForSH4(strdate);
+		} catch (Exception e) {
+			logger.error("查询getUserByDateForSH4失败",e);
+			throw new FutureException("","查询getUserByDateForSH4失败");
 		}
 		
 		return list;

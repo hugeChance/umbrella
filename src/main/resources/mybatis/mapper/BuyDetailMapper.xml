@@ -313,7 +313,7 @@
       This element was generated on Wed Jan 18 12:54:24 CST 2017.
     -->
     update T_BUY_DETAIL set SELLCOMBOKEY = SELLCOMBOKEY || ',' || #{sellcombokey,jdbcType=VARCHAR}
-    ,SELLVOLUME = SELLVOLUME + #{sellvolume,jdbcType=DECIMAL}
+    ,SELLVOLUME = nvl(SELLVOLUME,0) + #{sellvolume,jdbcType=DECIMAL}
     where  COMBOKEY = #{combokey,jdbcType=VARCHAR} 
     
   </update>
@@ -336,7 +336,7 @@
     and INSTRUMENTID = #{1,jdbcType=VARCHAR} 
     and DIRECTION = #{2,jdbcType=VARCHAR} 
     and OFFSETFLAG = '0'
-    and SELLVOLUME != VOLUME
+    and nvl(SELLVOLUME,0) &lt; VOLUME
     order by COMBOKEY asc 
   </select>
   

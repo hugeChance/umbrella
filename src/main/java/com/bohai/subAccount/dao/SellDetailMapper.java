@@ -24,5 +24,9 @@ public interface SellDetailMapper {
     
     List<SellDetail> getUserByDate(String strdate);
     
+    List<SellDetail> getUserByDateForSH3(String strdate);
+    
+    List<SellDetail> getUserByDateForSH4(String strdate);
+    
     List<SellDetail> getSellDetailForUser(String subUserId,String strdate);
 }
