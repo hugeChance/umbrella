@@ -108,9 +108,9 @@ public class AccountEditDialog extends Dialog {
 		passwd = new Text(shell, SWT.BORDER|SWT.PASSWORD);
 		passwd.setBounds(160, 114, 106, 23);
 		
-		brokerId.setText(mainAccount.getBrokerId());
-		accountNo.setText(mainAccount.getAccountNo());
-		passwd.setText(mainAccount.getPasswd());
+		brokerId.setText(mainAccount.getBrokerId()==null?"":mainAccount.getBrokerId());
+		accountNo.setText(mainAccount.getAccountNo()==null?"":mainAccount.getAccountNo());
+		passwd.setText(mainAccount.getPasswd()==null?"":mainAccount.getPasswd());
 		
 		combo = new Combo(shell, SWT.NONE);
         combo.setBounds(161, 156, 105, 23);
