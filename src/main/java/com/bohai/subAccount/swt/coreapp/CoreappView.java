@@ -409,13 +409,26 @@ public class CoreappView {
 				int hour = c.get(Calendar.HOUR_OF_DAY);
 				int minute=c.get(Calendar.MINUTE);
 				int second=c.get(Calendar.SECOND);
+				
+				Date date = new Date();//获取当前时间 
+				Calendar calendar = Calendar.getInstance();  
+				calendar.setTime(date); 
+				calendar.add(Calendar.DAY_OF_MONTH, -1);
+				int mouth2=c.get(Calendar.MONTH);
+				int year2=c.get(Calendar.YEAR);
+				int day2=calendar.get(Calendar.DAY_OF_MONTH );
+				
 				String startYYYYMMDD = "";
 				String endYYYYMMDD = "";
 				BigDecimal inOutMoney;
 				inOutMoney = new BigDecimal(0);
 				if( hour <= 20){
 					//日盘时间
-					startYYYYMMDD = String.valueOf(year) + String.format("%02d", mouth) + String.format("%02d", day - 1) + " 203501";
+					
+					
+					
+					
+					startYYYYMMDD = String.valueOf(year2) + String.format("%02d", mouth2) + String.format("%02d", day2) + " 203501";
 					endYYYYMMDD = String.valueOf(year) + String.format("%02d", mouth) + String.format("%02d", day) + " 200101";
 					Map map = new HashMap<String,Object>();
 					map.put("username", subTradingaccount2.getAccountid());
