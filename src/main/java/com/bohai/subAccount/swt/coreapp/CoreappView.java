@@ -15,6 +15,7 @@ import java.net.Socket;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,9 @@ import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
@@ -51,10 +55,14 @@ import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.bohai.subAccount.constant.ErrorConstant;
+import com.bohai.subAccount.dao.CapitalRateDetailMapper;
+import com.bohai.subAccount.dao.CapitalRateMapper;
 import com.bohai.subAccount.dao.FutureMarketMapper;
 import com.bohai.subAccount.dao.InvestorPositionOldMapper;
 import com.bohai.subAccount.dao.UseravailableindbMapper;
 import com.bohai.subAccount.entity.BuyDetail;
+import com.bohai.subAccount.entity.CapitalRate;
+import com.bohai.subAccount.entity.CapitalRateDetail2;
 import com.bohai.subAccount.entity.InputOrder;
 import com.bohai.subAccount.entity.InvestorPosition;
 import com.bohai.subAccount.entity.MainAccount;
@@ -111,6 +119,8 @@ public class CoreappView {
 	int frontID = 0;
 	int CTPerrID = 0;
 	int tradingAccountnRequestID = 0;
+	
+	public int reStartFlg = 0;
 
 	/** 测试前置机地址 **/
 	// static String frontAddr = "tcp://180.169.116.120:41205";
@@ -150,10 +160,16 @@ public class CoreappView {
 	private PositionsDetailService positionsDetailService;
 	
 	private InvestorPositionOldMapper investorPositionOldMapper;
+	
+	private CapitalRateMapper capitalRateMapper;
+	
+	private CapitalRateDetailMapper capitalRateDetailMapper;
 
 	private Socket CTPsocket;
 	// 买开卖平socket
 	private Socket ctpFirst;
+	
+
 	// 买开卖平输出流
 	private PrintWriter outFirst;
 	// 卖开买平socket
@@ -180,6 +196,8 @@ public class CoreappView {
 	private Map<String, PositionsDetail> mapSubNoTradeContractSave;
 	
 	static ArrayList<String> HYname = new ArrayList<String>();
+	
+	private CapitalRate capitalRate;
 	
 
 	/**
@@ -221,6 +239,13 @@ public class CoreappView {
 			clients = new ArrayList<Socket>();
 		}
 		clients.add(client);
+	}
+	
+	public synchronized void removeClient(Socket client){
+	    
+	    if (clients != null) {
+	        clients.remove(client);
+	    }
 	}
 
 	public void setMemory() {
@@ -375,6 +400,64 @@ public class CoreappView {
 					userAvailableMemorySave.setMargin("0");
 				}
 				userAvailableMemorySave.setPositionWin("0");
+				
+				//判断时间区域
+				Calendar c = Calendar.getInstance();
+				int year=c.get(Calendar.YEAR);
+				int mouth=c.get(Calendar.MONTH)+1;
+				int day=c.get(Calendar.DAY_OF_MONTH);
+				int hour = c.get(Calendar.HOUR_OF_DAY);
+				int minute=c.get(Calendar.MINUTE);
+				int second=c.get(Calendar.SECOND);
+				
+				Date date = new Date();//获取当前时间 
+				Calendar calendar = Calendar.getInstance();  
+				calendar.setTime(date); 
+				calendar.add(Calendar.DAY_OF_MONTH, -1);
+				int mouth2=c.get(Calendar.MONTH);
+				int year2=c.get(Calendar.YEAR);
+				int day2=calendar.get(Calendar.DAY_OF_MONTH );
+				
+				String startYYYYMMDD = "";
+				String endYYYYMMDD = "";
+				BigDecimal inOutMoney;
+				inOutMoney = new BigDecimal(0);
+				if( hour <= 20){
+					//日盘时间
+					
+					
+					
+					
+					startYYYYMMDD = String.valueOf(year2) + String.format("%02d", mouth2) + String.format("%02d", day2) + " 203501";
+					endYYYYMMDD = String.valueOf(year) + String.format("%02d", mouth) + String.format("%02d", day) + " 200101";
+					Map map = new HashMap<String,Object>();
+					map.put("username", subTradingaccount2.getAccountid());
+					map.put("starttime", startYYYYMMDD);
+					map.put("endtime", endYYYYMMDD);
+					CapitalRateDetail2 capitalRateDetail2 = new CapitalRateDetail2();
+					capitalRateDetail2 = capitalRateDetailMapper.selectByPrimaryKeyOneday(map);
+					if(capitalRateDetail2 != null ) {
+						inOutMoney = capitalRateDetail2.getInoutmoney();
+					}
+					
+				} else {
+					//夜盘时间
+					startYYYYMMDD = String.valueOf(year) + String.format("%02d", mouth) + String.format("%02d", day) + " 203501";
+					endYYYYMMDD = String.valueOf(year) + String.format("%02d", mouth) + String.format("%02d", day) + " 235959";
+					Map map = new HashMap<String,Object>();
+					map.put("username", subTradingaccount2.getAccountid());
+					map.put("starttime", startYYYYMMDD);
+					map.put("endtime", endYYYYMMDD);
+					CapitalRateDetail2 capitalRateDetail2 = new CapitalRateDetail2();
+					capitalRateDetail2 = capitalRateDetailMapper.selectByPrimaryKeyOneday(map);
+					if(capitalRateDetail2 != null ) {
+						inOutMoney = capitalRateDetail2.getInoutmoney();
+					}
+				}
+				
+				//盘中重连时用。不然出入金不会加载到可用资金里
+				userAvailableMemorySave.setInOutMoney(inOutMoney.toString());
+				
 
 				logger.info("可用资金初始化计算 SubTradingaccount=" + JSON.toJSONString(userAvailableMemorySave));
 //				String availableCalc = availableCalc(userAvailableMemorySave);
@@ -564,6 +647,9 @@ public class CoreappView {
 			ctpFirst = new Socket(ApplicationConfig.getProperty("addressFirst"),
 					Integer.parseInt(ApplicationConfig.getProperty("portFirst")));
 			outFirst = new PrintWriter(new OutputStreamWriter(ctpFirst.getOutputStream(), "UTF-8"));
+			
+			
+			
 			Thread buyConnect = new Thread(new CtpConnectThread(CoreappView.this, ctpFirst));
 			buyConnect.setDaemon(true);
 			buyConnect.start();
@@ -754,6 +840,11 @@ public class CoreappView {
 		
 		investorPositionOldMapper = (InvestorPositionOldMapper) SpringContextUtil.getBean("investorPositionOldMapper");
 
+		 //配置用20180106
+        capitalRateMapper = (CapitalRateMapper) SpringContextUtil.getBean("capitalRateMapper");
+        
+        
+        capitalRateDetailMapper= (CapitalRateDetailMapper) SpringContextUtil.getBean("capitalRateDetailMapper");
 		// groupInfoService = (GroupInfoService)
 		// SpringContextUtil.getBean("groupInfoService");
 		// mainAccountService = (MainAccountService)
@@ -793,7 +884,7 @@ public class CoreappView {
 				}
 			}
 		});
-		shell.setSize(613, 399);
+		shell.setSize(613, 427);
 		shell.setText("SWT Application");
 		shell.setLayout(null);
 
@@ -824,6 +915,134 @@ public class CoreappView {
 		Label label_1 = new Label(shell, SWT.NONE);
 		label_1.setText("交易员应答");
 		label_1.setBounds(339, 172, 61, 17);
+		
+		Button btnctp = new Button(shell, SWT.NONE);
+		btnctp.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e1) {
+				MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION
+						| SWT.OK | SWT.CANCEL);
+				box.setMessage("盘中重启是否开始（重启有风险，建议谨慎使用）？");
+				if(box.open() == SWT.OK){
+					MessageBox boxrepeat = new MessageBox(shell, SWT.ICON_INFORMATION
+							| SWT.OK | SWT.CANCEL);
+					boxrepeat.setMessage("盘中重启是否开始（重启有风险，建议谨慎使用）！");
+					if(box.open() == SWT.OK){
+						System.out.println("盘中重启开始");
+						logger.info("=====================盘中重启开始==============");
+						reStartFlg = 1;
+						
+						logger.info("=====================盘中重启定时1分钟计时开始==============");
+						new Thread("睡眠1分钟") {
+			                public void run() {
+			                    try {
+									sleep(60000);
+									reStartFlg = 0;
+									logger.info("=====================盘中重启定时1分钟计时结束==============");
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+			                }
+			            }.start();
+
+						
+						logger.info("=====================盘中重启STEP1:清空显示框==============");
+						tradeResponse.setText("");;
+						ctpRequest.setText("");
+						ctpResponse.setText("");
+						tradeRequest.setText("");
+						setTradeResponse(tradeResponse);
+						setCtpRequest(ctpRequest);
+						setCtpResponse(ctpResponse);
+						setTradeRequest(tradeRequest);
+						logger.info("=====================盘中重启STEP2:登入命令==============");
+						// 查询主账号
+						List<MainAccount> listmainAccount = findMainAcc();
+						if (listmainAccount != null) {
+							mainAccount = listmainAccount.get(0);
+						} else {
+							logger.error("查询主账号失败！！！");
+							return;
+						}
+						// 连接CTP
+						/*
+						 * Thread connect = new Thread(new ConnectCTP());
+						 * connect.setDaemon(true); connect.start();
+						 */
+
+						try {
+							// 买开 卖平路线 账户主
+
+							MainAccount accountPrimary = mainAccountService.getAccountByType("1");
+//							ctpFirst = new Socket(ApplicationConfig.getProperty("addressFirst"),
+//									Integer.parseInt(ApplicationConfig.getProperty("portFirst")));
+							
+
+							// 登录
+
+							CThostFtdcReqUserLoginField userLoginField = new CThostFtdcReqUserLoginField();
+							userLoginField.setBrokerID(accountPrimary.getBrokerId());
+							userLoginField.setUserID(accountPrimary.getAccountNo());
+							userLoginField.setPassword(accountPrimary.getPasswd());
+							outFirst.println("reqUserLogin|" + JSON.toJSONString(userLoginField) + "|1");
+							outFirst.flush();
+						} catch (FutureException e) {
+							logger.error("查询主账户信息失败", e);
+							box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+							box.setMessage("查询主账户信息失败");
+							box.setText("错误");
+							box.open();
+						} catch (Exception e) {
+							logger.error("连接前置机1失败", e);
+							box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+							box.setMessage("连接前置机1失败");
+							box.setText("错误");
+							box.open();
+						}
+
+						try {
+							// 卖开 买平路线 账户备
+							MainAccount accountSecondary = mainAccountService.getAccountByType("2");
+							if (accountSecondary != null) {
+								ctpSecond = new Socket(ApplicationConfig.getProperty("addressSecond"),
+										Integer.parseInt(ApplicationConfig.getProperty("portSecond")));
+								outSecond = new PrintWriter(new OutputStreamWriter(ctpSecond.getOutputStream(), "UTF-8"));
+								Thread sellConnect = new Thread(new CtpConnectThread(CoreappView.this, ctpSecond));
+								sellConnect.setDaemon(true);
+								sellConnect.start();
+
+								// 登录
+								CThostFtdcReqUserLoginField userLoginField = new CThostFtdcReqUserLoginField();
+								userLoginField.setBrokerID(accountSecondary.getBrokerId());
+								userLoginField.setUserID(accountSecondary.getAccountNo());
+								userLoginField.setPassword(accountSecondary.getPasswd());
+								outSecond.println("reqUserLogin|" + JSON.toJSONString(userLoginField) + "|1");
+								outSecond.flush();
+							}
+						} catch (FutureException e) {
+							logger.error("查询备账户信息失败", e);
+							box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+							box.setMessage("查询备账户信息失败");
+							box.setText("错误");
+							box.open();
+						} catch (Exception e) {
+							logger.error("连接前置机2失败");
+							box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+							box.setMessage("连接前置机2失败");
+							box.setText("错误");
+							box.open();
+						}
+
+						
+						
+					}
+				}
+				
+			}
+		});
+		btnctp.setBounds(29, 351, 162, 27);
+		btnctp.setText("重连CTP（谨慎操作）");
 
 	}
 
@@ -873,6 +1092,12 @@ public class CoreappView {
 		// 中报单的状态为“已成交”。但是仍然建议客户端将成交回报作为报单成交的标志，因为 CTP 的交易核心在 收到 OnRtnTrade
 		// 之后才会更新该报单的状态。如果客户端通过报单回报来判断报单成交与否并立即平仓，有 极小的概率会出现在平仓指令到达 CTP
 		// 交易核心时该报单的状态仍未更新，就会导致无法平仓。
+		
+		if(reStartFlg == 1){
+			logger.info("重启中，成交回调，以下忽略");
+			logger.info(JSON.toJSONString(pTrade));
+			return;
+		}
 		logger.info("成交");
 		logger.info(JSON.toJSONString(pTrade));
 
@@ -993,7 +1218,7 @@ public class CoreappView {
 			}
 		}
 
-		if (pTrade.getOffsetFlag() == '3') {
+		if (pTrade.getOffsetFlag() == '3' || pTrade.getOffsetFlag() == '4' || pTrade.getOffsetFlag() == '1') {
 			SellDetail sellDetail = new SellDetail();
 			sellDetail.setBrokerid(pTrade.getBrokerID());
 			sellDetail.setInvestorid(pTrade.getInvestorID());
@@ -1506,6 +1731,11 @@ public class CoreappView {
 
 	public void onRspQryInvestorPositionDetail(CThostFtdcInvestorPositionDetailField pInvestorPositionDetail,
 			CThostFtdcRspInfoField pRspInfo, int nRequestID, boolean bIsLast) {
+		if(reStartFlg == 1){
+			logger.info("重启中，持仓明细查询回调，以下忽略");
+			logger.info(JSON.toJSONString(pInvestorPositionDetail));
+			return;
+		}
 		logger.info("持仓明细查询回调");
 		logger.info(JSON.toJSONString(pInvestorPositionDetail));
 
@@ -1527,6 +1757,11 @@ public class CoreappView {
 
 	public void onRspQryInvestorPosition(CThostFtdcInvestorPositionField pInvestorPosition,
 			CThostFtdcRspInfoField pRspInfo, int nRequestID, boolean bIsLast) {
+		if(reStartFlg == 1){
+			logger.info("重启中，持仓查询回调，以下忽略");
+			logger.info(JSON.toJSONString(pInvestorPosition));
+			return;
+		}
 		logger.info("持仓查询回调");
 		logger.info(JSON.toJSONString(pInvestorPosition));
 
@@ -1534,10 +1769,20 @@ public class CoreappView {
 
 	public void onRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField pSettlementInfoConfirm,
 			CThostFtdcRspInfoField pRspInfo, int nRequestID, boolean bIsLast) {
+		if(reStartFlg == 1){
+			logger.info("重启中，结算单确认回调，以下忽略");
+			logger.info("结算单确认回调");
+			return;
+		}
 		logger.info("结算单确认回调");
 	}
 
 	public void onRspError(CThostFtdcRspInfoField pRspInfo, int nRequestID, boolean bIsLast) {
+		if(reStartFlg == 1){
+			logger.info("重启中，错误回调，以下忽略");
+			logger.info(JSON.toJSONString(pRspInfo));
+			return;
+		}
 		logger.info("错误回调");
 		logger.info(JSON.toJSONString(pRspInfo));
 
@@ -1556,6 +1801,12 @@ public class CoreappView {
 		// OnErrRtnOrderInsert 函数， 而更新后的报单状态会通过调用函数 OnRtnOrder 发送到客 户端。
 		// 如果交易所认为该报单合法，则只返回该报单状态（此时的状态应为：“尚未触发”）。
 
+		if(reStartFlg == 1){
+			logger.info("重启中，报单录入错误回调，以下忽略");
+			logger.info(JSON.toJSONString(pInputOrder));
+			logger.info(JSON.toJSONString(pRspInfo));
+			return;
+		}
 		logger.info("报单录入错误回调");
 		logger.info(JSON.toJSONString(pInputOrder));
 		logger.info(JSON.toJSONString(pRspInfo));
@@ -1766,6 +2017,12 @@ public class CoreappView {
 //		///错单//自定义添加
 //		#define TSHFE_FTDC_OST_Error 'e'
 		
+		if(reStartFlg == 1){
+			logger.info("重启中，报单回调，以下忽略");
+			logger.info(JSON.toJSONString(pOrder));
+			return;
+		}
+		
 		logger.info("报单");
 		logger.info(JSON.toJSONString(pOrder));
 
@@ -1792,7 +2049,22 @@ public class CoreappView {
 		logger.info("onRtnOrder确定子账号：" + subAccount);
 
 		if (StringUtils.isEmpty(subAccount)) {
-			return;
+			
+			logger.info("再次确定子账号开始====一定前置机重启后现象改修！");
+			try {
+				subAccount = inputOrderService.getSubUserIDFromOrderref( pOrder.getOrderRef());
+			} catch (FutureException e) {
+				//
+				e.printStackTrace();
+			}
+			
+			logger.info("onRtnOrder再次确定子账号：" + subAccount);
+			
+			if (StringUtils.isEmpty(subAccount)) {
+				return;
+			}
+			
+			
 		}
 
 		// 插入T_ORDER数据
@@ -2088,12 +2360,24 @@ public class CoreappView {
 			boolean bIsLast) {
 		// 综合交易平台交易核心返回的包含错误信息的报单响应，对应于上一节中的第 7 步的第 1 种情况。
 		// 第 7 步的第 1 种情况,交易前置从交易核心订阅到错误的报单响应报文，以对话模式将该报文转发给交易终端。
+		if(reStartFlg == 1){
+			logger.info("重启中，onRspOrderInsert，以下忽略");
+			logger.info(pRspInfo.getErrorMsg());
+			logger.info(JSON.toJSONString(pInputOrder));
+			return;
+		}
 		logger.info(pRspInfo.getErrorMsg());
 		logger.info(JSON.toJSONString(pInputOrder));
 	}
 
 	public void onRspOrderAction(CThostFtdcInputOrderActionField pInputOrderAction, CThostFtdcRspInfoField pRspInfo,
 			int nRequestID, boolean bIsLast) {
+		if(reStartFlg == 1){
+			logger.info("重启中，撤单返回，以下忽略");
+			logger.info(JSON.toJSONString(pInputOrderAction));
+			logger.info(JSON.toJSONString(pRspInfo));
+			return;
+		}
 
 		logger.info("撤单返回");
 		logger.info(JSON.toJSONString(pInputOrderAction));
@@ -2176,18 +2460,30 @@ public class CoreappView {
 			sessionID = pRspUserLogin.getSessionID();
 			frontID = pRspUserLogin.getFrontID();
 			// orderRef = pRspUserLogin.getMaxOrderRef();
-			atomicInteger.getAndSet(Integer.parseInt(pRspUserLogin.getMaxOrderRef()));
+			
 			this.nRequestID = nRequestID;
 			CTPerrID = pRspInfo.getErrorID();
 			
-			//确认账单
-			CThostFtdcSettlementInfoConfirmField settlementInfoConfirmField = new CThostFtdcSettlementInfoConfirmField();
-			settlementInfoConfirmField.setBrokerID(mainAccount.getBrokerId());
-			settlementInfoConfirmField.setInvestorID(mainAccount.getAccountNo());
+			if(reStartFlg == 1){
+				//重置orderRef
+				atomicInteger.set(atomicInteger.get() + 1000000);
+				logger.info("重置orderRef:"+atomicInteger.get());
+				//重置SessionID
+				//重置FrontID
+				logger.info("重置SessionID,新SessionID:"+sessionID);
+				logger.info("重置FrontID,新FrontID:"+frontID);
+				
+			} else {
+				atomicInteger.getAndSet(Integer.parseInt(pRspUserLogin.getMaxOrderRef()));
+				//确认账单
+				CThostFtdcSettlementInfoConfirmField settlementInfoConfirmField = new CThostFtdcSettlementInfoConfirmField();
+				settlementInfoConfirmField.setBrokerID(mainAccount.getBrokerId());
+				settlementInfoConfirmField.setInvestorID(mainAccount.getAccountNo());
 
-			nRequestID = nRequestID + 1;
-			outFirst.println("reqSettlementInfoConfirm|" + JSON.toJSONString(settlementInfoConfirmField) + "|" + nRequestID);
-			outFirst.flush();
+				nRequestID = nRequestID + 1;
+				outFirst.println("reqSettlementInfoConfirm|" + JSON.toJSONString(settlementInfoConfirmField) + "|" + nRequestID);
+				outFirst.flush();
+			}
 			
 			
 		} catch (NumberFormatException e) {
@@ -2225,6 +2521,11 @@ public class CoreappView {
 
 	public void onRspQryTradingAccount(CThostFtdcTradingAccountField pTradingAccount, CThostFtdcRspInfoField pRspInfo,
 			int nRequestID, boolean bIsLast) {
+		if(reStartFlg == 1){
+			logger.info("重启中，资金回调，以下忽略");
+			logger.info(JSON.toJSONString(pTradingAccount));
+			return;
+		}
 		// INSERTＤＢ
 		logger.info("资金回调");
 		logger.info(JSON.toJSONString(pTradingAccount));
@@ -2246,6 +2547,24 @@ public class CoreappView {
 	}
 
 	public void subOrderAction(String subAccount, String strJson) {
+		
+		//重启状态FLG判断
+		if(reStartFlg == 1){
+			// 重启状态FLG判断
+			StringBuffer sb = new StringBuffer();
+			sb.append("onRtnOrder|" + subAccount + "|error|系统正在重启中请等待！！！");
+			SocketPrintOut(sb.toString());
+			// socketStr = ;
+			Display.getDefault().syncExec(new Runnable() {
+
+				@Override
+				public void run() {
+					getTradeResponse().append(sb.toString() + "\r\n");
+				}
+			});
+			return;
+		}
+		
 		logger.info("subOrderAction:" + subAccount + JSON.toJSONString(strJson));
 		nRequestID = nRequestID + 1;
 		JSONObject json = JSON.parseObject(strJson);
@@ -2341,6 +2660,23 @@ public class CoreappView {
 		logger.info("subOrder:" + subAccount + JSON.toJSONString(strJson));
 
 		JSONObject json = JSON.parseObject(strJson);
+		
+		//重启状态FLG判断
+		if(reStartFlg == 1){
+			// 重启状态FLG判断
+			StringBuffer sb = new StringBuffer();
+			sb.append("onRtnOrder|" + subAccount + "|error|系统正在重启中请等待！！！");
+			SocketPrintOut(sb.toString());
+			// socketStr = ;
+			Display.getDefault().syncExec(new Runnable() {
+
+				@Override
+				public void run() {
+					getTradeResponse().append(sb.toString() + "\r\n");
+				}
+			});
+			return;
+		}
 
 		// 最大委托CHECK
 		if (mapTradeRuleMemorySave.size() > 0) {
@@ -3394,7 +3730,8 @@ public class CoreappView {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 		String dateString = formatter.format(currentTime);
 		long retInt = 0;
-		// 取得结算日平仓数据
+		//20180120 开始结算分上海 及 其他 其他继续用优先平仓方式结算。上海的方法重写
+		// 上海以外取得结算日平仓数据
 		try {
 			List<SellDetail> listSellDetail = sellDetailService.getSellDetail(dateString);
 			for (SellDetail sellDetail : listSellDetail) {
@@ -3434,6 +3771,42 @@ public class CoreappView {
 						e.printStackTrace();
 					}
 				}
+			}
+
+		} catch (FutureException e) {
+			// TODO Auto-generated catch block
+			logger.error("sellDetailService.getSellDetail(dateString);", e);
+			e.printStackTrace();
+		}
+		logger.info("上海以外逐笔对冲清算完成！");
+		logger.info("上海平昨4逐笔对冲清算开始！");
+		try {
+			//上海只平昨仓操作。
+			List<SellDetail> listSellDetail = sellDetailService.getUserByDateForSH4(dateString);
+			for (SellDetail sellDetail : listSellDetail) {
+				retInt = 0;
+				// 根据平仓数据 先查找历史持仓表中有无，再查找今日开仓表
+				// 子用户
+				// sellDetail.getSubuserid();
+				// COMBOKEY
+				// sellDetail.getCombokey();
+				// 方向
+				// sellDetail.getDirection();
+				// 合约
+				// sellDetail.getInstrumentid();
+				// 平仓数量
+				// sellDetail.getVolume();
+
+				long tmplong = sellDetail.getVolume();
+				try {
+					retInt = positionsDetailService.doFindPositionsDetailSH4(sellDetail.getSubuserid(),
+							sellDetail.getCombokey(), sellDetail.getDirection(), sellDetail.getInstrumentid(), tmplong);
+
+				} catch (Exception e) {
+
+					logger.error("positionsDetailService.doFindPositionsDetail;", e);
+					e.printStackTrace();
+				}
 
 			}
 
@@ -3442,7 +3815,46 @@ public class CoreappView {
 			logger.error("sellDetailService.getSellDetail(dateString);", e);
 			e.printStackTrace();
 		}
+		
+		logger.info("上海平昨4逐笔对冲清算完成！");
+		logger.info("上海平今3逐笔对冲清算开始！");
+		
+		try {
+			//上海只平今仓操作
+			List<SellDetail> listSellDetail = sellDetailService.getUserByDateForSH3(dateString);
+			for (SellDetail sellDetail : listSellDetail) {
+				retInt = 0;
+				// 根据平仓数据 先查找历史持仓表中有无，再查找今日开仓表
+				// 子用户
+				// sellDetail.getSubuserid();
+				// COMBOKEY
+				// sellDetail.getCombokey();
+				// 方向
+				// sellDetail.getDirection();
+				// 合约
+				// sellDetail.getInstrumentid();
+				// 平仓数量
+				// sellDetail.getVolume();
 
+				long tmplong = sellDetail.getVolume();
+				
+				try {
+					buyDetailService.doFindPositionsDetail(sellDetail.getSubuserid(), sellDetail.getCombokey(),
+							sellDetail.getDirection(), sellDetail.getInstrumentid(), tmplong);
+				} catch (Exception e) {
+					logger.error("buyDetailService.doFindPositionsDetail;", e);
+					e.printStackTrace();
+				}
+				
+			}
+
+		} catch (FutureException e) {
+			// TODO Auto-generated catch block
+			logger.error("sellDetailService.getSellDetail(dateString);", e);
+			e.printStackTrace();
+		}
+
+		logger.info("上海平今3逐笔对冲清算完成！");
 		logger.info("逐笔对冲清算完成！");
 
 		logger.info("把今日持仓表重新计算一遍。开始！");
@@ -4159,6 +4571,24 @@ public class CoreappView {
 	}
 
 	public void riskCRJ(String subUserid, String available) {
+		//去T_CAPITAL_RATE
+		capitalRate = capitalRateMapper.selectByPrimaryKey(subUserid);
+		// 发送给交易员
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append("riskCAPITALRATE|" + subUserid  + "|" + JSON.toJSONString(capitalRate));
+		// logger.debug("可用资金推送："+sb.toString());
+		SocketPrintOut(sb.toString());
+		// socketStr = ;
+		Display.getDefault().syncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				getTradeResponse().append(sb.toString() + "\r\n");
+			}
+		});
+		
+		
 		double getOldInOutMoney = 0;
 		// 出入金推送
 		// logger.info("用户名:"+subUserid+"|持仓盈亏做可用计算:"+JSON.toJSONString(available));
@@ -4309,5 +4739,40 @@ public class CoreappView {
 
 		}
 	}
+	
+	public Socket getCtpFirst() {
+		return ctpFirst;
+	}
 
+	public void setCtpFirst(Socket ctpFirst) {
+		this.ctpFirst = ctpFirst;
+	}
+	
+	 public void recreateSocket(){
+	        logger.info("重连CTPFIRST前置");
+//	        if(ctpFirst != null){
+//	            try {
+//	            	ctpFirst.close();
+//	            } catch (IOException e) {
+//	                // TODO Auto-generated catch block
+//	                e.printStackTrace();
+//	            }
+//	        }
+	        try {
+	            this.ctpFirst = new Socket(ApplicationConfig.getProperty("addressFirst"),
+						Integer.parseInt(ApplicationConfig.getProperty("portFirst")));
+	            outFirst = new PrintWriter(new OutputStreamWriter(ctpFirst.getOutputStream(), "UTF-8"));
+	            Thread.sleep(5000);
+	        } catch (Exception e) {
+	            logger.error("与行情服务器通信失败",e);
+	        }
+	    }
+
+	public Socket getCtpSecond() {
+		return ctpSecond;
+	}
+
+	public void setCtpSecond(Socket ctpSecond) {
+		this.ctpSecond = ctpSecond;
+	}
 }

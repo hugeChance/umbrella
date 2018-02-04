@@ -102,6 +102,19 @@ public class InputOrderServiceImpl implements InputOrderService {
 		
 		return inputOrder;
 	}
+
+	@Override
+	public String getSubUserIDFromOrderref(String orderRef) throws FutureException {
+		String retStr ="";
+		logger.info("getSubUserID入參："+ orderRef) ;
+		try {
+			retStr = inputOrderMapper.getSubUserIDFromOrderref(orderRef);
+		} catch (Exception e) {
+			logger.error("getSubUserID失败",e);
+			throw new FutureException("","getSubUserID失败");
+		}
+		return retStr;
+	}
 	
 
 }

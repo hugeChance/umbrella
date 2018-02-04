@@ -193,6 +193,30 @@ public class RiskMainTradeReceiveThread implements Runnable {
 					riskManageView.savePosition(userName, investorPositions);*/
 					//riskManageView.savePosition(params[1] + "close", investorPositions2);
                 	
+                } else if(params[0].equals("riskCAPITALRATE")) {
+                	String userName = params[1];
+                	Display.getDefault().asyncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(riskManageView.getSubAccountTable().getItemCount()>0){
+                                TableItem[] items = riskManageView.getSubAccountTable().getItems();
+                                for(TableItem item :items){
+                                    if(item.getText(0).equals(userName)){
+   
+                                        
+                                        String positionStr = params[2];
+                                        JSONObject jo = JSON.parseObject(positionStr);
+                                        
+                                        item.setText(7, jo.getString("userCapital"));
+                                        item.setText(8, jo.getString("hostCapital1"));
+                                        
+                                       
+                                    }
+                                }
+                            }
+                        }
+                    });
+                	
                 }
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

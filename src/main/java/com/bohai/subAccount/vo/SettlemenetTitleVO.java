@@ -30,6 +30,12 @@ public class SettlemenetTitleVO {
 	private String risk_Degree;
 	//应追加资金
 	private String margin_Call;
+	//自有资金
+	private String cust_availible;
+	//配资资金
+	private String host_availible;
+	
+	
 	
 	//输出字段
 	private String retStr;
@@ -71,12 +77,17 @@ public class SettlemenetTitleVO {
 		retStr = retStr + tmpStr;
 		retStr = retStr + "保证金占用 Margin Occupied：" + margin;
 		retStr = retStr + tmpStr;
-		retStr = retStr + "可用资金 Fund Avail.：" + fund_availible;
+		retStr = retStr + "总可用资金 Fund Avail.：" + fund_availible;
+		retStr = retStr + tmpStr;
+		retStr = retStr + "其中客户自有资金可用：" + cust_availible;
+		retStr = retStr + tmpStr;
+		retStr = retStr + "其中调入资金可用：" + host_availible;		
 		retStr = retStr + tmpStr;
 		retStr = retStr + "风 险 度 Risk Degree：" + risk_Degree;
 		retStr = retStr + tmpStr;
 		retStr = retStr + "应追加资金 Margin Call：" + margin_Call;
 		retStr = retStr + tmpStr;
+		
 		
 		return retStr;
 	}
@@ -165,7 +176,18 @@ public class SettlemenetTitleVO {
 		this.margin_Call = margin_Call;
 	}
 	
-	
+	public String getCust_availible() {
+		return cust_availible;
+	}
+	public void setCust_availible(String cust_availible) {
+		this.cust_availible = cust_availible;
+	}
+	public String getHost_availible() {
+		return host_availible;
+	}
+	public void setHost_availible(String host_availible) {
+		this.host_availible = host_availible;
+	}
 	
 	
 

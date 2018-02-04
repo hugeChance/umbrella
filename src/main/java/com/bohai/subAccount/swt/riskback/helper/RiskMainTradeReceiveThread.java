@@ -5,25 +5,37 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.bohai.subAccount.dao.CapitalRateMapper;
 import com.bohai.subAccount.entity.InvestorPosition;
 //import com.bohai.subAccount.entity.InvestorPosition2;
 import com.bohai.subAccount.exception.FutureException;
+import com.bohai.subAccount.service.CloseRuleService;
+import com.bohai.subAccount.service.GroupRuleService;
 import com.bohai.subAccount.service.InvestorPositionService;
+import com.bohai.subAccount.service.MainAccountService;
+import com.bohai.subAccount.service.SubTradingaccountService;
+import com.bohai.subAccount.service.UserContractService;
+import com.bohai.subAccount.service.UserInfoService;
 import com.bohai.subAccount.swt.riskback.RiskManageBackView;
+import com.bohai.subAccount.utils.SpringContextUtil;
 import com.bohai.subAccount.vo.UserPositionVO;
 
 public class RiskMainTradeReceiveThread implements Runnable {
 	
 	static Logger logger = Logger.getLogger(RiskMainTradeReceiveThread.class);
+	
+
 	
 	private RiskManageBackView riskManageView;
 	
@@ -39,6 +51,8 @@ public class RiskMainTradeReceiveThread implements Runnable {
 
 	@Override
 	public void run() {
+		
+
 		
 		BufferedReader in = null;
 		try {
@@ -87,12 +101,16 @@ public class RiskMainTradeReceiveThread implements Runnable {
 										
 										UserPositionVO positionVO = (UserPositionVO) tableItem.getData();
 										if(positionVO.getUserName().equals(userName)){
+											//20180106 配资强平
+//											BigDecimal limit = positionVO.getSubTradingaccount().getUSER_CAPITAL().subtract(
+//													positionVO.getSubTradingaccount().getUSER_CAPITAL_YESTORDAY()==null?new BigDecimal("0"):positionVO.getSubTradingaccount().getUSER_CAPITAL_YESTORDAY());
 											
-											BigDecimal limit = positionVO.getSubTradingaccount().getUSER_CAPITAL().subtract(
-													positionVO.getSubTradingaccount().getUSER_CAPITAL_YESTORDAY()==null?new BigDecimal("0"):positionVO.getSubTradingaccount().getUSER_CAPITAL_YESTORDAY());
-											
+											BigDecimal limit = new BigDecimal(0);
 											//已亏损金额
 											limit = limit.add(closeWin).add(positionWin);
+											
+											
+											
 											
 											//强平比例
 											String closeRate = tableItem.getText(5);
@@ -101,9 +119,9 @@ public class RiskMainTradeReceiveThread implements Runnable {
 												//允许亏损的最大值 = 自有资金*强平比例
 												BigDecimal closeAmountBig = closeRateBig.multiply(positionVO.getSubTradingaccount().getUSER_CAPITAL());
 												
-												if(closeAmountBig.compareTo(limit) <= 0){
-													riskManageView.forceCloseByUserName(userName);
-												}
+//												if(closeAmountBig.compareTo(limit) <= 0){
+//													riskManageView.forceCloseByUserName(userName);
+//												}
 											}
 											//强平金额
 											String closeAmount = tableItem.getText(6);
@@ -133,7 +151,7 @@ public class RiskMainTradeReceiveThread implements Runnable {
                 	String userName = params[1];
                 	if(params[2].equals("0")){//持仓为空
                         //刷新持仓表
-                        Display.getDefault().syncExec(new Runnable() {
+                        Display.getDefault().asyncExec(new Runnable() {
                             @Override
                             public void run() {
                             	if(riskManageView.getSubAccountTable().getItemCount()>0){
@@ -150,9 +168,71 @@ public class RiskMainTradeReceiveThread implements Runnable {
                             }
                         });
                         continue;
+                    }else if (params[2].equals("1")) {
+                      //刷新持仓表
+                        Display.getDefault().asyncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(riskManageView.getSubAccountTable().getItemCount()>0){
+                                    TableItem[] items = riskManageView.getSubAccountTable().getItems();
+                                    for(TableItem item :items){
+                                        if(item.getText(0).equals(userName)){
+                                            UserPositionVO userPositionVO = (UserPositionVO) item.getData();
+                                            
+                                            String positionStr = params[4];
+                                            JSONObject jo = JSON.parseObject(positionStr);
+                                            
+                                            String oldPosition = params[5];
+                                            
+                                            InvestorPosition position = new InvestorPosition();
+                                            position.setInstrumentid(jo.getString("instrumentid"));
+                                            position.setPosidirection(jo.getString("posidirection"));
+                                            position.setPosition(jo.getLong("position"));
+                                            position.setOpenamount(jo.getBigDecimal("openamount"));
+                                            position.setYdposition(Long.parseLong(oldPosition));//昨仓
+                                            List<InvestorPosition> investorPositions = new ArrayList<InvestorPosition>();
+                                            investorPositions.add(position);
+                                            userPositionVO.setInvestorPositions(investorPositions);
+                                            //item.setData(userPositionVO);
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }else {
+                        //刷新持仓表
+                        Display.getDefault().asyncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(riskManageView.getSubAccountTable().getItemCount()>0){
+                                    TableItem[] items = riskManageView.getSubAccountTable().getItems();
+                                    for(TableItem item :items){
+                                        if(item.getText(0).equals(userName)){
+                                            UserPositionVO userPositionVO = (UserPositionVO) item.getData();
+                                            
+                                            String positionStr = params[4];
+                                            JSONObject jo = JSON.parseObject(positionStr);
+                                            
+                                            String oldPosition = params[5];
+                                            
+                                            InvestorPosition position = new InvestorPosition();
+                                            position.setInstrumentid(jo.getString("instrumentid"));
+                                            position.setPosidirection(jo.getString("posidirection"));
+                                            position.setPosition(jo.getLong("position"));
+                                            position.setOpenamount(jo.getBigDecimal("openamount"));
+                                            position.setYdposition(Long.parseLong(oldPosition));//昨仓
+                                            
+                                            userPositionVO.getInvestorPositions().add(position);
+                                            
+                                            //item.setData(userPositionVO);
+                                        }
+                                    }
+                                }
+                            }
+                        });
                     }
                     
-                    if(params[2].equals("1")){//如果是重新推送则清空持仓表
+                    /*if(params[2].equals("1")){//如果是重新推送则清空持仓表
                         //刷新持仓表
                         Display.getDefault().syncExec(new Runnable() {
                             @Override
@@ -177,27 +257,43 @@ public class RiskMainTradeReceiveThread implements Runnable {
                             	}
                             }
                         });
-                    }
+                    }*/
+                    
                 	
-                	/*List<InvestorPosition> investorPositions = null;
-                	//List<InvestorPosition2> investorPositions2 = null;
-					try {
-						investorPositions = investorPositionService.getUserByUserName(userName);
-						//investorPositions2 = investorPositionService.getUserByUserName2(userName);
-					} catch (FutureException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					riskManageView.savePosition(userName, investorPositions);*/
-					//riskManageView.savePosition(params[1] + "close", investorPositions2);
+                } else if(params[0].equals("riskCAPITALRATE")) {
+                	String userName = params[1];
+                	Display.getDefault().asyncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(riskManageView.getSubAccountTable().getItemCount()>0){
+                                TableItem[] items = riskManageView.getSubAccountTable().getItems();
+                                for(TableItem item :items){
+                                    if(item.getText(0).equals(userName)){
+   
+                                        
+                                        String positionStr = params[2];
+                                        JSONObject jo = JSON.parseObject(positionStr);
+                                        
+                                        item.setText(7, jo.getString("userCapital"));
+                                        item.setText(8, jo.getString("hostCapital1"));
+                                        
+                                       
+                                    }
+                                }
+                            }
+                        }
+                    });
                 	
                 }
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				logger.error("连接交易服务器失败",e);
+			}catch (Exception e) {
+                logger.error("报文解析失败",e);
+            }
 		}
 		
 	}
+	
+	
 
 }

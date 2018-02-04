@@ -1,7 +1,9 @@
 package com.bohai.subAccount.swt.getWay;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
@@ -85,10 +87,6 @@ public class MyMdSpi extends JCTPMdSpi {
 		//订阅
 		int subResult = -1;
 		
-		/*String s = FileUtil.read("C:\\合约test.txt");
-		String s1 = s.replaceAll("\r\n", "");
-		String[] ss = s1.split(",");*/
-		
 		UserContractService userContractService = (UserContractService) SpringContextUtil.getBean("userContractService");
 		List<UserContract> list = null;
 		try {
@@ -114,6 +112,20 @@ public class MyMdSpi extends JCTPMdSpi {
 		}
 		
 		logger.debug("订阅合约信息:"+JSON.toJSONString(contractNo));
+		
+		try {
+            String s = FileUtil.read("合约.txt");
+            String s1 = s.replaceAll("\r\n", "");
+            String[] ss = s1.split(",");
+            if(ss != null && ss.length >0){
+                
+                contractNo = (String[]) ArrayUtils.addAll(contractNo, ss);
+                
+                logger.debug("订阅合约信息:"+JSON.toJSONString(contractNo));
+            }
+        } catch (Exception e) {
+            logger.error("读取文件失败",e);
+        }
 		//logger.debug("读取文件合约信息："+JSON.toJSONString(ss));
 		
 		

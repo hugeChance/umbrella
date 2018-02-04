@@ -24,6 +24,7 @@ import com.bohai.subAccount.entity.Order;
 import com.bohai.subAccount.entity.Trade;
 import com.bohai.subAccount.entity.UserContract;
 import com.bohai.subAccount.swt.loginMain;
+import com.bohai.subAccount.swt.trader.ColumnIndex;
 import com.bohai.subAccount.swt.trader.TraderView;
 import com.bohai.subAccount.utils.MediaPlay;
 import com.bohai.subAccount.vo.UserAvailableMemorySave;
@@ -290,13 +291,16 @@ public class TradeReceiveThread implements Runnable {
                                 tableItem.setData(position);
                                 tableItem.setText(0, jo.getString("instrumentid"));
                                 tableItem.setText(1, jo.getString("posidirection").equals("0")?"买":"卖");
-                                tableItem.setText(2, jo.getString("position"));
-                                //昨仓
-                                tableItem.setText(3, position.getYdposition().toString());
-                                //今仓
-                                Long todayPosition = position.getPosition()-position.getYdposition();
-                                tableItem.setText(4, todayPosition.toString());
-                                tableItem.setText(5, jo.getString("openamount"));
+                                tableItem.setText(2, jo.getString("openamount"));
+                                tableItem.setText(3, jo.getString("position"));
+                                if(tradreView.checkSHPosition(position.getInstrumentid())){
+                                    //昨仓
+                                    tableItem.setText(4, position.getYdposition().toString());
+                                    //今仓
+                                    Long todayPosition = position.getPosition()-position.getYdposition();
+                                    tableItem.setText(5, todayPosition.toString());
+                                }
+                                
                                 //tradreView.shell.layout();
                             }
                         });
@@ -319,22 +323,92 @@ public class TradeReceiveThread implements Runnable {
                                 TableItem[] items = tradreView.getTable().getItems();
                                 if(items == null ||items.length < 1){
                                     TableItem newItem = new TableItem(tradreView.getTable(), SWT.NONE);
-                                    newItem.setText(0, obj.getAvailable()==null ? "0.00" : new BigDecimal(obj.getAvailable()).setScale(2, RoundingMode.HALF_UP).toString());//静态资金
-                                    newItem.setText(1, obj.getCloseWin()==null ? "0.00" : new BigDecimal(obj.getCloseWin()).setScale(2, RoundingMode.HALF_UP).toString());//平仓盈亏
-                                    newItem.setText(2, obj.getPositionWin()==null ? "0.00" : new BigDecimal(obj.getPositionWin()).setScale(2, RoundingMode.HALF_UP).toString());//持仓盈亏
-                                    newItem.setText(3, b.toString());   //可用资金
-                                    newItem.setText(4, obj.getFrozenAvailable()==null ? "0.00" : new BigDecimal(obj.getFrozenAvailable()).setScale(2, RoundingMode.HALF_UP).toString());//冻结资金
-                                    newItem.setText(5, obj.getMargin()==null ? "0.00" : new BigDecimal(obj.getMargin()).setScale(2, RoundingMode.HALF_UP).toString());//占用保证金
-                                    newItem.setText(6, obj.getCommission()==null ? "0.00" : new BigDecimal(obj.getCommission()).setScale(2, RoundingMode.HALF_UP).toString());//手续费
+                                    
+                                    //静态资金
+                                    BigDecimal staticMoney = obj.getAvailable()==null ? BigDecimal.ZERO : new BigDecimal(obj.getAvailable()).setScale(2, RoundingMode.HALF_UP);
+                                    newItem.setText(ColumnIndex.CAPITAL_TABLE_STATICPROFIT_INDEX, staticMoney.toString());
+                                    
+                                    //平仓盈亏
+                                    BigDecimal closeWin = obj.getCloseWin()==null ? BigDecimal.ZERO : new BigDecimal(obj.getCloseWin()).setScale(2, RoundingMode.HALF_UP);
+                                    newItem.setText(ColumnIndex.CAPITAL_TABLE_CLOSEWIN_INDEX, closeWin.toString());
+                                    
+                                    //持仓盈亏
+                                    BigDecimal positionWin = obj.getPositionWin()==null ? BigDecimal.ZERO : new BigDecimal(obj.getPositionWin()).setScale(2, RoundingMode.HALF_UP);
+                                    newItem.setText(ColumnIndex.CAPITAL_TABLE_POSITIONWIN_INDEX, positionWin.toString());//持仓盈亏
+                                    
+                                    newItem.setText(ColumnIndex.CAPITAL_TABLE_AVAILABLE_INDEX, b.toString());   //可用资金
+                                    newItem.setText(ColumnIndex.CAPITAL_TABLE_FROZENCAPITAL_INDEX, obj.getFrozenAvailable()==null ? "0.00" : new BigDecimal(obj.getFrozenAvailable()).setScale(2, RoundingMode.HALF_UP).toString());//冻结资金
+                                    
+                                    //持仓保证金
+                                    BigDecimal deposit = obj.getMargin()==null ? BigDecimal.ZERO : new BigDecimal(obj.getMargin()).setScale(2, RoundingMode.HALF_UP);
+                                    newItem.setText(ColumnIndex.CAPITAL_TABLE_MARGIN_INDEX, deposit.toString());//占用保证金
+                                    
+                                    //手续费
+                                    BigDecimal commission = obj.getCommission()==null ? BigDecimal.ZERO : new BigDecimal(obj.getCommission()).setScale(2, RoundingMode.HALF_UP);
+                                    newItem.setText(ColumnIndex.CAPITAL_TABLE_COMMISSION_INDEX, commission.toString());//手续费
+                                    
+                                    //出入金
+                                    BigDecimal inoutMoney = obj.getInOutMoney()==null? BigDecimal.ZERO :new BigDecimal(obj.getInOutMoney()).setScale(2, RoundingMode.HALF_UP);
+                                    newItem.setText(ColumnIndex.CAPITAL_TABLE_INOUT_INDEX, inoutMoney.toString());
+                                    
+                                    //动态权益 = 静态权益 +平仓盈亏+持仓盈亏-手续费+出入金
+                                    BigDecimal dynamicMoney = staticMoney.add(closeWin).add(positionWin).subtract(commission).add(inoutMoney); 
+                                    newItem.setText(ColumnIndex.CAPITAL_TABLE_DYNAMICPROFIT_INDEX, dynamicMoney.toString());//动态权益
+                                    
+                                    if(dynamicMoney.compareTo(new BigDecimal("0")) != 0){
+                                        //风险度
+                                        BigDecimal risk = deposit.divide(dynamicMoney, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100)).setScale(2, RoundingMode.HALF_UP);
+                                        newItem.setText(ColumnIndex.CAPITAL_TABLE_RISK_INDEX, risk.toString()+"%");
+                                    }
+                                    
+                                    
                                 }else {
                                     TableItem item = items[0];
-                                    item.setText(0, obj.getAvailable()==null ? "0.00" : new BigDecimal(obj.getAvailable()).setScale(2, RoundingMode.HALF_UP).toString());//静态资金
+/*                                    item.setText(0, obj.getAvailable()==null ? "0.00" : new BigDecimal(obj.getAvailable()).setScale(2, RoundingMode.HALF_UP).toString());//静态资金
                                     item.setText(1, obj.getCloseWin()==null ? "0.00" : new BigDecimal(obj.getCloseWin()).setScale(2, RoundingMode.HALF_UP).toString());//平仓盈亏
                                     item.setText(2, obj.getPositionWin()==null ? "0.00" : new BigDecimal(obj.getPositionWin()).setScale(2, RoundingMode.HALF_UP).toString());//持仓盈亏
                                     item.setText(3, b.toString());   //可用资金
                                     item.setText(4, obj.getFrozenAvailable()==null ? "0.00" : new BigDecimal(obj.getFrozenAvailable()).setScale(2, RoundingMode.HALF_UP).toString());//冻结资金
                                     item.setText(5, obj.getMargin()==null ? "0.00" : new BigDecimal(obj.getMargin()).setScale(2, RoundingMode.HALF_UP).toString());//占用保证金
                                     item.setText(6, obj.getCommission()==null ? "0.00" : new BigDecimal(obj.getCommission()).setScale(2, RoundingMode.HALF_UP).toString());//手续费
+                                    item.setText(7, obj.getInOutMoney()==null? "0.00":new BigDecimal(obj.getInOutMoney()).setScale(2, RoundingMode.HALF_UP).toString());//出入金
+*/                                    
+                                    //静态资金
+                                    BigDecimal staticMoney = obj.getAvailable()==null ? BigDecimal.ZERO : new BigDecimal(obj.getAvailable()).setScale(2, RoundingMode.HALF_UP);
+                                    item.setText(ColumnIndex.CAPITAL_TABLE_STATICPROFIT_INDEX, staticMoney.toString());
+                                    
+                                    //平仓盈亏
+                                    BigDecimal closeWin = obj.getCloseWin()==null ? BigDecimal.ZERO : new BigDecimal(obj.getCloseWin()).setScale(2, RoundingMode.HALF_UP);
+                                    item.setText(ColumnIndex.CAPITAL_TABLE_CLOSEWIN_INDEX, closeWin.toString());
+                                    
+                                    //持仓盈亏
+                                    BigDecimal positionWin = obj.getPositionWin()==null ? BigDecimal.ZERO : new BigDecimal(obj.getPositionWin()).setScale(2, RoundingMode.HALF_UP);
+                                    item.setText(ColumnIndex.CAPITAL_TABLE_POSITIONWIN_INDEX, positionWin.toString());//持仓盈亏
+                                    
+                                    item.setText(ColumnIndex.CAPITAL_TABLE_AVAILABLE_INDEX, b.toString());   //可用资金
+                                    item.setText(ColumnIndex.CAPITAL_TABLE_FROZENCAPITAL_INDEX, obj.getFrozenAvailable()==null ? "0.00" : new BigDecimal(obj.getFrozenAvailable()).setScale(2, RoundingMode.HALF_UP).toString());//冻结资金
+                                    
+                                    //持仓保证金
+                                    BigDecimal deposit = obj.getMargin()==null ? BigDecimal.ZERO : new BigDecimal(obj.getMargin()).setScale(2, RoundingMode.HALF_UP);
+                                    item.setText(ColumnIndex.CAPITAL_TABLE_MARGIN_INDEX, deposit.toString());//占用保证金
+                                    
+                                    //手续费
+                                    BigDecimal commission = obj.getCommission()==null ? BigDecimal.ZERO : new BigDecimal(obj.getCommission()).setScale(2, RoundingMode.HALF_UP);
+                                    item.setText(ColumnIndex.CAPITAL_TABLE_COMMISSION_INDEX, commission.toString());//手续费
+                                    
+                                    //出入金
+                                    BigDecimal inoutMoney = obj.getInOutMoney()==null? BigDecimal.ZERO :new BigDecimal(obj.getInOutMoney()).setScale(2, RoundingMode.HALF_UP);
+                                    item.setText(ColumnIndex.CAPITAL_TABLE_INOUT_INDEX, inoutMoney.toString());
+                                    
+                                    //动态权益 = 静态权益 +平仓盈亏+持仓盈亏-手续费+出入金
+                                    BigDecimal dynamicMoney = staticMoney.add(closeWin).add(positionWin).subtract(commission).add(inoutMoney); 
+                                    item.setText(ColumnIndex.CAPITAL_TABLE_DYNAMICPROFIT_INDEX, dynamicMoney.toString());//动态权益
+                                    
+                                    if(dynamicMoney.compareTo(new BigDecimal("0")) != 0){
+                                        //风险度
+                                        BigDecimal risk = deposit.divide(dynamicMoney, RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP);
+                                        item.setText(ColumnIndex.CAPITAL_TABLE_RISK_INDEX, risk.toString());
+                                    }
                                 }
                                 
                                 String price = tradreView.getPriceText().getText();
@@ -378,6 +452,10 @@ public class TradeReceiveThread implements Runnable {
                         loginMain.open();
                     }
                 });
+            }catch (Exception e) {
+                logger.error("报文解析失败",e);
+                e.printStackTrace();
+                continue;
             }
         }
         

@@ -48,6 +48,13 @@ public interface InputOrderService {
 	public String getSubUserID(int frontID,int sessionID,String orderRef) throws FutureException;
 	
 	/**
+	 * 查询SUBUSERID
+	 * @param id
+	 * @throws FutureException
+	 */
+	public String getSubUserIDFromOrderref(String orderRef) throws FutureException;
+	
+	/**
 	 * 查询getSubUserInfo
 	 * @param id
 	 * @throws FutureException

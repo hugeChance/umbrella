@@ -35,6 +35,9 @@ public interface InputOrderMapper {
     @Select("select SUBUSERID from T_INPUT_ORDER where FRONTID = #{0} and SESSIONID = #{1} and ORDERREF = #{2}"  )
     String getSubUserID(int frontID,int sessionID,String orderRef);
     
+    @Select("select SUBUSERID from T_INPUT_ORDER where ORDERREF = #{0}"  )
+    String getSubUserIDFromOrderref(String orderRef);
+    
     InputOrder getSubUserInfo(Map<String,Object> map);
     
     /**

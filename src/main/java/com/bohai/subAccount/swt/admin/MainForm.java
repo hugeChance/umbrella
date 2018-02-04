@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.ExpandBar;
 import org.eclipse.swt.widgets.ExpandItem;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -59,6 +60,7 @@ import com.bohai.subAccount.dao.FutureMarketMapper;
 import com.bohai.subAccount.dao.UserInfoMapper;
 import com.bohai.subAccount.dao.UseravailableindbMapper;
 import com.bohai.subAccount.entity.BuyDetail;
+import com.bohai.subAccount.entity.CapitalRate;
 import com.bohai.subAccount.entity.CloseRule;
 import com.bohai.subAccount.entity.FutureMarket;
 import com.bohai.subAccount.entity.GroupInfo;
@@ -76,6 +78,7 @@ import com.bohai.subAccount.exception.FutureException;
 import com.bohai.subAccount.service.BuyDetailService;
 import com.bohai.subAccount.service.ClearService;
 import com.bohai.subAccount.service.CloseRuleService;
+import com.bohai.subAccount.service.FileService;
 import com.bohai.subAccount.service.FutureMarketService;
 import com.bohai.subAccount.service.GroupInfoService;
 import com.bohai.subAccount.service.GroupRuleService;
@@ -88,6 +91,7 @@ import com.bohai.subAccount.service.TradeService;
 import com.bohai.subAccount.service.UserAvailableInDbService;
 import com.bohai.subAccount.service.UserContractService;
 import com.bohai.subAccount.service.UserInfoService;
+import com.bohai.subAccount.service.impl.InstrumentFileServiceImpl;
 import com.bohai.subAccount.utils.ApplicationConfig;
 import com.bohai.subAccount.utils.SpringContextUtil;
 import com.bohai.subAccount.vo.SettlemenetPart1Body;
@@ -128,6 +132,8 @@ public class MainForm {
 	
 	private FutureMarketMapper futureMarketMapper;
 	
+	private CapitalRateMapper capitalRateMapper;
+	
 	//add COMPOSITE组件
 	private Composite composite;
 	private Button buttonComposite;
@@ -159,6 +165,8 @@ public class MainForm {
 	private PositionsDetailService positionsDetailService;
 	private SellDetailService sellDetailService;
 	private UserAvailableInDbService userAvailableInDbService;
+	
+	private FileService instrumentFileService;
 	
 	private Map<String,UserContract> mapUserContractMemorySave;
 	
@@ -228,6 +236,10 @@ public class MainForm {
         positionsDetailService = (PositionsDetailService) SpringContextUtil.getBean("positionsDetailService");
         
         futureMarketMapper = (FutureMarketMapper) SpringContextUtil.getBean("futureMarketMapper");
+        
+        capitalRateMapper = (CapitalRateMapper) SpringContextUtil.getBean("capitalRateMapper");
+        instrumentFileService = (FileService) SpringContextUtil.getBean("instrumentFileService");
+
         setMemory();
     }
 
@@ -807,6 +819,25 @@ public class MainForm {
 						}
 						
 					}
+                }else if ("导入合约".equals(selection.getText())) {
+                    
+                    FileDialog filedlg=new FileDialog(shell,SWT.SINGLE);
+                    String openFile = filedlg.open();
+                    if(openFile != null){
+                        try {
+                            instrumentFileService.Import(openFile);
+                            MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                            box.setMessage("导入完成");
+                            box.setText(CommonConstant.MESSAGE_BOX_NOTICE);
+                            box.open();
+                        } catch (FutureException e1) {
+                            MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
+                            box.setMessage(e1.getMessage());
+                            box.setText(CommonConstant.MESSAGE_BOX_ERROR);
+                            box.open();
+                        }
+                        
+                    }
                 }
 				
 				
@@ -832,6 +863,10 @@ public class MainForm {
 
 		TreeItem treeSysItem2 = new TreeItem(systemTree, SWT.NONE);
 		treeSysItem2.setText("结算设置");
+		
+		TreeItem treeItem_1 = new TreeItem(systemTree, 0);
+		treeItem_1.setText("导入合约");
+		treeItem_1.setExpanded(true);
 		
 		
 		
@@ -869,14 +904,23 @@ public class MainForm {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
         String dateString = formatter.format(currentTime);
         
+        //合约单位及属性的MAP生成
+        UserContract userContract = new UserContract();
+        
+
+        
         if(saveFile!=null){
         	File directiory=new File(saveFile);
             logger.info(directiory.getPath());
             List<Useravailableindb> listUseravailableindb = new ArrayList<Useravailableindb>();
             listUseravailableindb = useravailableindbMapper.selectAll();
             
+            
             //循环按每个客户出文件
             for (Useravailableindb useravailableindb : listUseravailableindb) {
+            	
+            	
+            	
             	StringBuffer strB = new StringBuffer();
             	SettlemenetTitleVO settlemenetTitleVO = new SettlemenetTitleVO();
             	settlemenetTitleVO.setCompanyName("交易软件");
@@ -901,7 +945,7 @@ public class MainForm {
             	settlemenetTitleVO.setDeposit(String.valueOf(useravailableindb.getInoutmoney()));
             	//可用资金
 //            	BigDecimal fund_availBDec = useravailableindb.getAvailable().add(useravailableindb.getFrozenavailable());
-            	BigDecimal fund_availBDec =  balanceBDec.subtract(useravailableindb.getMargin());
+            	BigDecimal fund_availBDec =  balanceBDec.add(useravailableindb.getInoutmoney()).subtract(useravailableindb.getMargin());
             	settlemenetTitleVO.setFund_availible(String.valueOf(fund_availBDec));
             	settlemenetTitleVO.setMargin(String.valueOf(useravailableindb.getMargin()));
             	settlemenetTitleVO.setMTM(String.valueOf(useravailableindb.getPositionwin()));
@@ -921,6 +965,17 @@ public class MainForm {
             	} else {
             		settlemenetTitleVO.setMargin_Call("0");
             	}
+            	
+            	CapitalRate capitalRate = new CapitalRate();
+            	capitalRate = capitalRateMapper.selectByPrimaryKey(useravailableindb.getUsername());
+            	BigDecimal host_availible = capitalRate.getHostCapital1();
+            	BigDecimal cust_availible = fund_availBDec.subtract(host_availible);
+            	//其中客户自有资金可用
+            	settlemenetTitleVO.setCust_availible(String.valueOf(balanceBDec));
+            	//其中配资资金可用
+            	settlemenetTitleVO.setHost_availible(String.valueOf(host_availible));
+            	
+            	
 				//账单头部
             	strB.append(settlemenetTitleVO.getRetStr());
             	strB.append("\r\n");
@@ -942,7 +997,7 @@ public class MainForm {
             	//查询成交表
             	try {
 					List<Trade> listTrade = tradeService.getUserByUserName2(useravailableindb.getUsername());
-					UserContract userContract = new UserContract();
+					
 					
 					if (listTrade.size() > 0) {
 						//有成交则出明细
@@ -1006,7 +1061,7 @@ public class MainForm {
 						
 					}
 				} catch (FutureException e) {
-					logger.info("结算单查询成交表！！");
+					logger.info("结算单查询成交表ERROR！！");
 					e.printStackTrace();
 				}
             	
@@ -1023,7 +1078,9 @@ public class MainForm {
 						strB.append("\r\n");
 					
 					}
-						
+					BigDecimal tempLots = new BigDecimal(0);
+					BigDecimal tempRealized = new BigDecimal(0);
+					
 					
 					for (SellDetail sellDetail : listSellDetail) {
 						//拿着平仓COMBOKEY去查开仓
@@ -1037,21 +1094,40 @@ public class MainForm {
 							settlemenetPart2Body.setProduct(buyDetail.getInstrumentid());
 							settlemenetPart2Body.setInstrument(buyDetail.getInstrumentid());
 							settlemenetPart2Body.setOpenDate(buyDetail.getTradedate());
+							tempLots = new BigDecimal(0);
+							tempRealized = new BigDecimal(0);
 							if(buyDetail.getDirection().equals("0")){
 								settlemenetPart2Body.setBS("买");
+								
+								tempRealized = sellDetail.getPrice().subtract(buyDetail.getPrice());
 							} else {
 								settlemenetPart2Body.setBS("卖");
+//								settlemenetPart2Body.setRealized(buyDetail.getPrice().subtract(sellDetail.getPrice()));
+								tempRealized = buyDetail.getPrice().subtract(sellDetail.getPrice());
 							}
-							if(sellDetail.getVolume() > buyDetail.getVolume()){
-								settlemenetPart2Body.setLots(String.valueOf(buyDetail.getVolume()));
+							
+							String retnum = retcombokeynum(buyDetail.getSellcombokey(),sellDetail.getCombokey());
+							if(retnum == "") {
+								tempLots = new BigDecimal(0);
 							} else {
-								settlemenetPart2Body.setLots(String.valueOf(sellDetail.getVolume()));
+								tempLots = new BigDecimal(retnum);
 							}
+							settlemenetPart2Body.setLots(String.valueOf(tempLots));
+//							if(sellDetail.getVolume() > buyDetail.getVolume()){
+//								settlemenetPart2Body.setLots(String.valueOf(buyDetail.getVolume()));
+//								tempLots = new BigDecimal(buyDetail.getVolume());
+//							} else {
+//								settlemenetPart2Body.setLots(String.valueOf(sellDetail.getVolume()));
+//								tempLots = new BigDecimal(sellDetail.getVolume());
+//							}
 							settlemenetPart2Body.setPos(buyDetail.getPrice().toString());
 							//昨结算 要实装 T_FUTURE_MARKET表PRE_SETTLEMENT_PRICE
 							settlemenetPart2Body.setPrev("");
 							settlemenetPart2Body.setTrans(sellDetail.getPrice().toString());
-							settlemenetPart2Body.setRealized(sellDetail.getPrice().subtract(buyDetail.getPrice()).toString());
+							userContract = mapUserContractMemorySave
+									.get(useravailableindb.getUsername() + buyDetail.getInstrumentid());
+							tempRealized = tempRealized.multiply(tempLots).multiply(new BigDecimal(userContract.getContractUnit()));
+							settlemenetPart2Body.setRealized(tempRealized.toString());
 							settlemenetPart2Body.setPremium("0.00");
 							
 							strB.append(settlemenetPart2Body.getRetStr());
@@ -1061,7 +1137,7 @@ public class MainForm {
 					}
 					
 				} catch (FutureException e1) {
-					// TODO Auto-generated catch block
+					logger.info("结算单查询平仓表ERROR！！");
 					e1.printStackTrace();
 				}
             	
@@ -1086,6 +1162,7 @@ public class MainForm {
 						
 						
 						for (BuyDetail buyDetail : listBuyDetail) {
+							BigDecimal tempRealized = new BigDecimal(0);
 							//输出平仓明细
 							settlemenetPart4Body.setExchange(buyDetail.getExchangeid());
 							settlemenetPart4Body.setProduct(buyDetail.getInstrumentid());
@@ -1114,18 +1191,27 @@ public class MainForm {
 							//Accum 浮动盈亏
 							settlemenetPart4Body.setAccum("0");
 							
+							userContract = mapUserContractMemorySave
+									.get(useravailableindb.getUsername() + buyDetail.getInstrumentid());
+							
 							//盯市盈亏
 							if(buyDetail.getDirection().equals("0")){
 								//买
-								settlement = settlement.subtract(buyDetail.getPrice());
-								settlement = settlement.multiply(new BigDecimal(positionsDetail.getVolume()));
-								settlemenetPart4Body.setMTM(settlement.toString());
+								tempRealized = settlement.subtract(buyDetail.getPrice());
+								tempRealized = tempRealized.multiply(new BigDecimal(positionsDetail.getVolume()));
+								tempRealized = tempRealized.multiply(new BigDecimal(userContract.getContractUnit()));
+//								settlement = settlement.subtract(buyDetail.getPrice());
+//								settlement = settlement.multiply(new BigDecimal(positionsDetail.getVolume()));
+								settlemenetPart4Body.setMTM(tempRealized.toString());
 								
 							} else {
 								//卖
-								settlement = buyDetail.getPrice().subtract(settlement);
-								settlement = settlement.multiply(new BigDecimal(positionsDetail.getVolume()));
-								settlemenetPart4Body.setMTM(settlement.toString());
+								tempRealized =  buyDetail.getPrice().subtract(settlement);
+								tempRealized = tempRealized.multiply(new BigDecimal(positionsDetail.getVolume()));
+								tempRealized = tempRealized.multiply(new BigDecimal(userContract.getContractUnit()));
+//								settlement = buyDetail.getPrice().subtract(settlement);
+//								settlement = settlement.multiply(new BigDecimal(positionsDetail.getVolume()));
+								settlemenetPart4Body.setMTM(tempRealized.toString());
 								
 							}
 							
@@ -1160,6 +1246,8 @@ public class MainForm {
 						strB.append(settlemenetPart3Head.getRetPart3Head1());
 						strB.append("\r\n");
 						
+						
+						
 	            		for (InvestorPosition investorPosition : listInvestorPosition) {
 		            			//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 		            			//|       品种       |      合约      |    买持     |    买均价   |     卖持     |    卖均价    |  昨结算  |  今结算  |持仓盯市盈亏|  保证金占用   |  投/保     |   多头期权市值   |   空头期权市值    |
@@ -1168,6 +1256,9 @@ public class MainForm {
 		            			//|        铝        |     al1706     |            1|    13840.000|             0|         0.000| 13765.000| 13790.000|     -250.00|        6895.00|投          |              0.00|               0.00|
 	            			settlemenetPart3Body.setProduct(getStringDateShort());
 	            			settlemenetPart3Body.setInstrument(investorPosition.getInstrumentid());
+	            			userContract = mapUserContractMemorySave
+									.get(useravailableindb.getUsername() + investorPosition.getInstrumentid());
+	            			
 	            			if(investorPosition.getPosidirection().equals("0"))
 	            			{
 	            				//买
@@ -1199,12 +1290,14 @@ public class MainForm {
 								//买
 								settlement = settlement.subtract(investorPosition.getOpenamount());
 								settlement = settlement.multiply(new BigDecimal(investorPosition.getPosition()));
+								settlement = settlement.multiply(new BigDecimal(userContract.getContractUnit()));
 								settlemenetPart3Body.setMTM(settlement.toString());
 								
 							} else {
 								//卖
 								settlement = investorPosition.getOpenamount().subtract(settlement);
 								settlement = settlement.multiply(new BigDecimal(investorPosition.getPosition()));
+								settlement = settlement.multiply(new BigDecimal(userContract.getContractUnit()));
 								settlemenetPart3Body.setMTM(settlement.toString());
 								
 							}
@@ -1248,6 +1341,27 @@ public class MainForm {
     	
     	return 0;
     }
+	
+	public String retcombokeynum(String combokey,String sellcombokey){
+		String rettmp = "";
+		
+		if(combokey.equals("") ) {
+			return rettmp;
+		}
+		
+
+		 String[] ss = new String[100];
+		 ss = combokey.split(",");
+		 for (int i = 0;i < ss.length;i ++){
+			 if(ss[i].indexOf(sellcombokey) >= 0){
+				 return ss[i].split("@")[1];
+				 
+			 } 
+		 }
+		
+		
+		return rettmp;
+	}
 	
 	/**
      * 获取现在时间
@@ -1574,9 +1688,9 @@ public class MainForm {
                 TableItem item = new TableItem(mainAccountTable, SWT.NULL);
                 item.setData(mainAccount);
                 item.setText(0,++i +"");
-                item.setText(1,mainAccount.getBrokerId());
-                item.setText(2,mainAccount.getAccountNo());
-                item.setText(3, mainAccount.getPasswd());
+                item.setText(1,mainAccount.getBrokerId()==null?"":mainAccount.getBrokerId());
+                item.setText(2,mainAccount.getAccountNo()==null?"":mainAccount.getAccountNo());
+                item.setText(3, mainAccount.getPasswd()==null?"":mainAccount.getPasswd());
                 if(!StringUtils.isEmpty(mainAccount.getAccountType())){
                     item.setText(4,mainAccount.getAccountType().equals("1") ? "账户主" : "账户备");
                 }

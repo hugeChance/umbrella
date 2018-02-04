@@ -13,6 +13,10 @@
     <result column="HOST_CAPITAL" property="hostCapital" jdbcType="DECIMAL" />
     <result column="INSERT_TIME" property="insertTime" jdbcType="VARCHAR" />
   </resultMap>
+  
+  <resultMap id="BaseResultMap2" type="com.bohai.subAccount.entity.CapitalRateDetail2" >
+    <result column="INOUTMONEY" property="inoutmoney" jdbcType="DECIMAL" />
+  </resultMap>
   <sql id="Base_Column_List" >
     <!--
       WARNING - @mbggenerated
@@ -136,4 +140,14 @@
   	where USER_NAME = #{0,jdbcType=VARCHAR}
   
   </select>
+  
+   <select id="selectByPrimaryKeyOneday" resultMap="BaseResultMap2" parameterType="java.util.Map">
+  	select  nvl(sum(USER_CAPITAL) + sum(HOST_CAPITAL),0)  as INOUTMONEY  from T_CAPITAL_RATE_DETAIL 
+  	where to_date(INSERT_TIME,&apos;yyyymmdd hh24miss&apos;)  &gt; to_date(#{starttime,jdbcType=VARCHAR},&apos;yyyymmdd hh24miss&apos;)
+  	and to_date(INSERT_TIME,&apos;yyyymmdd hh24miss&apos;) &lt; to_date(#{endtime,jdbcType=VARCHAR},&apos;yyyymmdd hh24miss&apos;) 
+  	group by USER_NAME having USER_NAME = #{username,jdbcType=VARCHAR}
+  
+  </select>
+  
+   
 </mapper>

@@ -188,7 +188,7 @@ public class ClearServiceImpl implements ClearService {
 			//结算最终客户权益，为明天开盘的权益（包含了保证金）。  T_USERAVAILABLEINDB.AVAILABLE + CLOSEWIN + POSITIONWIN - COMMISSION 
 			Useravailableindb useravailableindb = useravailableindbMapper.selectByUserName2(userInfo.getUserName());
 			BigDecimal userOpenAmountAvailable = new BigDecimal(0);
-			userOpenAmountAvailable = useravailableindb.getAvailable().add(useravailableindb.getClosewin()).add(userAllPositionWin).subtract(useravailableindb.getCommission());
+			userOpenAmountAvailable = useravailableindb.getAvailable().add(useravailableindb.getClosewin()).add(userAllPositionWin).subtract(useravailableindb.getCommission()).add(useravailableindb.getInoutmoney());
 			
 			userInfoMapper.updateUserCapital(userInfo.getUserName(), userOpenAmountAvailable);
 			

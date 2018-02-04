@@ -43,7 +43,7 @@ public class MyTraderSpi extends JCTPTraderSpi {
 	int nRequestID = 0;
 	
 	CoreappView coreappView;
-	//中证
+	//渤海
 	String brokerId = "4080";
 	String userId = "86001017";
 	String password = "074014";

@@ -24,8 +24,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -46,20 +44,17 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcInputOrderField;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
-import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.bohai.subAccount.constant.CommonConstant;
+import com.bohai.subAccount.dao.CapitalRateMapper;
+import com.bohai.subAccount.entity.CapitalRate;
 import com.bohai.subAccount.entity.CloseRule;
 import com.bohai.subAccount.entity.GroupRule;
 import com.bohai.subAccount.entity.InvestorPosition;
 import com.bohai.subAccount.entity.MainAccount;
-import com.bohai.subAccount.entity.SubTradingaccount;
 import com.bohai.subAccount.entity.UserContract;
 import com.bohai.subAccount.entity.UserInfo;
 import com.bohai.subAccount.exception.FutureException;
@@ -93,6 +88,7 @@ public class RiskFrontView {
 	
 	protected Shell shell;
 	private Table mainAccountTable;
+	private CapitalRateMapper capitalRateMapper;
 	private Table subAccountTable;
 	private MainAccountService mainAccountService;
 	private UserInfoService userInfoService;
@@ -103,6 +99,7 @@ public class RiskFrontView {
 	private CloseRuleService closeRuleService;
     private Socket socket;
     private Socket tradeSocket;
+    private CapitalRate capitalRate;
     private Datecalculate dateCalcuate = new Datecalculate();
     private HashMap<Object, Object> investorPositionsInfos;
     private List<UserContract> userContracts = new ArrayList<UserContract>();    
@@ -192,6 +189,9 @@ public class RiskFrontView {
         subTradingaccountService = (SubTradingaccountService) SpringContextUtil.getBean("subTradingaccountService");
         groupRuleService = (GroupRuleService) SpringContextUtil.getBean("groupRuleService");
         closeRuleService = (CloseRuleService) SpringContextUtil.getBean("closeRuleService");
+        
+        //配置用20180106
+        capitalRateMapper = (CapitalRateMapper) SpringContextUtil.getBean("capitalRateMapper");
 	}
 
 	/**
@@ -348,6 +348,9 @@ public class RiskFrontView {
 			investorPositionsInfos = new HashMap<Object, Object>();
 
 			for (UserInfo userInfo : userInfos) {
+				//调配资金
+            	capitalRate = capitalRateMapper.selectByPrimaryKey(userInfo.getUserName());
+				
 				//CTP成交信息取得
 				//List<Trade> trades = null;
 				//投资者持仓信息取得
@@ -388,6 +391,11 @@ public class RiskFrontView {
 					//强平金额
 					userInfoTableItem.setText(6, StringUtils.isEmpty(userInfo.getForceLimit())?"":userInfo.getForceLimit());
 
+					//自有资金
+                    userInfoTableItem.setText(7, StringUtils.isEmpty(capitalRate.getUserCapital())?"":String.valueOf(capitalRate.getUserCapital()));
+                    //调配资金
+                    userInfoTableItem.setText(8, StringUtils.isEmpty(capitalRate.getHostCapital1())?"":String.valueOf(capitalRate.getHostCapital1()));
+                    
 				} catch (FutureException e) {
 					logger.error("查询用户持仓失败",e);
 				}
@@ -501,6 +509,12 @@ public class RiskFrontView {
         
         tLayout.addColumnData(new ColumnWeightData(60));
         new TableColumn(subAccountTable, SWT.NONE).setText("强平金额");
+        
+        tLayout.addColumnData(new ColumnWeightData(60));
+        new TableColumn(subAccountTable, SWT.NONE).setText("自由资金");
+        
+        tLayout.addColumnData(new ColumnWeightData(60));
+        new TableColumn(subAccountTable, SWT.NONE).setText("调配资金");
 		
 	}
 	
@@ -646,221 +660,221 @@ public class RiskFrontView {
     /**
      *  定时强平限制操作，由quartz定时调度
      */
-    public void closeJob() {
-    	
-    	logger.debug("--------------进入定时强平方法---------------");
-			try {
-				setStrade("QPXZ");
-				
-				Thread.sleep(100);
-				
-				for(TableItem item :subAccountTable.getItems()){
-					UserPositionVO userPositionVO = (UserPositionVO) item.getData();
-					List<InvestorPosition> list = userPositionVO.getInvestorPositions();
-					if(list != null && list.size() > 0){
-						
-						for(InvestorPosition position : list){
-							
-							try {
-								StringBuffer sb = new StringBuffer();
-								sb.append("risk");
-								String userName = item.getText(0).trim();
-								sb.append("|"+userName);
-								sb.append("|FKQP");
-								//报单入参
-								CThostFtdcInputOrderField inputOrderField = new CThostFtdcInputOrderField();
-								//合约代码
-								String instrumentid = position.getInstrumentid();
-								inputOrderField.setInstrumentID(instrumentid);
-								//数量
-								inputOrderField.setVolumeTotalOriginal(position.getPosition().intValue());
-								//平今仓
-								inputOrderField.setCombOffsetFlag("3");
-								//投资者代码
-								inputOrderField.setInvestorID(userName);
-								// 用户代码
-								inputOrderField.setUserID(userName);
-								// 报单价格条件
-								inputOrderField.setOrderPriceType(THOST_FTDC_OPT_LimitPrice);
-								// 组合投机套保标志
-								inputOrderField.setCombHedgeFlag("1");
-								// 有效期类型
-								inputOrderField.setTimeCondition(THOST_FTDC_TC_GFD);
-								// GTD日期
-								inputOrderField.setGTDDate("");
-								// 成交量类型
-								inputOrderField.setVolumeCondition(THOST_FTDC_VC_AV);
-								// 最小成交量
-								inputOrderField.setMinVolume(0);
-								// 触发条件
-								inputOrderField.setContingentCondition(THOST_FTDC_CC_Immediately);
-								// 止损价
-								inputOrderField.setStopPrice(0);
-								// 强平原因
-								inputOrderField.setForceCloseReason(THOST_FTDC_FCC_NotForceClose);
-								// 自动挂起标志
-								inputOrderField.setIsAutoSuspend(0);
-								//合约属性
-								UserContract contract = this.getContractByContractNo(instrumentid);
-								if(position.getPosidirection().equals("0")){
-									logger.debug("买开强平持仓信息："+JSON.toJSONString(position));
-									//买开强平 ---> 卖平
-									inputOrderField.setDirection(THOST_FTDC_D_Sell);
-									//价格 = 对手价（买价） - 10跳
-									BigDecimal price = position.getBidPrice1().subtract(contract.getTickSize().multiply(new BigDecimal("10"))).setScale(2, RoundingMode.HALF_UP);
-									//跌停价
-									BigDecimal lowerLimitPrice = position.getLowerLimitPrice();
-									if(price.compareTo(lowerLimitPrice)<0){
-										//如果价格小于跌停价，就用跌停价
-										price = lowerLimitPrice;
-									}
-									logger.debug("强平价格："+price);
-									inputOrderField.setLimitPrice(price.doubleValue());
-									
-								}else {
-									logger.debug("卖开强平持仓信息："+JSON.toJSONString(position));
-									//卖开强平 ---> 买平
-									inputOrderField.setDirection(THOST_FTDC_D_Buy);
-									//价格 = 对手价（卖价） + 10跳
-									BigDecimal price = position.getAskPrice1().add(contract.getTickSize().multiply(new BigDecimal("10"))).setScale(2, RoundingMode.HALF_UP);
-									//涨停价
-									BigDecimal upperLimitPrice = position.getUpperLimitPrice();
-									if(price.compareTo(upperLimitPrice)>0){
-										//如果价格大于涨停价，就用涨停价
-										price = upperLimitPrice;
-									}
-									logger.debug("强平价格："+price);
-									inputOrderField.setLimitPrice(price.doubleValue());
-								}
-								sb.append("|"+JSON.toJSONString(inputOrderField));
-								logger.info("强平指令："+sb.toString());
-								PrintWriter out = new PrintWriter(new OutputStreamWriter(this.tradeSocket.getOutputStream(),"UTF-8"));
-								out.println(sb.toString());
-								out.flush();
-							} catch (Exception e) {
-								logger.error("强平异常",e);
-							}
-							
-						}
-					}
-				}
-			} catch (Exception e) {
-				logger.error("定时强平失败",e);
-			}
-    }
+//    public void closeJob() {
+//    	
+//    	logger.debug("--------------进入定时强平方法---------------");
+//			try {
+//				setStrade("QPXZ");
+//				
+//				Thread.sleep(100);
+//				
+//				for(TableItem item :subAccountTable.getItems()){
+//					UserPositionVO userPositionVO = (UserPositionVO) item.getData();
+//					List<InvestorPosition> list = userPositionVO.getInvestorPositions();
+//					if(list != null && list.size() > 0){
+//						
+//						for(InvestorPosition position : list){
+//							
+//							try {
+//								StringBuffer sb = new StringBuffer();
+//								sb.append("risk");
+//								String userName = item.getText(0).trim();
+//								sb.append("|"+userName);
+//								sb.append("|FKQP");
+//								//报单入参
+//								CThostFtdcInputOrderField inputOrderField = new CThostFtdcInputOrderField();
+//								//合约代码
+//								String instrumentid = position.getInstrumentid();
+//								inputOrderField.setInstrumentID(instrumentid);
+//								//数量
+//								inputOrderField.setVolumeTotalOriginal(position.getPosition().intValue());
+//								//平今仓
+//								inputOrderField.setCombOffsetFlag("3");
+//								//投资者代码
+//								inputOrderField.setInvestorID(userName);
+//								// 用户代码
+//								inputOrderField.setUserID(userName);
+//								// 报单价格条件
+//								inputOrderField.setOrderPriceType(THOST_FTDC_OPT_LimitPrice);
+//								// 组合投机套保标志
+//								inputOrderField.setCombHedgeFlag("1");
+//								// 有效期类型
+//								inputOrderField.setTimeCondition(THOST_FTDC_TC_GFD);
+//								// GTD日期
+//								inputOrderField.setGTDDate("");
+//								// 成交量类型
+//								inputOrderField.setVolumeCondition(THOST_FTDC_VC_AV);
+//								// 最小成交量
+//								inputOrderField.setMinVolume(0);
+//								// 触发条件
+//								inputOrderField.setContingentCondition(THOST_FTDC_CC_Immediately);
+//								// 止损价
+//								inputOrderField.setStopPrice(0);
+//								// 强平原因
+//								inputOrderField.setForceCloseReason(THOST_FTDC_FCC_NotForceClose);
+//								// 自动挂起标志
+//								inputOrderField.setIsAutoSuspend(0);
+//								//合约属性
+//								UserContract contract = this.getContractByContractNo(instrumentid);
+//								if(position.getPosidirection().equals("0")){
+//									logger.debug("买开强平持仓信息："+JSON.toJSONString(position));
+//									//买开强平 ---> 卖平
+//									inputOrderField.setDirection(THOST_FTDC_D_Sell);
+//									//价格 = 对手价（买价） - 10跳
+//									BigDecimal price = position.getBidPrice1().subtract(contract.getTickSize().multiply(new BigDecimal("10"))).setScale(2, RoundingMode.HALF_UP);
+//									//跌停价
+//									BigDecimal lowerLimitPrice = position.getLowerLimitPrice();
+//									if(price.compareTo(lowerLimitPrice)<0){
+//										//如果价格小于跌停价，就用跌停价
+//										price = lowerLimitPrice;
+//									}
+//									logger.debug("强平价格："+price);
+//									inputOrderField.setLimitPrice(price.doubleValue());
+//									
+//								}else {
+//									logger.debug("卖开强平持仓信息："+JSON.toJSONString(position));
+//									//卖开强平 ---> 买平
+//									inputOrderField.setDirection(THOST_FTDC_D_Buy);
+//									//价格 = 对手价（卖价） + 10跳
+//									BigDecimal price = position.getAskPrice1().add(contract.getTickSize().multiply(new BigDecimal("10"))).setScale(2, RoundingMode.HALF_UP);
+//									//涨停价
+//									BigDecimal upperLimitPrice = position.getUpperLimitPrice();
+//									if(price.compareTo(upperLimitPrice)>0){
+//										//如果价格大于涨停价，就用涨停价
+//										price = upperLimitPrice;
+//									}
+//									logger.debug("强平价格："+price);
+//									inputOrderField.setLimitPrice(price.doubleValue());
+//								}
+//								sb.append("|"+JSON.toJSONString(inputOrderField));
+//								logger.info("强平指令："+sb.toString());
+//								PrintWriter out = new PrintWriter(new OutputStreamWriter(this.tradeSocket.getOutputStream(),"UTF-8"));
+//								out.println(sb.toString());
+//								out.flush();
+//							} catch (Exception e) {
+//								logger.error("强平异常",e);
+//							}
+//							
+//						}
+//					}
+//				}
+//			} catch (Exception e) {
+//				logger.error("定时强平失败",e);
+//			}
+//    }
     
     /**
      * 止损强平
      * @param userName
      */
-    public void forceCloseByUserName(String userName){
-        try {
-            PrintWriter out = new PrintWriter(new OutputStreamWriter(getTradeSocket().getOutputStream(),"UTF-8"));
-            StringBuffer stringBuffer = new StringBuffer();;
-            stringBuffer.append("risk|");
-            stringBuffer.append(userName + "|");
-            stringBuffer.append("QPXZ|");
-            logger.info("强平指令：" + stringBuffer.toString());
-            out.println(stringBuffer.toString());
-            out.flush();
-            Thread.sleep(200);
-            
-            for(TableItem item :subAccountTable.getItems()){
-                if(!userName.equals(item.getText(0))){
-                    continue;
-                }
-                
-                UserPositionVO userPositionVO = (UserPositionVO) item.getData();
-                List<InvestorPosition> list = userPositionVO.getInvestorPositions();
-                if(list != null && list.size() > 0){
-                    
-                    for(InvestorPosition position : list){
-                        
-                        StringBuffer sb = new StringBuffer();
-                        sb.append("risk");
-                        sb.append("|"+userName);
-                        sb.append("|FKQP");
-                        //报单入参
-                        CThostFtdcInputOrderField inputOrderField = new CThostFtdcInputOrderField();
-                        //合约代码
-                        String instrumentid = position.getInstrumentid();
-                        inputOrderField.setInstrumentID(instrumentid);
-                        //数量
-                        inputOrderField.setVolumeTotalOriginal(position.getPosition().intValue());
-                        //平今仓
-                        inputOrderField.setCombOffsetFlag("3");
-                        //投资者代码
-                        inputOrderField.setInvestorID(userName);
-                        // 用户代码
-                        inputOrderField.setUserID(userName);
-                        // 报单价格条件
-                        inputOrderField.setOrderPriceType(THOST_FTDC_OPT_LimitPrice);
-                        // 组合投机套保标志
-                        inputOrderField.setCombHedgeFlag("1");
-                        // 有效期类型
-                        inputOrderField.setTimeCondition(THOST_FTDC_TC_GFD);
-                        // GTD日期
-                        inputOrderField.setGTDDate("");
-                        // 成交量类型
-                        inputOrderField.setVolumeCondition(THOST_FTDC_VC_AV);
-                        // 最小成交量
-                        inputOrderField.setMinVolume(0);
-                        // 触发条件
-                        inputOrderField.setContingentCondition(THOST_FTDC_CC_Immediately);
-                        // 止损价
-                        inputOrderField.setStopPrice(0);
-                        // 强平原因
-                        inputOrderField.setForceCloseReason(THOST_FTDC_FCC_NotForceClose);
-                        // 自动挂起标志
-                        inputOrderField.setIsAutoSuspend(0);
-                        //合约属性
-                        UserContract contract = this.getContractByContractNo(instrumentid);
-                        if(position.getPosidirection().equals("0")){
-                            logger.debug("买开强平持仓信息："+JSON.toJSONString(position));
-                            //买开强平 ---> 卖平
-                            inputOrderField.setDirection(THOST_FTDC_D_Sell);
-                            //价格 = 对手价（买价） - 10跳
-                            BigDecimal price = position.getBidPrice1().subtract(contract.getTickSize().multiply(new BigDecimal("10"))).setScale(2, RoundingMode.HALF_UP);
-                            //跌停价
-                            BigDecimal lowerLimitPrice = position.getLowerLimitPrice();
-                            if(price.compareTo(lowerLimitPrice)<0){
-                                //如果价格小于跌停价，就用跌停价
-                                price = lowerLimitPrice;
-                            }
-                            logger.debug("强平价格："+price);
-                            inputOrderField.setLimitPrice(price.doubleValue());
-                            
-                        }else {
-                            logger.debug("卖开强平持仓信息："+JSON.toJSONString(position));
-                            //卖开强平 ---> 买平
-                            inputOrderField.setDirection(THOST_FTDC_D_Buy);
-                            //价格 = 对手价（卖价） + 10跳
-                            BigDecimal price = position.getAskPrice1().add(contract.getTickSize().multiply(new BigDecimal("10"))).setScale(2, RoundingMode.HALF_UP);
-                            //涨停价
-                            BigDecimal upperLimitPrice = position.getUpperLimitPrice();
-                            if(price.compareTo(upperLimitPrice)>0){
-                                //如果价格大于涨停价，就用涨停价
-                                price = upperLimitPrice;
-                            }
-                            logger.debug("强平价格："+price);
-                            inputOrderField.setLimitPrice(price.doubleValue());
-                        }
-                        sb.append("|"+JSON.toJSONString(inputOrderField));
-                        logger.info("风控强平指令："+sb.toString());
-                        
-                        out.println(sb.toString());
-                        out.flush();
-                        
-                    }
-                }
-            }
-            
-            
-        } catch (Exception e) {
-            logger.error("强平失败",e);
-        }
-        
-    }
+//    public void forceCloseByUserName(String userName){
+//        try {
+//            PrintWriter out = new PrintWriter(new OutputStreamWriter(getTradeSocket().getOutputStream(),"UTF-8"));
+//            StringBuffer stringBuffer = new StringBuffer();;
+//            stringBuffer.append("risk|");
+//            stringBuffer.append(userName + "|");
+//            stringBuffer.append("QPXZ|");
+//            logger.info("强平指令：" + stringBuffer.toString());
+//            out.println(stringBuffer.toString());
+//            out.flush();
+//            Thread.sleep(200);
+//            
+//            for(TableItem item :subAccountTable.getItems()){
+//                if(!userName.equals(item.getText(0))){
+//                    continue;
+//                }
+//                
+//                UserPositionVO userPositionVO = (UserPositionVO) item.getData();
+//                List<InvestorPosition> list = userPositionVO.getInvestorPositions();
+//                if(list != null && list.size() > 0){
+//                    
+//                    for(InvestorPosition position : list){
+//                        
+//                        StringBuffer sb = new StringBuffer();
+//                        sb.append("risk");
+//                        sb.append("|"+userName);
+//                        sb.append("|FKQP");
+//                        //报单入参
+//                        CThostFtdcInputOrderField inputOrderField = new CThostFtdcInputOrderField();
+//                        //合约代码
+//                        String instrumentid = position.getInstrumentid();
+//                        inputOrderField.setInstrumentID(instrumentid);
+//                        //数量
+//                        inputOrderField.setVolumeTotalOriginal(position.getPosition().intValue());
+//                        //平今仓
+//                        inputOrderField.setCombOffsetFlag("3");
+//                        //投资者代码
+//                        inputOrderField.setInvestorID(userName);
+//                        // 用户代码
+//                        inputOrderField.setUserID(userName);
+//                        // 报单价格条件
+//                        inputOrderField.setOrderPriceType(THOST_FTDC_OPT_LimitPrice);
+//                        // 组合投机套保标志
+//                        inputOrderField.setCombHedgeFlag("1");
+//                        // 有效期类型
+//                        inputOrderField.setTimeCondition(THOST_FTDC_TC_GFD);
+//                        // GTD日期
+//                        inputOrderField.setGTDDate("");
+//                        // 成交量类型
+//                        inputOrderField.setVolumeCondition(THOST_FTDC_VC_AV);
+//                        // 最小成交量
+//                        inputOrderField.setMinVolume(0);
+//                        // 触发条件
+//                        inputOrderField.setContingentCondition(THOST_FTDC_CC_Immediately);
+//                        // 止损价
+//                        inputOrderField.setStopPrice(0);
+//                        // 强平原因
+//                        inputOrderField.setForceCloseReason(THOST_FTDC_FCC_NotForceClose);
+//                        // 自动挂起标志
+//                        inputOrderField.setIsAutoSuspend(0);
+//                        //合约属性
+//                        UserContract contract = this.getContractByContractNo(instrumentid);
+//                        if(position.getPosidirection().equals("0")){
+//                            logger.debug("买开强平持仓信息："+JSON.toJSONString(position));
+//                            //买开强平 ---> 卖平
+//                            inputOrderField.setDirection(THOST_FTDC_D_Sell);
+//                            //价格 = 对手价（买价） - 10跳
+//                            BigDecimal price = position.getBidPrice1().subtract(contract.getTickSize().multiply(new BigDecimal("10"))).setScale(2, RoundingMode.HALF_UP);
+//                            //跌停价
+//                            BigDecimal lowerLimitPrice = position.getLowerLimitPrice();
+//                            if(price.compareTo(lowerLimitPrice)<0){
+//                                //如果价格小于跌停价，就用跌停价
+//                                price = lowerLimitPrice;
+//                            }
+//                            logger.debug("强平价格："+price);
+//                            inputOrderField.setLimitPrice(price.doubleValue());
+//                            
+//                        }else {
+//                            logger.debug("卖开强平持仓信息："+JSON.toJSONString(position));
+//                            //卖开强平 ---> 买平
+//                            inputOrderField.setDirection(THOST_FTDC_D_Buy);
+//                            //价格 = 对手价（卖价） + 10跳
+//                            BigDecimal price = position.getAskPrice1().add(contract.getTickSize().multiply(new BigDecimal("10"))).setScale(2, RoundingMode.HALF_UP);
+//                            //涨停价
+//                            BigDecimal upperLimitPrice = position.getUpperLimitPrice();
+//                            if(price.compareTo(upperLimitPrice)>0){
+//                                //如果价格大于涨停价，就用涨停价
+//                                price = upperLimitPrice;
+//                            }
+//                            logger.debug("强平价格："+price);
+//                            inputOrderField.setLimitPrice(price.doubleValue());
+//                        }
+//                        sb.append("|"+JSON.toJSONString(inputOrderField));
+//                        logger.info("风控强平指令："+sb.toString());
+//                        
+//                        out.println(sb.toString());
+//                        out.flush();
+//                        
+//                    }
+//                }
+//            }
+//            
+//            
+//        } catch (Exception e) {
+//            logger.error("强平失败",e);
+//        }
+//        
+//    }
     
     // 一键撤单操作
     private void cancelLation() {
