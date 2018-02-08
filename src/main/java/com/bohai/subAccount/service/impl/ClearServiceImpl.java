@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.bohai.subAccount.dao.CapitalRateDetailMapper;
 import com.bohai.subAccount.dao.FutureMarketMapper;
 import com.bohai.subAccount.dao.InputOrderHistoryMapper;
 import com.bohai.subAccount.dao.InputOrderMapper;
@@ -81,6 +82,9 @@ public class ClearServiceImpl implements ClearService {
 	
 	@Autowired
 	private UseravailableindbMapper useravailableindbMapper;
+	
+	@Autowired
+	private CapitalRateDetailMapper capitalRateDetailMapper;
 
 	@Override
 	public void backUp() {
@@ -119,6 +123,18 @@ public class ClearServiceImpl implements ClearService {
 		logger.debug("开始备份T_SUB_TRADINGACCOUNT表");
 		count = subTradingaccountHistoryMapper.backup();
 		logger.debug("T_TRADE表已备份"+count+"条数据完成");
+		
+		logger.debug("开始备份T_SUB_TRADINGACCOUNT表");
+		count = subTradingaccountHistoryMapper.backup();
+		logger.debug("T_TRADE表已备份"+count+"条数据完成");
+		
+		logger.debug("开始备份T_CAPITAL_RATE_DETAIL表");
+		count = capitalRateDetailMapper.backup();
+		logger.debug("T_CAPITAL_RATE_DETAIL表已备份"+count+"条数据完成");
+		
+		logger.debug("开始删除T_CAPITAL_RATE_DETAIL表");
+		count = capitalRateDetailMapper.deleteall();
+		logger.debug("T_CAPITAL_RATE_DETAIL表已删除"+count+"条数据完成");
 		
 		
 		

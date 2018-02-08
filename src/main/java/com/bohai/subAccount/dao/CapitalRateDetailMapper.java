@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 
 import com.bohai.subAccount.entity.CapitalRateDetail;
@@ -61,4 +63,10 @@ public interface CapitalRateDetailMapper {
     int updateByPrimaryKey(CapitalRateDetail record);
     
     List<CapitalRateDetail> getUserByUserName(String userName);
+    
+    @Insert("insert into T_CAPITAL_RATE_DETAIL_BAK select t.*,to_char(sysdate,'yyyymmdd hh24:mi:ss') from T_CAPITAL_RATE_DETAIL t ")
+    int backup();
+    
+    @Delete("delete from T_CAPITAL_RATE_DETAIL")
+    int deleteall();
 }
