@@ -1455,11 +1455,11 @@ public class TraderView {
                     if("买".equals(item.getText(ColumnIndex.POSITION_TABLE_DIRECTION_INDEX))){
                         sellButton.setSelection(true);
                         buyButton.setSelection(false);
-                        priceText.setText(item.getText(ColumnIndex.MARKET_TABLE_BIDPRICE1_INDEX));
+                        priceText.setText(item.getText(ColumnIndex.POSITION_TABLE_LASTPRICE_INDEX));
                     }else{
                         buyButton.setSelection(true);
                         sellButton.setSelection(false);
-                        priceText.setText(item.getText(ColumnIndex.MARKET_TABLE_ASKPRICE1_INDEX));
+                        priceText.setText(item.getText(ColumnIndex.POSITION_TABLE_LASTPRICE_INDEX));
                     }
                 }
             }
