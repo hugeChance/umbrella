@@ -692,6 +692,7 @@ public class TraderView {
         
         volume = new Spinner(composite, SWT.BORDER);
         volume.setIncrement(1);
+        volume.setMaximum(999);
         volume.setBounds(71, 118, 95, 27);
         
         String volumeStr = ApplicationConfig.getProperty("volume");
