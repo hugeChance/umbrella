@@ -80,6 +80,7 @@ import com.bohai.subAccount.utils.ApplicationConfig;
 import com.bohai.subAccount.vo.UserAvailableMemorySave;
 
 import swing2swt.layout.BorderLayout;
+import org.eclipse.swt.widgets.Spinner;
 
 public class TraderView {
 
@@ -101,12 +102,12 @@ public class TraderView {
     private Table entrustTable;
     private Table dealTable;
     private Table positionTable;
-    private Text volume;
     private Text priceText;
     
     private Combo combo;
     private Button buyButton;
     private Button sellButton;
+    private Spinner volume;
     private Button openButton;
     private Button closeButton;
     private Button closeTodayButton;
@@ -689,21 +690,13 @@ public class TraderView {
         label_2.setBounds(10, 119, 55, 27);
         label_2.setText("手数");
         
-        volume = new Text(composite, SWT.BORDER);
-        volume.addFocusListener(new FocusAdapter() {
-        	@Override
-        	public void focusLost(FocusEvent e) {
-        		if(!StringUtils.isEmpty(volume.getText())){
-        			ApplicationConfig.setProperty("volume", volume.getText());
-        		}
-        	}
-        });
-        volume.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
-        volume.setBounds(71, 116, 95, 27);
+        volume = new Spinner(composite, SWT.BORDER);
+        volume.setIncrement(1);
+        volume.setBounds(71, 118, 95, 27);
         
         String volumeStr = ApplicationConfig.getProperty("volume");
         if(!StringUtils.isEmpty(volumeStr)){
-        	volume.setText(volumeStr);;
+        	volume.setSelection(Integer.parseInt(volumeStr));
         }
         
         Label label_3 = new Label(composite, SWT.NONE);
@@ -722,7 +715,7 @@ public class TraderView {
         
         volumePermit = new Label(composite, SWT.NONE);
         volumePermit.setFont(SWTResourceManager.getFont("微软雅黑", 10, SWT.NORMAL));
-        volumePermit.setBounds(190, 119, 71, 27);
+        volumePermit.setBounds(190, 114, 71, 27);
         volumePermit.setText("可开数量");
         
         Button btnNewButton = new Button(composite, SWT.NONE);
@@ -1011,11 +1004,11 @@ public class TraderView {
         label_4.setBounds(190, 17, 65, 22);
         
         sellLabel = new Label(composite, SWT.NONE);
-        sellLabel.setBounds(190, 145, 126, 17);
+        sellLabel.setBounds(218, 147, 126, 17);
         sellLabel.setText(" ");
         
         buyLabel = new Label(composite, SWT.NONE);
-        buyLabel.setBounds(190, 168, 126, 17);
+        buyLabel.setBounds(218, 170, 126, 17);
         buyLabel.setText(" ");
         
         Button btnNewButton_1 = new Button(composite, SWT.NONE);
@@ -1069,6 +1062,37 @@ public class TraderView {
         Button clearButten = new Button(composite, SWT.NONE);
         clearButten.setBounds(212, 267, 95, 34);
         clearButten.setText("清仓");
+        
+        Button upBtn = new Button(composite, SWT.NONE);
+        upBtn.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                String instrumentID = combo.getText();
+                if(!StringUtils.isEmpty(instrumentID) && !StringUtils.isEmpty(priceText.getText())){
+                    BigDecimal tickPrice = getContractByContractNo(instrumentID).getTickSize();
+                    BigDecimal price = new BigDecimal(priceText.getText()).add(tickPrice);
+                    priceText.setText(price.toString());
+                }
+            }
+        });
+        upBtn.setBounds(168, 157, 15, 17);
+        upBtn.setText("△");
+        
+        Button button = new Button(composite, SWT.NONE);
+        button.setText("▽");
+        button.setBounds(168, 175, 15, 17);
+        button.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                String instrumentID = combo.getText();
+                if(!StringUtils.isEmpty(instrumentID) && !StringUtils.isEmpty(priceText.getText())){
+                    BigDecimal tickPrice = getContractByContractNo(instrumentID).getTickSize();
+                    BigDecimal price = new BigDecimal(priceText.getText()).subtract(tickPrice);
+                    priceText.setText(price.toString());
+                }
+            }
+        });
+        
         clearButten.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -1414,6 +1438,33 @@ public class TraderView {
     public void createPositionTable(Composite parent){
         
         positionTable = new Table(parent, SWT.BORDER | SWT.FULL_SELECTION);
+        //选中
+        positionTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseDown(MouseEvent e) {
+                TableItem item = positionTable.getItem(new Point(e.x, e.y));
+                if(item != null){
+                    
+                    if(!"".equals(item.getText(ColumnIndex.POSITION_TABLE_INSTRUMENT_INDEX))){
+                        combo.setText(item.getText(ColumnIndex.MARKET_TABLE_INSTRUMENT_INDEX));
+                        volume.setSelection(Integer.parseInt((item.getText(ColumnIndex.POSITION_TABLE_VOLUME_INDEX))));
+                        openButton.setSelection(false);
+                        closeButton.setSelection(true);
+                        closeTodayButton.setSelection(false);
+                    }
+                    if("买".equals(item.getText(ColumnIndex.POSITION_TABLE_DIRECTION_INDEX))){
+                        sellButton.setSelection(true);
+                        buyButton.setSelection(false);
+                        priceText.setText(item.getText(ColumnIndex.POSITION_TABLE_LASTPRICE_INDEX));
+                    }else{
+                        buyButton.setSelection(true);
+                        sellButton.setSelection(false);
+                        priceText.setText(item.getText(ColumnIndex.POSITION_TABLE_LASTPRICE_INDEX));
+                    }
+                }
+            }
+        });
+
         TableLayout tLayout = new TableLayout();//专用于表格的布局
         
         positionTable.setLayout(tLayout);
