@@ -692,6 +692,7 @@ public class TraderView {
         
         volume = new Spinner(composite, SWT.BORDER);
         volume.setIncrement(1);
+        volume.setMaximum(999);
         volume.setBounds(71, 118, 95, 27);
         
         String volumeStr = ApplicationConfig.getProperty("volume");
@@ -2198,7 +2199,7 @@ public class TraderView {
         
         //等待50毫秒
         try {
-            Thread.sleep(50);
+            Thread.sleep(600);
         } catch (InterruptedException e) {
             logger.error("市价反手等待失败");
             MessageBox box = new MessageBox(shell, SWT.APPLICATION_MODAL | SWT.YES);
