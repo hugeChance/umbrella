@@ -197,6 +197,7 @@
     on t.CONTRACT_NO = t1.CONTRACT
     where u.user_no = t.user_no
     and t.USER_NO = #{userNo,jdbcType=VARCHAR}
+    order by t.CONTRACT_NO
   </select>
   
   <select id="selectTradeRulesByGroupId" parameterType="java.lang.String" resultMap="UserContractTradeRuleMap">
