@@ -952,7 +952,13 @@ public class MainForm {
             	settlemenetTitleVO.setRealized(String.valueOf(useravailableindb.getClosewin()));
             	//风险度=客户保证金占用/客户权益*100%；
 //            	BigDecimal risk_DegreeBDec = useravailableindb.getMargin().divide(balanceBDec);
-            	double dbltmp = useravailableindb.getMargin().doubleValue() / balanceBDec.doubleValue() * 100;
+            	double dbltmp = 0;
+            	if(balanceBDec.compareTo(new BigDecimal(0)) == 0){
+            		dbltmp = 0;
+            	} else {
+            		dbltmp = useravailableindb.getMargin().doubleValue() / balanceBDec.doubleValue() * 100;
+            	}
+            	
             	
             	//dbltmp = Math.round(dbltmp);
             	dbltmp = new BigDecimal(dbltmp).setScale(1, RoundingMode.HALF_UP).doubleValue();
