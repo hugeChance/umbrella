@@ -23,50 +23,11 @@ import com.bohai.subAccount.entity.UserContract;
 public class Test {
 	
 	public static void main(String[] args) throws ParseException {
-		/*CThostFtdcInputOrderField inputOrderField=new CThostFtdcInputOrderField();
-		//期货公司代码
-		inputOrderField.setBrokerID("123");
-		//投资者代码
-		inputOrderField.setInvestorID("123");
-		// 合约代码
-		inputOrderField.setInstrumentID("a1705");
-		///报单引用
-		inputOrderField.setOrderRef("000000000001");
-		// 用户代码
-		inputOrderField.setUserID("123");
-		// 报单价格条件
-		inputOrderField.setOrderPriceType(THOST_FTDC_OPT_LimitPrice);
-		// 买卖方向
-		inputOrderField.setDirection(THOST_FTDC_D_Buy);
-		// 组合开平标志
-		inputOrderField.setCombOffsetFlag("0");
-		// 组合投机套保标志
-		inputOrderField.setCombHedgeFlag("1");
-		// 价格
-		inputOrderField.setLimitPrice(4420);
-		// 数量
-		inputOrderField.setVolumeTotalOriginal(1);
-		// 有效期类型
-		inputOrderField.setTimeCondition(THOST_FTDC_TC_GFD);
-		// GTD日期
-		inputOrderField.setGTDDate("");
-		// 成交量类型
-		inputOrderField.setVolumeCondition(THOST_FTDC_VC_AV);
-		// 最小成交量
-		inputOrderField.setMinVolume(0);
-		// 触发条件
-		inputOrderField.setContingentCondition(THOST_FTDC_CC_Immediately);
-		// 止损价
-		inputOrderField.setStopPrice(0);
-		// 强平原因
-		inputOrderField.setForceCloseReason(THOST_FTDC_FCC_NotForceClose);
-		// 自动挂起标志
-		inputOrderField.setIsAutoSuspend(0);
 		
-		System.out.println(JSON.toJSONString(inputOrderField));*/
-		
-		Test test = new Test();
-		test.test3();
+		double a = 1.0/0.0;  
+		System.out.println(a);
+		double b = new BigDecimal(a).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();  
+		System.out.println(b);
 	}
 	
 	public void test4(){

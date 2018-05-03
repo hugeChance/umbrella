@@ -426,8 +426,6 @@ public class CoreappView {
 					//日盘时间
 					
 					
-					
-					
 					startYYYYMMDD = String.valueOf(year2) + String.format("%02d", mouth2) + String.format("%02d", day2) + " 203501";
 					endYYYYMMDD = String.valueOf(year) + String.format("%02d", mouth) + String.format("%02d", day) + " 200101";
 					Map map = new HashMap<String,Object>();
