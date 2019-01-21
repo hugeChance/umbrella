@@ -838,6 +838,13 @@ public class MainForm {
                         }
                         
                     }
+                }else if ("读取结算单".equals(selection.getText())) {
+                	FileDialog filedlg=new FileDialog(shell,SWT.SINGLE);
+                    String openFile = filedlg.open();
+                    if(openFile != null){
+                    	
+                    }
+                	
                 }
 				
 				
@@ -866,7 +873,9 @@ public class MainForm {
 		
 		TreeItem treeItem_1 = new TreeItem(systemTree, 0);
 		treeItem_1.setText("导入合约");
-		treeItem_1.setExpanded(true);
+		
+		TreeItem treeItem_2 = new TreeItem(systemTree, 0);
+		treeItem_2.setText("读取结算单");
 		
 		
 		

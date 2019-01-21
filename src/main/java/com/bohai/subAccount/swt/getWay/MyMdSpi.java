@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
-import org.hraink.futures.ctp.socket.JCTPCallBack;
 import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcDepthMarketDataField;
 import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcReqUserLoginField;
 import org.hraink.futures.ctp.thostftdcuserapistruct.CThostFtdcRspInfoField;
@@ -32,8 +31,6 @@ public class MyMdSpi extends JCTPMdSpi {
 	
 	private JCTPMdApi mdApi;
 	
-	private JCTPCallBack callBack;
-	
 	private FutureMarketService futureMarketService;
 	
 	private GetWay getWay;
@@ -53,10 +50,6 @@ public class MyMdSpi extends JCTPMdSpi {
 		this.futureMarketService = futureMarketService;
 	}
 	
-	public MyMdSpi(JCTPMdApi mdApi,JCTPCallBack callBack) {
-		this.mdApi = mdApi;
-		this.callBack = callBack;
-	}
 	
 	@Override
 	public void onFrontConnected() {
@@ -137,10 +130,6 @@ public class MyMdSpi extends JCTPMdSpi {
 	public void onRtnDepthMarketData(CThostFtdcDepthMarketDataField pDepthMarketData) {
 		/*System.out.print(pDepthMarketData.getUpdateTime() + " " + pDepthMarketData.getUpdateMillisec() + "   ");
 		System.out.println(pDepthMarketData.getInstrumentID()+": "+JSON.toJSONString(pDepthMarketData));*/
-		//回调转发socket
-		if(callBack != null){
-			callBack.execute(pDepthMarketData);
-		}
 		//保存行情
 		if(futureMarketService != null){
 			System.out.println(JSON.toJSONString(pDepthMarketData));
@@ -185,14 +174,6 @@ public class MyMdSpi extends JCTPMdSpi {
 	public void onRspUserLogout(CThostFtdcUserLogoutField pUserLogout,
 			CThostFtdcRspInfoField pRspInfo, int nRequestID, boolean bIsLast) {
 		// TODO Auto-generated method stub
-	}
-
-	public JCTPCallBack getCallBack() {
-		return callBack;
-	}
-
-	public void setCallBack(JCTPCallBack callBack) {
-		this.callBack = callBack;
 	}
 
 	public FutureMarketService getFutureMarketService() {

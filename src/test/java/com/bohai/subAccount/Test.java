@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,11 +24,21 @@ import com.bohai.subAccount.entity.UserContract;
 public class Test {
 	
 	public static void main(String[] args) throws ParseException {
+		Calendar c = Calendar.getInstance();
+		int year=c.get(Calendar.YEAR);
+		int mouth=c.get(Calendar.MONTH)+1;
+		int day=c.get(Calendar.DAY_OF_MONTH);
+		int hour = c.get(Calendar.HOUR_OF_DAY);
+		int minute=c.get(Calendar.MINUTE);
+		int second=c.get(Calendar.SECOND);
 		
-		double a = 1.0/0.0;  
-		System.out.println(a);
-		double b = new BigDecimal(a).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();  
-		System.out.println(b);
+		Date date = new Date();//获取当前时间 
+		Calendar calendar = Calendar.getInstance();  
+		calendar.setTime(date); 
+		calendar.add(Calendar.DAY_OF_MONTH, -1);
+		int mouth2=c.get(Calendar.MONTH);
+		int year2=c.get(Calendar.YEAR);
+		int day2=calendar.get(Calendar.DAY_OF_MONTH );
 	}
 	
 	public void test4(){

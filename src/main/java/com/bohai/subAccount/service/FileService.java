@@ -10,5 +10,7 @@ import com.bohai.subAccount.exception.FutureException;
 public interface FileService {
     
     public void Import(String fileName) throws FutureException;
+    
+    public void ImportJSTxt(String fileName) throws FutureException;
 
 }

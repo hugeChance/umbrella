@@ -1,6 +1,9 @@
 package com.bohai.subAccount.service.impl;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
 
@@ -114,5 +117,25 @@ public class InstrumentFileServiceImpl implements FileService {
         }
         
     }
+
+	@Override
+	public void ImportJSTxt(String fileName) throws FutureException {
+		 File file = new File(fileName);
+		 try {
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			String s = null;
+			while((s = br.readLine())!=null){
+				//逐行读取结算单
+				
+				
+			}
+			br.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 
+		
+	}
 
 }

@@ -1,4 +1,4 @@
-﻿package com.bohai.subAccount.swt.riskfront;
+package com.bohai.subAccount.swt.riskfront;
 
 import static org.hraink.futures.ctp.thostftdcuserapidatatype.ThostFtdcUserApiDataTypeLibrary.THOST_FTDC_CC_Immediately;
 import static org.hraink.futures.ctp.thostftdcuserapidatatype.ThostFtdcUserApiDataTypeLibrary.THOST_FTDC_D_Buy;
